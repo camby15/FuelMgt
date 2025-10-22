@@ -1,0 +1,83 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins';
+}
+body {
+    width: 100%;
+    height: 100vh;
+    background: url(../images/Banner-2.png);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+.welcome-box {
+    display: flex;
+    width: 35%;
+    height: 50vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    margin: auto;
+    margin-top: 20vh;
+    flex-direction: column;
+    border-radius: 10px;
+}
+.welcome-box h1 {
+    font-size: 2.2rem;
+    text-align: center;
+    margin-top: 5%;
+    color: rgba(245, 245, 245, 0.795);
+    font-weight: 600;
+    margin-top: 8%;
+}
+.welcome-box h2 {
+    font-size: 1.5rem;
+    text-align: center;
+    color: rgba(245, 245, 245, 0.61);
+    font-weight: 200;
+    margin-bottom: 8%;
+}
+
+.buttons {
+    text-decoration: none;
+    color: white;
+    text-align: center;
+    border: 1px solid #069a9a;
+    width: 60%;
+    height: 11%;
+    margin-left: 20%;
+    padding: 15px;
+    margin-bottom: 2%;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 400;
+    cursor: pointer;
+    transform: 0.5s;
+}
+
+.buttons:hover {
+    background-color: #069a9a;
+    transition: 0.5s;
+}
+span {
+    text-align: center;
+    color: white;
+    margin-bottom: 1%;
+}
+
+@media screen and (max-width: 600px) {
+    .welcome-box {
+        width: 100%;
+        background-color: transparent;
+    }
+
+    .buttons {
+        font-size: 0.8rem;
+        background-color: #033c42;
+        border: 1px solid #033c42;
+    }
+    .buttons:hover {
+        background-color: #033c42;
+    }
+}

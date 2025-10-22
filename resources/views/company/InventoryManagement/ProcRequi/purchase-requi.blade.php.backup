@@ -1,0 +1,3196 @@
+@push('css')
+<style>
+    /* Make table rows clickable */
+    .clickable-row {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .clickable-row:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+    
+    /* Prevent action buttons from triggering row click */
+    .action-buttons {
+        white-space: nowrap;
+        text-align: right;
+        padding-right: 10px !important;
+    }
+    
+    /* Ensure buttons are properly spaced */
+    .action-buttons .btn {
+        margin: 0 2px;
+    }
+</style>
+<style>
+    :root {
+        --primary-color: #3b7ddd;
+        --secondary-color: #6c757d;
+        --success-color: #1cc88a;
+        --danger-color: #e74a3b;
+    }
+    
+    body {
+        background-color: #f8f9fc;
+    }
+    .requisition-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1.5rem;
+        background: #fff;
+        border-radius: 0.5rem;
+        box-shadow: var(--shadow);
+    }
+    
+    .section-title {
+        position: relative;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin: 2rem 0 1.5rem;
+        padding-bottom: 0.75rem;
+    }
+    
+    .section-title:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 50px;
+        height: 3px;
+        background: var(--primary-color);
+        border-radius: 3px;
+    }
+    
+    .form-section {
+        background: #fff;
+        border-radius: var(--border-radius);
+        padding: 1.75rem;
+        margin-bottom: 1.75rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+    }
+    
+    .form-section:hover {
+        box-shadow: var(--shadow);
+        border-color: rgba(var(--primary-color), 0.2);
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    
+    .required-field::after {
+        content: " *";
+        color: var(--danger-color);
+    }
+    
+    /* Item Rows */
+    .item-row {
+        position: relative;
+        background: #f8fafc;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px dashed var(--border-color);
+        transition: var(--transition);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+    
+    .item-row:hover {
+        background: #f1f8ff;
+        border-color: rgba(var(--primary-color), 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    .remove-item {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 50%;
+        color: var(--danger-color);
+        opacity: 0.7;
+        transition: var(--transition);
+    }
+    
+    .remove-item:hover {
+        opacity: 1;
+        background: var(--danger-color);
+        color: #fff;
+        transform: rotate(90deg);
+    }
+    
+    /* File Upload */
+    .file-upload-container {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 2.5rem 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        background: #f8fafc;
+    }
+    
+    .file-upload-container:hover {
+        border-color: var(--primary-color);
+        background: rgba(var(--primary-color), 0.03);
+    }
+    
+    .file-upload-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        transition: var(--transition);
+    }
+    
+    .file-upload-container:hover .file-upload-icon {
+        transform: translateY(-3px);
+    }
+    
+    .file-preview {
+        margin-top: 1.5rem;
+    }
+    
+    .file-preview-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        margin-bottom: 0.75rem;
+        transition: var(--transition);
+    }
+    
+    .file-preview-item:hover {
+        border-color: var(--primary-color);
+        background: rgba(var(--primary-color), 0.03);
+    }
+    
+    .file-preview-item i {
+        margin-right: 0.75rem;
+        color: var(--secondary-color);
+        font-size: 1.25rem;
+    }
+    
+    .file-preview-item .file-name {
+        flex-grow: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--dark-color);
+        font-size: 0.9rem;
+    }
+    
+    .file-preview-item .file-size {
+        color: var(--secondary-color);
+        font-size: 0.8rem;
+        margin-right: 1rem;
+    }
+    
+    .file-preview-item .file-remove {
+        color: var(--danger-color);
+        cursor: pointer;
+        margin-left: 0.5rem;
+        opacity: 0.7;
+        transition: var(--transition);
+    }
+    
+    .file-preview-item .file-remove:hover {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+    
+    /* Buttons */
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: var(--transition);
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .btn-responsive {
+        min-width: 130px;
+        transition: var(--transition);
+        font-weight: 500;
+        padding: 0.5rem 1.25rem;
+        border-radius: 50px;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+        border-color: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+    }
+    
+    .btn-outline-secondary {
+        color: var(--secondary-color);
+        border-color: var(--border-color);
+    }
+    
+    .btn-outline-secondary:hover {
+        background: #f8f9fa;
+        color: var(--dark-color);
+        border-color: var(--border-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Animations */
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+        opacity: 0;
+    }
+    
+    @keyframes fadeIn {
+        from { 
+            opacity: 0; 
+            transform: translateY(15px); 
+        }
+        to { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 991.98px) {
+        .requisition-container {
+            padding: 1.25rem;
+        }
+        
+        .form-section {
+            padding: 1.5rem 1.25rem;
+        }
+        
+        .section-title {
+            font-size: 1.35rem;
+        }
+    }
+    
+    @media (max-width: 767.98px) {
+        .btn-responsive {
+            width: 100%;
+            margin-bottom: 0.75rem;
+        }
+        
+        .btn-group .btn-responsive {
+            margin-bottom: 0;
+        }
+        
+        .item-row {
+            padding: 1.25rem 1rem;
+        }
+        
+        .file-upload-container {
+            padding: 1.75rem 1rem;
+        }
+    }
+    
+    @media (max-width: 575.98px) {
+        .requisition-container {
+            padding: 1rem;
+            border-radius: 0;
+        }
+        
+        .form-section {
+            padding: 1.25rem 1rem;
+            margin-left: -1rem;
+            margin-right: -1rem;
+            border-left: 0;
+            border-right: 0;
+            border-radius: 0;
+        }
+        
+        .section-title {
+            margin-left: -1rem;
+            margin-right: -1rem;
+            padding-left: 1rem;
+            font-size: 1.25rem;
+        }
+    }
+    
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out;
+    }
+</style>
+@endpush
+
+<div class="requisition-container animate-fade-in">
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mb-4" id="requisitionTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="create-tab" data-bs-toggle="tab" data-bs-target="#create-requisition" type="button" role="tab">
+                <i class="fas fa-plus-circle me-2"></i>Create Requisition
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="list-tab" data-bs-toggle="tab" data-bs-target="#requisition-list" type="button" role="tab">
+                <i class="fas fa-list me-2"></i>Requisition List
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content" id="requisitionTabsContent">
+        <!-- Create Requisition Tab -->
+        <div class="tab-pane fade show active" id="create-requisition" role="tabpanel" aria-labelledby="create-tab">
+            <!-- Flash Messages -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <strong>Error!</strong> Please check the form below for errors.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <div class="mb-3 mb-md-0">
+            <h4 class="mb-1">New Material Requisition</h4>
+            <p class="text-muted mb-0">Fill in the details below to create a new material requisition</p>
+        </div>
+    </div>
+    
+    <form id="purchaseRequisitionForm" method="POST" action="" enctype="multipart/form-data" class="needs-validation" novalidate>
+        @csrf
+        
+        <!-- Requisition Details -->
+        <div class="form-section">
+            <h5 class="section-title">
+                <i class="fas fa-file-alt me-2"></i>Requisition Details
+            </h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="title" class="form-label required-field">
+                        <i class="fas fa-heading me-1 text-muted"></i>Requisition Title
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                        <input type="text" class="form-control" id="title" name="title" required 
+                               placeholder="Enter a descriptive title for this requisition">
+                        <div class="invalid-feedback">
+                            Please provide a title for this requisition.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="requisitionDate" class="form-label required-field">
+                        <i class="far fa-calendar-alt me-1 text-muted"></i>Requisition Date
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                        <input type="date" class="form-control" id="requisitionDate" name="requisition_date" required>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="requiredDate" class="form-label required-field">
+                        <i class="far fa-calendar-check me-1 text-muted"></i>Required By
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="far fa-calendar-check"></i></span>
+                        <input type="date" class="form-control" id="requiredDate" name="required_date" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="department" class="form-label required-field">
+                        <i class="fas fa-building me-1 text-muted"></i>Department
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-building"></i></span>
+                        <select class="form-select" id="department" name="department_id" required>
+                            <option value="" selected disabled>Loading departments...</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a department.
+                        </div>
+                    </div>
+                </div>
+                            <div class="col-md-4 mb-3">
+                <label for="projectManager" class="form-label required-field">
+                    <i class="fas fa-user-tie me-1 text-muted"></i>Project Manager
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+                    <select class="form-select" id="projectManager" name="project_manager_id" required>
+                        <option value="" selected disabled>Select Project Manager</option>
+                        <option value="1">John Smith</option>
+                        <option value="2">Sarah Johnson</option>
+                        <option value="3">Michael Brown</option>
+                        <option value="4">Emily Davis</option>
+                    </select>
+                    <div class="invalid-feedback">
+                        Please select a project manager.
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="teamLeader" class="form-label required-field">
+                    <i class="fas fa-users me-1 text-muted"></i>Team Leader
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-users"></i></span>
+                    <select class="form-select" id="teamLeader" name="team_leader_id" required>
+                        <option value="" selected disabled>Select Team Leader</option>
+                        <option value="1">David Wilson</option>
+                        <option value="2">Lisa Anderson</option>
+                        <option value="3">Robert Taylor</option>
+                        <option value="4">Jennifer Martinez</option>
+                    </select>
+                    <div class="invalid-feedback">
+                        Please select a team leader.
+                    </div>
+                </div>
+            </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="priority" class="form-label required-field">
+                        <i class="fas fa-flag me-1 text-muted"></i>Priority
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-flag"></i></span>
+                        <select class="form-select" id="priority" name="priority" required>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="referenceNumber" class="form-label">
+                        <i class="fas fa-hashtag me-1 text-muted"></i>Reference Number
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                        <input type="text" class="form-control bg-light" id="referenceNumber" 
+                               name="reference_number" value="PR-{{ date('Ymd') }}-{{ strtoupper(Str::random(6)) }}" 
+                               readonly>
+                    </div>
+                </div>
+            </div>
+        
+        <!-- Items Section -->
+        <div class="form-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0"><i class="fas fa-boxes me-2"></i>Items</h5>
+                <button type="button" class="btn btn-sm btn-primary" id="addNewItemBtn">
+                    <i class="fas fa-plus me-1"></i> Add Item
+                </button>
+            </div>
+            
+            <div id="itemsContainer">
+                <!-- Item rows will be added here dynamically -->
+                <div class="item-row border rounded p-3 mb-3 position-relative" data-item="1">
+                    <div class="position-absolute top-0 end-0 mt-2 me-2">
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-action remove-item" data-bs-toggle="tooltip" title="Remove item">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label required-field">Item</label>
+                            <select class="form-select item-select" name="item_select[]" required>
+                                <option value="">Select an item...</option>
+                            </select>
+                            <input type="hidden" name="item_id[]" value="">
+                            <input type="hidden" name="item_name[]" value="">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label required-field">Quantity</label>
+                            <input type="number" class="form-control" name="item_quantity[]" min="1" value="1" required>
+                            <small class="form-text text-muted available-qty-text">Available: 0</small>
+                            <input type="hidden" name="item_available_qty[]" value="">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Unit</label>
+                            <input type="text" class="form-control unit-display" readonly>
+                            <input type="hidden" name="item_unit[]" value="">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Unit Price</label>
+                            <input type="number" class="form-control price-display" readonly>
+                            <input type="hidden" name="item_unit_price[]" value="">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Total</label>
+                            <input type="number" class="form-control" name="item_total[]" readonly value="0.00">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="item-details">
+                                <!-- Item details will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 offset-md-6">
+                    <div class="bg-light p-3 rounded-3">
+                        <div class="d-flex justify-content-between fw-bold fs-5 border-top pt-2 mt-2">
+                            <span>Total Items:</span>
+                            <span id="totalItems">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-3" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <div>
+                        <strong>Note:</strong> All items will be reviewed by the procurement team. Please ensure all details are accurate.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Attachments Section -->
+        <div class="form-section">
+            <h5 class="section-title">
+                <i class="fas fa-paperclip me-2"></i>Attachments
+            </h5>
+            
+            <div class="file-upload-container" id="fileUploadContainer">
+                <input type="file" id="fileUpload" name="attachments[]" multiple style="display: none;">
+                <div class="text-center py-4">
+                    <div class="file-upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h5>Drag & drop files here or click to browse</h5>
+                    <p class="text-muted mb-2">Supported formats: PDF, JPG, PNG, DOC, DOCX, XLS, XLSX</p>
+                    <p class="text-muted">Maximum file size: 10MB per file</p>
+                    <button type="button" class="btn btn-outline-primary mt-2" id="browseFilesBtn">
+                        <i class="fas fa-folder-open me-2"></i>Browse Files
+                    </button>
+                </div>
+            </div>
+            
+            <div class="file-preview mt-4" id="filePreview">
+                <!-- File previews will be added here -->
+                <div class="text-center text-muted py-3" id="noFilesMessage">
+                    <i class="far fa-folder-open fa-2x mb-2"></i>
+                    <p class="mb-0">No files attached yet</p>
+                </div>
+            </div>
+            
+            <div class="alert alert-light mt-3" role="alert">
+                <div class="d-flex">
+                    <i class="fas fa-info-circle text-primary mt-1 me-2"></i>
+                    <div>
+                        <strong>Tip:</strong> You can attach quotes, specifications, or any other relevant documents to support your requisition. 
+                        <span class="d-block mt-1">Supported formats: .pdf, .jpg, .jpeg, .png, .doc, .docx, .xls, .xlsx (Max 10MB each)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="form-section bg-light mt-4">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center">
+                <div class="mb-3 mb-sm-0 text-center text-sm-start">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                        <label class="form-check-label" for="termsCheck">
+                            I confirm that all information provided is accurate and complete
+                        </label>
+                        <div class="invalid-feedback">
+                            You must confirm before submitting.
+                        </div>
+                    </div>
+                    <div class="form-text mt-1">
+                        <i class="fas fa-shield-alt me-1 text-success"></i>Your information is secure and will be encrypted
+                    </div>
+                </div>
+                
+                <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-sm-auto mt-3 mt-sm-0">
+                    <button type="button" class="btn btn-outline-secondary px-4 py-2" id="cancelBtn">
+                        <i class="fas fa-times me-2"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-outline-primary px-4 py-2" id="saveDraftBtn">
+                        <i class="far fa-save me-2"></i> Save as Draft
+                    </button>
+                    <button type="submit" class="btn btn-primary px-4 py-2" id="submitBtn">
+                        <i class="fas fa-paper-plane me-2"></i> Submit for Approval
+                    </button>
+                </div>
+            </div>
+            
+            <div class="alert alert-light border mt-3 mb-0" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-info-circle text-primary me-2"></i>
+                    <div>
+                        <strong>Next Steps:</strong> After submission, your request will be reviewed by the approver. 
+                        You'll receive email notifications about the status of your request.
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+        </div>
+        
+        <!-- Requisition List Tab -->
+        <div class="tab-pane fade" id="requisition-list" role="tabpanel" aria-labelledby="list-tab">
+            <div class="card">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Material Requisitions</h5>
+                    <div class="d-flex">
+                        <div class="input-group input-group-sm" style="max-width: 300px;">
+                            <input type="text" id="searchRequisitions" class="form-control" placeholder="Search requisitions...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <button class="btn btn-sm btn-primary ms-2" id="refreshRequisitions">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped" id="requisitionsTable">
+                            <thead>
+                                <tr>
+                                    <th>Requisition #</th>
+                                    <th>Title</th>
+                                    <th>Department</th>
+                                    <th>Requestor</th>
+                                    <th>Date</th>
+                                    <th>Total Items</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Sample Data - Replace with dynamic data -->
+                                <tr class="clickable-row" data-bs-toggle="modal" data-bs-target="#viewRequisitionModal" data-id="1">
+                                    <td>PR-2023-001</td>
+                                    <td>Office Supplies</td>
+                                    <td>IT Department</td>
+                                    <td>John Doe</td>
+                                    <td>2023-11-15</td>
+                                    <td>2</td>
+                                    <td><span class="badge bg-info">Medium</span></td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                    <td class="action-buttons" onclick="event.stopPropagation();">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-info view-requisition" data-bs-toggle="modal" data-bs-target="#viewRequisitionModal" data-id="1">
+                                                <i class="fas fa-eye d-none d-md-inline"></i>
+                                                <span class="d-inline d-md-none">View</span>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-primary edit-requisition" data-bs-toggle="modal" data-bs-target="#editRequisitionModal" data-id="1">
+                                                <i class="fas fa-edit d-none d-md-inline"></i>
+                                                <span class="d-inline d-md-none">Edit</span>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger delete-requisition" data-bs-toggle="modal" data-bs-target="#deleteRequisitionModal" data-id="1">
+                                                <i class="fas fa-trash d-none d-md-inline"></i>
+                                                <span class="d-inline d-md-none">Delete</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="clickable-row" data-bs-toggle="modal" data-bs-target="#viewRequisitionModal" data-id="2">
+                                    <td>PR-2023-002</td>
+                                    <td>Laptop Purchase</td>
+                                    <td>Finance</td>
+                                    <td>Jane Smith</td>
+                                    <td>2023-11-10</td>
+                                    <td>2</td>
+                                    <td><span class="badge bg-danger">High</span></td>
+                                    <td><span class="badge bg-success">Approved</span></td>
+                                    <td class="action-buttons" onclick="event.stopPropagation();">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-info view-requisition" data-bs-toggle="modal" data-bs-target="#viewRequisitionModal" data-id="2">
+                                                <i class="fas fa-eye d-none d-md-inline"></i>
+                                                <span class="d-inline d-md-none">View</span>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-primary edit-requisition" data-bs-toggle="modal" data-bs-target="#editRequisitionModal" data-id="2">
+                                                <i class="fas fa-edit d-none d-md-inline"></i>
+                                                <span class="d-inline d-md-none">Edit</span>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger delete-requisition" data-bs-toggle="modal" data-bs-target="#deleteRequisitionModal" data-id="2" disabled>
+                                                <i class="fas fa-trash d-none d-md-inline"></i>
+                                                <span class="d-inline d-md-none">Delete</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="clickable-row" data-bs-toggle="modal" data-bs-target="#viewRequisitionModal" data-id="3">
+                                    <td>PR-2023-003</td>
+                                    <td>Conference Room Chairs</td>
+                                    <td>Operations</td>
+                                    <td>Mike Johnson</td>
+                                    <td>2023-11-05</td>
+                                    <td>2</td>
+                                    <td><span class="badge bg-secondary">Low</span></td>
+                                    <td><span class="badge bg-info">In Review</span></td>
+                                    <td class="action-buttons" onclick="event.stopPropagation();">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-info view-requisition" data-bs-toggle="modal" data-bs-target="#viewRequisitionModal" data-id="3">
+                                                <i class="fas fa-eye d-none d-md-inline"></i>
+                                                <span class="d-inline d-md-none">View</span>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-primary edit-requisition" data-bs-toggle="modal" data-bs-target="#editRequisitionModal" data-id="3">
+                                                <i class="fas fa-edit d-none d-md-inline"></i>
+                                                <span class="d-inline d-md-none">Edit</span>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger delete-requisition" data-bs-toggle="modal" data-bs-target="#deleteRequisitionModal" data-id="3">
+                                                <i class="fas fa-trash d-none d-md-inline"></i>
+                                                <span class="d-inline d-md-none">Delete</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <nav aria-label="Page navigation" class="mt-3">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Item Selection Modal -->
+<div class="modal fade" id="itemSelectionModal" tabindex="-1" aria-labelledby="itemSelectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="itemSelectionModalLabel">Select Items</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="itemSearch" placeholder="Search items...">
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="40">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="selectAllItems">
+                                    </div>
+                                </th>
+                                <th>Item</th>
+                                <th>Category</th>
+                                <th>In Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsList">
+                            <!-- Items will be loaded here dynamically -->
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input item-checkbox" data-id="1" data-name="Laptop" data-price="2500.00"></td>
+                                <td>Dell XPS 15</td>
+                                <td>Electronics</td>
+                                <td>12</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input item-checkbox" data-id="2" data-name="Monitor" data-price="1200.00"></td>
+                                <td>27" 4K Monitor</td>
+                                <td>Electronics</td>
+                                <td>8</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="addSelectedItems">
+                    <i class="fas fa-plus me-2"></i>Add Selected Items
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirm Submission</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <div class="mb-3">
+                        <i class="fas fa-paper-plane fa-3x text-primary"></i>
+                    </div>
+                    <h5>Submit Purchase Requisition?</h5>
+                    <p class="text-muted">Are you sure you want to submit this purchase requisition for approval? This action cannot be undone.</p>
+                </div>
+                <div class="bg-light p-3 rounded">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Total Items:</span>
+                        <span id="modalItemCount">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmSubmit">
+                    <i class="fas fa-check me-2"></i>Yes, Submit
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Main document ready function
+    $(document).ready(function() {
+        // Initialize DataTable
+        const requisitionsTable = $('#requisitionsTable').DataTable({
+            responsive: true,
+            order: [[0, 'desc']],
+            pageLength: 10,
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search requisitions...",
+                paginate: {
+                    next: '<i class="fas fa-chevron-right"></i>',
+                    previous: '<i class="fas fa-chevron-left"></i>'
+                }
+            },
+            dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                 "<'row'<'col-sm-12'tr>>" +
+                 "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+        });
+        
+        // Load departments for the form
+        loadDepartments();
+        
+        // Also try loading departments after a delay
+        setTimeout(function() {
+            const departmentSelect = $('#department');
+            if (departmentSelect.find('option').length <= 1) {
+                console.log('Department select still empty after document ready, trying again...');
+                loadDepartments();
+            }
+        }, 2000);
+        
+        // Search functionality
+        $('#searchRequisitions').on('keyup', function() {
+            requisitionsTable.search(this.value).draw();
+        });
+        
+        // Refresh button
+        $('#refreshRequisitions').on('click', function() {
+            const btn = $(this);
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+            
+            // Simulate API call
+            setTimeout(() => {
+                requisitionsTable.ajax.reload(null, false);
+                btn.prop('disabled', false).html('<i class="fas fa-sync-alt"></i>');
+                showAlert('Success', 'Requisitions list refreshed', 'success');
+            }, 1000);
+        });
+        
+        // Handle modal events
+        $('#viewRequisitionModal').on('show.bs.modal', function(event) {
+            const button = $(event.relatedTarget);
+            const requisitionId = button.data('id');
+            const modal = $(this);
+            
+            // Show loading state
+            modal.find('.modal-body').html(`
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `);
+            
+            // Simulate API call to get requisition details
+            setTimeout(() => {
+                const requisitionData = {
+                    id: requisitionId,
+                    requisition_number: `PR-2023-${String(requisitionId).padStart(3, '0')}`,
+                    date: '2023-11-15',
+                    requested_by: 'John Doe',
+                    department: 'IT Department',
+                    status: 'Pending',
+                    items: [
+                        { name: 'Laptop', quantity: 2, unit: 'PCS', total: '2' },
+                        { name: 'Mouse', quantity: 2, unit: 'PCS', total: '2' }
+                    ],
+                    total_items: '4',
+                    notes: 'Urgent requirement for new employees.'
+                };
+                
+                // Render requisition details
+                renderRequisitionDetails(requisitionData);
+            }, 800);
+        });
+        
+        // Handle edit modal
+        $('#editRequisitionModal').on('show.bs.modal', function(event) {
+            const button = $(event.relatedTarget);
+            const requisitionId = button.data('id');
+            const modal = $(this);
+            
+            // Show loading state
+            modal.find('.modal-body').html(`
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading edit form...</span>
+                    </div>
+                </div>
+            `);
+            
+            // Simulate loading edit form
+            setTimeout(() => {
+                modal.find('.modal-body').html(`
+                    <form id="editRequisitionForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Requisition Number</label>
+                                <input type="text" class="form-control" value="PR-2023-${String(requisitionId).padStart(3, '0')}" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="form-control" value="2023-11-15">
+                            </div>
+                        </div>
+                        <!-- Add more form fields as needed -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Qty</th>
+                                        <th>Unit</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="text" class="form-control" value="Laptop"></td>
+                                        <td><input type="number" class="form-control" value="2" min="1"></td>
+                                        <td><input type="text" class="form-control" value="PCS"></td>
+                                        <td><button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="text" class="form-control" value="Mouse"></td>
+                                        <td><input type="number" class="form-control" value="2" min="1"></td>
+                                        <td><input type="text" class="form-control" value="PCS"></td>
+                                        <td><button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-end mt-3">
+                            <button type="button" class="btn btn-sm btn-success">
+                                <i class="fas fa-plus me-1"></i> Add Item
+                            </button>
+                        </div>
+                    </form>
+                `);
+            }, 800);
+        });
+        
+        // Handle delete confirmation
+        $('#deleteRequisitionModal').on('show.bs.modal', function(event) {
+            const button = $(event.relatedTarget);
+            const requisitionId = button.data('id');
+            $('#requisitionToDelete').val(requisitionId);
+        });
+        
+        // Confirm delete button
+        $('#confirmDeleteBtn').on('click', function() {
+            const requisitionId = $('#requisitionToDelete').val();
+            const btn = $(this);
+            const originalText = btn.html();
+            
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Deleting...');
+            
+            // Simulate API call
+            setTimeout(() => {
+                $('#deleteRequisitionModal').modal('hide');
+                showAlert('Success', 'Requisition has been deleted successfully', 'success');
+                // Refresh the table or remove the row
+                $(`button[data-id="${requisitionId}"]`).closest('tr').fadeOut(400, function() {
+                    $(this).remove();
+                });
+                btn.prop('disabled', false).html(originalText);
+            }, 1000);
+        });
+        
+        // View requisition details
+        $('.view-requisition').on('click', function() {
+            const requisitionId = $(this).data('id');
+            const modal = $('#viewRequisitionModal');
+            
+            // Show loading state
+            modal.find('.modal-body').html(`
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `);
+            
+            // Show modal
+            modal.modal('show');
+            
+            // Simulate API call to get requisition details
+            setTimeout(() => {
+                const requisitionData = {
+                    id: requisitionId,
+                    requisition_number: `PR-2023-${String(requisitionId).padStart(3, '0')}`,
+                    date: '2023-11-15',
+                    requested_by: 'John Doe',
+                    department: 'IT Department',
+                    status: 'Pending',
+                    items: [
+                        { name: 'Laptop', quantity: 2, unit: 'PCS', total: '2' },
+                        { name: 'Mouse', quantity: 2, unit: 'PCS', total: '2' }
+                    ],
+                    total_items: '4',
+                    notes: 'Urgent requirement for new employees.'
+                };
+                
+                // Render requisition details
+                renderRequisitionDetails(requisitionData);
+            }, 800);
+        });
+        
+        // Function to render requisition details
+        function renderRequisitionDetails(data) {
+            const statusClass = {
+                'Pending': 'bg-warning',
+                'Approved': 'bg-success',
+                'Rejected': 'bg-danger',
+                'Completed': 'bg-info'
+            }[data.status] || 'bg-secondary';
+            
+            const itemsHtml = data.items.map(item => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td class="text-end">${item.quantity}</td>
+                    <td>${item.unit}</td>
+                </tr>
+            `).join('');
+            
+            const html = `
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">${data.requisition_number}</h4>
+                        <span class="badge ${statusClass}">${data.status}</span>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Date:</strong> ${data.date}</p>
+                            <p class="mb-1"><strong>Requested By:</strong> ${data.requested_by}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Department:</strong> ${data.department}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item</th>
+                                    <th class="text-end">Qty</th>
+                                    <th>Unit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${itemsHtml}
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-active">
+                                    <th colspan="3" class="text-end">Total Items:</th>
+                                    <th class="text-end">${data.total_items}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    ${data.notes ? `
+                        <div class="card bg-light">
+                            <div class="card-header">
+                                <strong>Notes:</strong>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-0">${data.notes}</p>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            $('#viewRequisitionModal .modal-body').html(html);
+        }
+        
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    
+    // Form validation
+    (function() {
+        'use strict';
+        
+        // Fetch all forms with validation
+        var forms = document.querySelectorAll('.needs-validation');
+        
+        // Add validation to each form
+        Array.prototype.slice.call(forms).forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+    
+    // Initialize UI components
+    function initializeUI() {
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Initialize Select2
+        $('.select2').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            dropdownParent: $('.modal').length ? $('.modal') : document.body
+        });
+        
+        // Initialize date pickers
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true
+        });
+        
+        // Initialize all components
+        // initializePurchaseOrders(); // Function not defined yet
+        // initializeEventHandlers(); // Function not defined yet
+        
+        // Set default dates
+        const today = new Date().toISOString().split('T')[0];
+        $('#requisitionDate').val(today);
+        
+        const nextWeek = new Date();
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        $('#requiredDate').val(nextWeek.toISOString().split('T')[0]);
+        
+        // Ensure required by date is not before requisition date
+        $('#requisitionDate, #requiredDate').on('change', function() {
+            const reqDate = new Date($('#requisitionDate').val());
+            const reqByDate = new Date($('#requiredDate').val());
+            
+            if (reqByDate < reqDate) {
+                // If required by date is before requisition date, set it to requisition date
+                $('#requiredDate').val($('#requisitionDate').val());
+                
+                // Show error message
+                const errorDiv = $('<div class="invalid-feedback d-block">Required by date cannot be before requisition date</div>');
+                $('#requiredDate').closest('.input-group').after(errorDiv);
+                
+                // Remove error after 3 seconds
+                setTimeout(() => {
+                    errorDiv.fadeOut(300, function() { $(this).remove(); });
+                }, 3000);
+            }
+        });
+        
+        // Open item selection modal or file upload
+        $('#addItemBtn, #browseFilesBtn').on('click', function() {
+            const target = $(this).attr('id') === 'addItemBtn' ? '#itemSelectionModal' : '#fileUpload';
+            $(target).click();
+        });
+        
+        // Handle file upload container click
+        $('#fileUploadContainer').on('click', function(e) {
+            if (!$(e.target).closest('.file-remove').length) {
+                $('#fileUpload').click();
+            }
+        });
+        
+        // Initialize with one empty item row
+        if ($('.item-row').length === 0) {
+            addItemRow();
+        }
+        
+        // Handle file upload change
+        $('#fileUpload').on('change', function() {
+            handleFileUpload(this.files);
+        });
+        
+        // Handle drag and drop for file upload
+        const dropArea = document.getElementById('fileUploadContainer');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropArea.classList.add('border-primary', 'bg-light');
+        }
+        
+        function unhighlight() {
+            dropArea.classList.remove('border-primary', 'bg-light');
+        }
+        
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFileUpload(files);
+        }
+        
+        // Calculate totals when quantity changes
+        $(document).on('input', '.quantity', function() {
+            calculateTotals();
+        });
+        
+        // Handle item removal
+        $(document).on('click', '.remove-item', function() {
+            if ($('.item-row').length > 1) {
+                $(this).closest('.item-row').fadeOut(300, function() {
+                    $(this).remove();
+                    calculateTotals();
+                    // Renumber remaining items for form submission
+                    $('.item-row').each(function(index) {
+                        $(this).find('input, select, textarea').each(function() {
+                            const name = $(this).attr('name');
+                            if (name) {
+                                const newName = name.replace(/\[\d+\]/, '[' + index + ']');
+                                $(this).attr('name', newName);
+                            }
+                        });
+                        $(this).attr('data-item', index + 1);
+                    });
+                });
+            } else {
+                showAlert('Warning', 'At least one item is required', 'warning');
+            }
+        });
+        
+        // Add button to add new empty item row
+        $('#addNewItemBtn').on('click', function() {
+            addItemRow();
+            // Scroll to the new item
+            $('html, body').animate({
+                scrollTop: $('.item-row:last').offset().top - 20
+            }, 500);
+        });
+        
+        // Form submission handler
+        $('#purchaseRequisitionForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate form
+            const form = this;
+            if (!form.checkValidity()) {
+                e.stopPropagation();
+                form.classList.add('was-validated');
+                
+                // Scroll to first invalid field
+                const firstInvalid = $('.is-invalid').first();
+                if (firstInvalid.length) {
+                    $('html, body').animate({
+                        scrollTop: firstInvalid.offset().top - 100
+                    }, 500);
+                }
+                
+                return false;
+            }
+            
+            // Check if at least one item is added
+            if ($('.item-row').length === 0) {
+                showAlert('Error', 'Please add at least one item to the requisition', 'danger');
+                return false;
+            }
+            
+            // Check if confirmation checkbox is checked
+            if (!$('#termsCheck').is(':checked')) {
+                showAlert('Error', 'Please confirm that all information is correct before submitting', 'danger');
+                return false;
+            }
+            
+            // Show confirmation modal
+            const itemCount = $('.item-row').length;
+            
+            $('#modalItemCount').text(itemCount);
+            
+            // Store the form submission function
+            const submitForm = function() {
+                // Prepare form data
+                const formData = new FormData(form);
+                
+                // Add files to form data
+                const fileInput = document.getElementById('fileUpload');
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    formData.append('attachments[]', fileInput.files[i]);
+                }
+                
+                // Collect items data
+                const items = [];
+                $('.item-row').each(function() {
+                    const item = {
+                        item_id: $(this).find('[name="item_id[]"]').val(),
+                        item_name: $(this).find('[name="item_name[]"]').val(),
+                        quantity: $(this).find('[name="item_quantity[]"]').val(),
+                        unit_price: $(this).find('[name="item_unit_price[]"]').val(),
+                        unit: $(this).find('[name="item_unit[]"]').val(),
+                        available_qty: $(this).find('[name="item_available_qty[]"]').val(),
+                        total: $(this).find('[name="item_total[]"]').val()
+                    };
+                    items.push(item);
+                });
+                
+                // Add items to form data
+                formData.append('items', JSON.stringify(items));
+                
+                // Show loading state
+                const submitButton = $('#submitBtn');
+                const originalText = submitButton.html();
+                submitButton.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...');
+                
+                // Submit form via AJAX
+                $.ajax({
+                    url: form.action || '/company/warehouse/requisitions',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        // Handle success response
+                        if (response.redirect) {
+                            window.location.href = response.redirect;
+                        } else {
+                            showAlert('Success', 'Purchase requisition submitted successfully!', 'success');
+                            form.reset();
+                            $('#itemsContainer').empty();
+                            addItemRow();
+                            $('#filePreview').empty();
+                            $('#noFilesMessage').show();
+                            form.classList.remove('was-validated');
+                            window.scrollTo(0, 0);
+                            
+                            // Redirect to list view after 3 seconds
+                            setTimeout(() => {
+                                window.location.href = '';
+                            }, 3000);
+                        }
+                    },
+                    error: function(xhr) {
+                        // Handle errors
+                        let errorMessage = 'An error occurred while submitting the form.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            errorMessage = '';
+                            const errors = xhr.responseJSON.errors;
+                            for (const field in errors) {
+                                errorMessage += errors[field][0] + '\n';
+                            }
+                        }
+                        showAlert('Error', errorMessage, 'danger');
+                    },
+                    complete: function() {
+                        submitButton.prop('disabled', false).html(originalText);
+                    }
+                });
+            };
+            
+            // Store the submit function in the confirm button
+            $('#confirmSubmit').off('click').on('click', submitForm);
+            
+            // Show the confirmation modal
+            $('#confirmationModal').modal('show');
+            
+            return false;
+        });
+        
+        // Handle save draft button
+        $('#saveDraftBtn').on('click', function() {
+            const form = document.getElementById('purchaseRequisitionForm');
+            const formData = new FormData(form);
+            formData.append('is_draft', '1');
+            
+            // Add files to form data
+            const fileInput = document.getElementById('fileUpload');
+            for (let i = 0; i < fileInput.files.length; i++) {
+                formData.append('attachments[]', fileInput.files[i]);
+            }
+            
+            // Show loading state
+            const saveButton = $(this);
+            const originalText = saveButton.html();
+            saveButton.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+            
+            // Submit draft via AJAX
+            $.ajax({
+                url: form.action || '/company/warehouse/requisitions',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.redirect) {
+                        window.location.href = response.redirect;
+                    } else {
+                        showAlert('Success', 'Draft saved successfully!', 'success');
+                        
+                        // If we have a draft ID, update the form action
+                        if (response.draft_id) {
+                            form.action = form.action.replace(/\/draft$/, '') + '/' + response.draft_id;
+                        }
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = 'An error occurred while saving the draft.';
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = '';
+                        const errors = xhr.responseJSON.errors;
+                        for (const field in errors) {
+                            errorMessage += errors[field][0] + '\n';
+                        }
+                    }
+                    showAlert('Error', errorMessage, 'danger');
+                },
+                complete: function() {
+                    saveButton.prop('disabled', false).html(originalText);
+                }
+            });
+        });
+        
+        // Handle cancel button
+        $('#cancelBtn').on('click', function() {
+            if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+                window.location.href = '';
+            }
+        });
+        
+        // Function to add new item row
+        function addItemRow(itemData = {}) {
+            const itemCount = $('.item-row').length + 1;
+            
+            const newItem = `
+                <div class="item-row border rounded p-3 mb-3 position-relative" data-item="${itemCount}">
+                    <div class="position-absolute top-0 end-0 mt-2 me-2">
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-action remove-item" data-bs-toggle="tooltip" title="Remove item">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label required-field">Item</label>
+                            <select class="form-select item-select" name="item_select[]" required>
+                                <option value="">Select an item...</option>
+                            </select>
+                            <input type="hidden" name="item_id[]" value="">
+                            <input type="hidden" name="item_name[]" value="">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label required-field">Quantity</label>
+                            <input type="number" class="form-control" name="item_quantity[]" min="1" value="1" required>
+                            <small class="form-text text-muted available-qty-text">Available: 0</small>
+                            <input type="hidden" name="item_available_qty[]" value="">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Unit</label>
+                            <input type="text" class="form-control unit-display" readonly>
+                            <input type="hidden" name="item_unit[]" value="">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Unit Price</label>
+                            <input type="number" class="form-control price-display" readonly>
+                            <input type="hidden" name="item_unit_price[]" value="">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Total</label>
+                            <input type="number" class="form-control" name="item_total[]" readonly value="0.00">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="item-details">
+                                <!-- Item details will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            $('#itemsContainer').append(newItem);
+            
+            // Load available items for the new select element
+            const newSelect = $('#itemsContainer .item-row:last .item-select');
+            loadAvailableItems(newSelect);
+            
+            // Initialize tooltips for the new row
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+        
+        // Handle file upload preview
+        function handleFileUpload(files) {
+            const filePreview = $('#filePreview');
+            const noFilesMessage = $('#noFilesMessage');
+            
+            if (files.length > 0) {
+                noFilesMessage.hide();
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    
+                    // Check file size (max 10MB)
+                    if (file.size > 10 * 1024 * 1024) {
+                        showAlert('File too large', 'The file ' + file.name + ' exceeds the 10MB limit.', 'danger');
+                        continue;
+                    }
+                    
+                    const fileType = file.type.split('/')[0];
+                    let iconClass = 'fa-file';
+                    
+                    // Set appropriate icon based on file type
+                    if (fileType === 'image') {
+                        iconClass = 'fa-file-image';
+                    } else if (fileType === 'application') {
+                        if (file.type.includes('pdf')) {
+                            iconClass = 'fa-file-pdf';
+                        } else if (file.type.includes('word') || file.type.includes('document')) {
+                            iconClass = 'fa-file-word';
+                        } else if (file.type.includes('excel') || file.type.includes('spreadsheet')) {
+                            iconClass = 'fa-file-excel';
+                        }
+                    }
+                    
+                    const fileSize = formatFileSize(file.size);
+                    
+                    const filePreviewItem = `
+                        <div class="file-preview-item" data-file-name="${file.name}">
+                            <i class="fas ${iconClass} text-primary"></i>
+                            <div class="file-name" title="${file.name}">${truncateFileName(file.name, 30)}</div>
+                            <div class="file-size">${fileSize}</div>
+                            <i class="fas fa-times-circle file-remove" title="Remove file"></i>
+                        </div>
+                    `;
+                    
+                    // Check if file already exists
+                    if (!filePreview.find(`[data-file-name="${file.name}"]`).length) {
+                        filePreview.append(filePreviewItem);
+                    }
+                }
+                
+                // Add click handler for remove buttons
+                $('.file-remove').off('click').on('click', function(e) {
+                    e.stopPropagation();
+                    const fileName = $(this).closest('.file-preview-item').data('file-name');
+                    const dt = new DataTransfer();
+                    const input = document.getElementById('fileUpload');
+                    
+                    // Remove file from the input
+                    for (let i = 0; i < input.files.length; i++) {
+                        if (input.files[i].name !== fileName) {
+                            dt.items.add(input.files[i]);
+                        }
+                    }
+                    
+                    input.files = dt.files;
+                    $(this).closest('.file-preview-item').fadeOut(300, function() {
+                        $(this).remove();
+                        
+                        // Show no files message if no files left
+                        if ($('.file-preview-item').length === 0) {
+                            noFilesMessage.fadeIn(200);
+                        }
+                    });
+                });
+            }
+        }
+        
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Truncate long file names
+        function truncateFileName(name, maxLength) {
+            if (name.length > maxLength) {
+                return name.substring(0, maxLength / 2) + '...' + name.substring(name.length - (maxLength / 2 - 3));
+            }
+            return name;
+        }
+        
+        // Show alert message
+        function showAlert(title, message, type = 'info') {
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <strong>${title}</strong> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            
+            $('.container').prepend(alertHtml);
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                $('.alert').fadeOut(300, function() { $(this).remove(); });
+            }, 5000);
+        }
+        
+        // Calculate and update totals
+        function calculateTotals() {
+            // Calculate total items
+            let totalItems = 0;
+            $('.item-row').each(function() {
+                const quantity = parseFloat($(this).find('.quantity').val()) || 0;
+                totalItems += quantity;
+            });
+            
+            // Update total items display
+            $('#totalItems').text(totalItems);
+        }
+        
+        // Load departments for requisition form
+        function loadDepartments() {
+            const csrfToken = $('meta[name="csrf-token"]').attr('content');
+            console.log('Loading departments...');
+            console.log('CSRF Token:', csrfToken);
+            
+            // First, let's test the debug endpoint
+            $.ajax({
+                url: '/company/warehouse/requisitions/debug-departments',
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                success: function(response) {
+                    console.log('Debug response:', response);
+                    
+                    // Now try the actual warehouse departments endpoint
+                    $.ajax({
+                        url: '/company/warehouse/requisitions/warehouse-departments',
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json'
+                        },
+                        success: function(response) {
+                            console.log('Departments response:', response);
+                            const departmentSelect = $('#department');
+                            departmentSelect.empty();
+                            departmentSelect.append('<option value="" selected disabled>Select Department</option>');
+                            
+                            if (response.success && response.departments && response.departments.length > 0) {
+                                response.departments.forEach(function(department) {
+                                    // Since we only show sub-departments now, just use the name directly
+                                    departmentSelect.append(`<option value="${department.id}">${department.name}</option>`);
+                                });
+                                console.log('Successfully loaded', response.departments.length, 'sub-departments');
+                                console.log('Debug info:', response.debug_info);
+                            } else {
+                                console.log('No warehouse sub-departments found, trying fallback...');
+                                loadAllDepartments();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error loading departments:', error);
+                            console.error('Response:', xhr.responseText);
+                            console.error('Status:', status);
+                            loadAllDepartments();
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error with debug endpoint:', error);
+                    console.error('Debug Response:', xhr.responseText);
+                    
+                    // Try the warehouse departments endpoint anyway
+                    $.ajax({
+                        url: '/company/warehouse/requisitions/warehouse-departments',
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json'
+                        },
+                        success: function(response) {
+                            console.log('Departments response (after debug error):', response);
+                            const departmentSelect = $('#department');
+                            departmentSelect.empty();
+                            departmentSelect.append('<option value="" selected disabled>Select Department</option>');
+                            
+                            if (response.success && response.departments && response.departments.length > 0) {
+                                response.departments.forEach(function(department) {
+                                    // Since we only show sub-departments now, just use the name directly
+                                    departmentSelect.append(`<option value="${department.id}">${department.name}</option>`);
+                                });
+                                console.log('Successfully loaded sub-departments (after debug error):', response.departments.length);
+                            } else {
+                                loadAllDepartments();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error loading departments (after debug error):', error);
+                            loadAllDepartments();
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Fallback function to load all departments
+        function loadAllDepartments() {
+            const csrfToken = $('meta[name="csrf-token"]').attr('content');
+            console.log('Loading all departments as fallback...');
+            
+            $.ajax({
+                url: '/company/warehouse/requisitions/all-departments',
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                success: function(response) {
+                    console.log('All departments response:', response);
+                    const departmentSelect = $('#department');
+                    departmentSelect.empty();
+                    departmentSelect.append('<option value="" selected disabled>Select Department</option>');
+                    
+                    if (response.success && response.departments && response.departments.length > 0) {
+                        response.departments.forEach(function(department) {
+                            departmentSelect.append(`<option value="${department.id}">${department.name}</option>`);
+                        });
+                    } else {
+                        departmentSelect.append('<option value="" disabled>No departments available</option>');
+                        showAlert('Warning', 'No departments found. Please contact administrator.', 'warning');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading all departments:', error);
+                    const departmentSelect = $('#department');
+                    departmentSelect.empty();
+                    departmentSelect.append('<option value="" disabled>Error loading departments</option>');
+                    showAlert('Error', 'Failed to load departments. Please refresh the page.', 'error');
+                }
+            });
+        }
+        
+        // Load available items from central store
+        function loadAvailableItems(selectElement) {
+            const csrfToken = $('meta[name="csrf-token"]').attr('content');
+            console.log('Loading available items...');
+            console.log('CSRF Token:', csrfToken);
+            
+            $.ajax({
+                url: '/company/warehouse/central-store/available-items-for-requisition',
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify({
+                    search: '',
+                    category: ''
+                }),
+                success: function(response) {
+                    console.log('Success response:', response);
+                    $(selectElement).empty();
+                    $(selectElement).append('<option value="">Select an item...</option>');
+                    
+                    if (response.data && response.data.length > 0) {
+                        response.data.forEach(function(item) {
+                            const option = `<option value="${item.id}" 
+                                data-unit="${item.unit}" 
+                                data-unit-price="${item.unit_price}" 
+                                data-available-qty="${item.quantity_available}"
+                                data-description="${item.description || ''}"
+                                data-item-data='${JSON.stringify(item)}'>
+                                ${item.name} - ${item.category} (Available: ${item.quantity_available} ${item.unit})
+                            </option>`;
+                            $(selectElement).append(option);
+                        });
+                    } else {
+                        $(selectElement).append('<option value="" disabled>No items available</option>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading items:', error);
+                    console.error('Response:', xhr.responseText);
+                    console.error('Status:', status);
+                    $(selectElement).empty();
+                    $(selectElement).append('<option value="" disabled>Error loading items</option>');
+                }
+            });
+        }
+    }); // End of document ready function
+</script>
+
+<!-- View Requisition Modal -->
+
+<div class="modal fade" id="viewRequisitionModal" tabindex="-1" aria-labelledby="viewRequisitionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="viewRequisitionModalLabel">
+                    <i class="fas fa-file-invoice me-2"></i>Requisition Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Content will be loaded dynamically -->
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Close
+                </button>
+                <button type="button" class="btn btn-primary" id="printRequisition">
+                    <i class="fas fa-print me-1"></i>Print
+                </button>
+                <button type="button" class="btn btn-success" id="approveRequisition">
+                    <i class="fas fa-check me-1"></i>Approve
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Requisition Modal -->
+<div class="modal fade" id="editRequisitionModal" tabindex="-1" aria-labelledby="editRequisitionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="editRequisitionModalLabel">
+                    <i class="fas fa-edit me-2"></i>Edit Requisition
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="saveChangesBtn">
+                    <i class="fas fa-save me-1"></i>Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteRequisitionModal" tabindex="-1" aria-labelledby="deleteRequisitionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteRequisitionModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-trash-alt fa-4x text-danger mb-3"></i>
+                    <h5>Are you sure you want to delete this requisition?</h5>
+                    <p class="text-muted">This action cannot be undone. All items in this requisition will be permanently removed.</p>
+                    <input type="hidden" id="requisitionToDelete" value="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="fas fa-trash me-1"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Required Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<!-- Add these in your <head> section -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+// Also load departments when window is fully loaded
+$(window).on('load', function() {
+    console.log('Window loaded, ensuring departments are loaded...');
+    setTimeout(function() {
+        const departmentSelect = $('#department');
+        if (departmentSelect.find('option').length <= 1) {
+            console.log('Department select still empty on window load, loading departments...');
+            loadDepartments();
+        }
+    }, 1000);
+});
+                url: '/company/warehouse/requisitions/warehouse-departments',
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                success: function(response) {
+                    console.log('Departments response:', response);
+                    const departmentSelect = $('#department');
+                    departmentSelect.empty();
+                    departmentSelect.append('<option value="" selected disabled>Select Department</option>');
+                    
+                    if (response.success && response.departments && response.departments.length > 0) {
+                        response.departments.forEach(function(department) {
+                            // Since we only show sub-departments now, just use the name directly
+                            departmentSelect.append(`<option value="${department.id}">${department.name}</option>`);
+                        });
+                        console.log('Successfully loaded', response.departments.length, 'sub-departments');
+                        console.log('Debug info:', response.debug_info);
+                    } else {
+                        console.log('No warehouse sub-departments found, trying fallback...');
+                        // Fallback: try to load all departments if no warehouse departments found
+                        loadAllDepartments();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading departments:', error);
+                    console.error('Response:', xhr.responseText);
+                    console.error('Status:', status);
+                    
+                    // Fallback: try to load all departments
+                    loadAllDepartments();
+                }
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error with debug endpoint:', error);
+            console.error('Debug Response:', xhr.responseText);
+            
+            // Try the warehouse departments endpoint anyway
+            $.ajax({
+                url: '/company/warehouse/requisitions/warehouse-departments',
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                success: function(response) {
+                    console.log('Departments response (after debug error):', response);
+                    const departmentSelect = $('#department');
+                    departmentSelect.empty();
+                    departmentSelect.append('<option value="" selected disabled>Select Department</option>');
+                    
+                    if (response.success && response.departments && response.departments.length > 0) {
+                        response.departments.forEach(function(department) {
+                            // Since we only show sub-departments now, just use the name directly
+                            departmentSelect.append(`<option value="${department.id}">${department.name}</option>`);
+                        });
+                        console.log('Successfully loaded sub-departments (after debug error):', response.departments.length);
+                    } else {
+                        loadAllDepartments();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading departments (after debug error):', error);
+                    loadAllDepartments();
+                }
+            });
+        }
+    });
+}
+
+// Fallback function to load all departments
+function loadAllDepartments() {
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
+    console.log('Loading all departments as fallback...');
+    
+    $.ajax({
+        url: '/company/warehouse/requisitions/all-departments',
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Content-Type': 'application/json'
+        },
+        success: function(response) {
+            console.log('All departments response:', response);
+            const departmentSelect = $('#department');
+            departmentSelect.empty();
+            departmentSelect.append('<option value="" selected disabled>Select Department</option>');
+            
+            if (response.success && response.departments && response.departments.length > 0) {
+                response.departments.forEach(function(department) {
+                    departmentSelect.append(`<option value="${department.id}">${department.name}</option>`);
+                });
+            } else {
+                // Final fallback: show error message
+                departmentSelect.append('<option value="" disabled>No departments available</option>');
+                showAlert('Warning', 'No departments found. Please contact administrator.', 'warning');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading all departments:', error);
+            const departmentSelect = $('#department');
+            departmentSelect.empty();
+            departmentSelect.append('<option value="" disabled>Error loading departments</option>');
+            showAlert('Error', 'Failed to load departments. Please refresh the page.', 'error');
+        }
+    });
+}
+
+// Load available items from central store
+function loadAvailableItems(selectElement) {
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
+    console.log('Loading available items...');
+    console.log('CSRF Token:', csrfToken);
+    
+    $.ajax({
+        url: '/company/warehouse/central-store/available-items-for-requisition',
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify({
+            search: '',
+            category: ''
+        }),
+        success: function(response) {
+            console.log('Success response:', response);
+            $(selectElement).empty();
+            $(selectElement).append('<option value="">Select an item...</option>');
+            
+            if (response.data && response.data.length > 0) {
+                response.data.forEach(function(item) {
+                    const option = `<option value="${item.id}" 
+                        data-unit="${item.unit}" 
+                        data-unit-price="${item.unit_price}" 
+                        data-available-qty="${item.quantity_available}"
+                        data-description="${item.description || ''}"
+                        data-item-data='${JSON.stringify(item)}'>
+                        ${item.name} - ${item.category} (Available: ${item.quantity_available} ${item.unit})
+                    </option>`;
+                    $(selectElement).append(option);
+                });
+            } else {
+                $(selectElement).append('<option value="" disabled>No items available</option>');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading items:', xhr.responseText);
+            console.error('Status:', status);
+            console.error('Error:', error);
+            $(selectElement).empty();
+            $(selectElement).append('<option value="" disabled>Error loading items</option>');
+        }
+    });
+}
+
+// Handle item selection change
+$(document).on('change', '.item-select', function() {
+    const row = $(this).closest('.item-row');
+    const selectedOption = $(this).find('option:selected');
+    const itemData = selectedOption.data('item-data');
+    
+    if (itemData) {
+        // Update hidden fields
+        row.find('input[name="item_id[]"]').val(itemData.id);
+        row.find('input[name="item_name[]"]').val(itemData.name);
+        row.find('input[name="item_unit[]"]').val(itemData.unit);
+        row.find('input[name="item_unit_price[]"]').val(itemData.unit_price);
+        row.find('input[name="item_available_qty[]"]').val(itemData.quantity_available);
+        
+        // Update display fields
+        row.find('.unit-display').val(itemData.unit);
+        row.find('.price-display').val(itemData.unit_price);
+        
+        // Update available quantity text
+        row.find('.available-qty-text').text(`Available: ${itemData.quantity_available} ${itemData.unit}`);
+        
+        // Update item details
+        row.find('.item-details').html(`
+            <strong>Category:</strong> ${itemData.category}<br>
+            <strong>Brand:</strong> ${itemData.brand || 'N/A'}<br>
+            <strong>SKU:</strong> ${itemData.sku || 'N/A'}<br>
+            <strong>Location:</strong> ${itemData.location || 'N/A'}<br>
+            <strong>Description:</strong> ${itemData.description || 'No description available'}
+        `);
+        
+        // Calculate total for this item
+        calculateItemTotal(row);
+    } else {
+        // Clear fields if no item selected
+        row.find('input[name="item_id[]"]').val('');
+        row.find('input[name="item_name[]"]').val('');
+        row.find('input[name="item_unit[]"]').val('');
+        row.find('input[name="item_unit_price[]"]').val('');
+        row.find('input[name="item_available_qty[]"]').val('');
+        row.find('.unit-display').val('');
+        row.find('.price-display').val('');
+        row.find('.available-qty-text').text('Available: 0');
+        row.find('.item-details').html('');
+    }
+    
+    // Update grand totals
+    calculateTotals();
+});
+
+// Calculate total for a specific item row
+function calculateItemTotal(row) {
+    const quantity = parseFloat(row.find('input[name="item_quantity[]"]').val()) || 0;
+    const unitPrice = parseFloat(row.find('input[name="item_unit_price[]"]').val()) || 0;
+    const total = quantity * unitPrice;
+    row.find('input[name="item_total[]"]').val(total.toFixed(2));
+}
+
+// Calculate grand totals
+function calculateTotals() {
+    let totalItems = 0;
+    let totalValue = 0;
+    
+    $('.item-row').each(function() {
+        const quantity = parseFloat($(this).find('input[name="item_quantity[]"]').val()) || 0;
+        const total = parseFloat($(this).find('input[name="item_total[]"]').val()) || 0;
+        
+        totalItems += quantity;
+        totalValue += total;
+    });
+    
+    // Update summary fields
+    $('#totalItems').text(totalItems);
+    $('#totalValue').text(totalValue.toFixed(2));
+}
+
+// Handle quantity change
+$(document).on('input', 'input[name="item_quantity[]"]', function() {
+    const row = $(this).closest('.item-row');
+    const quantity = parseFloat($(this).val()) || 0;
+    const availableQty = parseFloat(row.find('input[name="item_available_qty[]"]').val()) || 0;
+    
+    // Check if quantity exceeds available
+    if (quantity > availableQty) {
+        $(this).addClass('is-invalid');
+        row.find('.available-qty-text').addClass('text-danger').text(`Available: ${availableQty} (Quantity exceeds available stock!)`);
+    } else {
+        $(this).removeClass('is-invalid');
+        row.find('.available-qty-text').removeClass('text-danger').text(`Available: ${availableQty}`);
+    }
+    
+    calculateItemTotal(row);
+    calculateTotals();
+});
+
+// Handle unit price change
+$(document).on('input', 'input[name="item_unit_price[]"]', function() {
+    const row = $(this).closest('.item-row');
+    calculateItemTotal(row);
+    calculateTotals();
+});
+
+// Initialize tooltips and load initial data
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Generate reference number on page load
+    generateReferenceNumber();
+    
+    // Load available items for the first item row
+    const firstItemSelect = $('.item-select').first();
+    if (firstItemSelect.length > 0) {
+        loadAvailableItems(firstItemSelect);
+    }
+    
+    // Set up remove item functionality
+    $(document).on('click', '.remove-item', function() {
+        const itemRow = $(this).closest('.item-row');
+        if ($('.item-row').length > 1) {
+            itemRow.remove();
+            calculateTotals();
+        } else {
+            showSafeSweetAlert({
+                icon: 'warning',
+                title: 'Cannot Remove',
+                text: 'At least one item is required.',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+    
+    // Calculate initial totals
+    calculateTotals();
+    
+    // You can add additional event handlers here for the modals
+    document.querySelectorAll('.view-order, .edit-order, .delete-order').forEach(button => {
+        button.addEventListener('click', function() {
+            const poId = this.getAttribute('data-id');
+            // You can load specific PO data here based on poId
+            console.log(`Action for PO ID: ${poId}`);
+        });
+    });
+});
+
+// Generate reference number
+function generateReferenceNumber() {
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 1000);
+    const reference = `REQ-${timestamp}-${random}`;
+    $('#referenceNumber').val(reference);
+}
+
+
+
+
+// Global flag to prevent multiple alerts
+if (!window.isAlertShowing) {
+    window.isAlertShowing = false;
+}
+
+function showSafeSweetAlert(options) {
+    if (!window.isAlertShowing) {
+        window.isAlertShowing = true;
+        return Swal.fire(options).finally(() => {
+            window.isAlertShowing = false;
+        });
+    }
+}
+
+// Currency formatter
+window.CurrencyHelper = {
+    format: function(amount) {
+        if (!amount) return 'GH₵0.00';
+        const formatted = parseFloat(amount).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+        return 'GH₵' + formatted;
+    }
+};
+
+// Function to handle search
+function searchPurchaseOrders() {
+    const searchQuery = $('#searchInput').val();
+    const startDate = $('#startDateFilter').val();
+    const endDate = $('#endDateFilter').val();
+    fetchPurchaseOrders(1, startDate, endDate, searchQuery);
+}
+
+// Function to fetch purchase orders with search and pagination
+function fetchPurchaseOrders(page = 1, startDate = '', endDate = '', searchQuery = '') {
+    $.ajax({
+        url: '/company/warehouse/purchasing_order/all',
+        method: 'POST',
+        data: {
+            page: page,
+            start_date: startDate,
+            end_date: endDate,
+            search: searchQuery
+        },
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        beforeSend: function() {
+            $('#purchaseOrdersTable tbody').html('<tr><td colspan="8" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>');
+        },
+        success: function(response) {
+            // console.log("Purchase orders response:", response);
+            renderPurchaseOrders(response);
+            renderPagination(response);
+        },
+        error: function(xhr) {
+            console.log("Error fetching purchase orders:", xhr.responseJSON);
+            showSafeSweetAlert({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to load purchase orders. Please try again.',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+}
+
+// Render purchase orders table
+function renderPurchaseOrders(response) {
+    let tableBody = '';
+    
+    if (response.data.length === 0) {
+        tableBody = `<tr>
+            <td colspan="8" class="text-center">
+                <div class="text-muted">
+                    <i class="fas fa-box-open fa-3x mb-3"></i>
+                    <p>No purchase orders found. Create your first PO.</p>
+                </div>
+            </td>
+        </tr>`;
+    } else {
+        response.data.forEach(po => {
+            let statusBadge = '';
+            switch(po.status.toLowerCase()) {
+                case 'created': statusBadge = 'bg-info'; break;
+                case 'approved': statusBadge = 'bg-primary'; break;
+                case 'delivered': statusBadge = 'bg-success'; break;
+                case 'cancelled': statusBadge = 'bg-danger'; break;
+                default: statusBadge = 'bg-secondary';
+            }
+
+              // Calculate total items by summing all quantities
+            const { totalItems, totalPrice } = po.items.reduce((acc, item) => {
+                return {
+                    totalItems: acc.totalItems + parseInt(item.quantity),
+                    totalPrice: acc.totalPrice + (parseFloat(item.unit_price) * parseInt(item.quantity))
+                };
+            }, { totalItems: 0, totalPrice: 0 });
+            
+            tableBody += `<tr>
+                <td>${po.po_number}</td>
+                <td>${po.supplier?.name || 'N/A'}</td>
+                <td>${po.order_date}</td>
+                <td>${po.delivery_date}</td>
+                <td><span class="badge ${statusBadge}">${po.status}</span></td>
+                <td>${totalItems}</td>
+                <td>${window.CurrencyHelper.format(totalPrice)}</td>
+                <td class="text-nowrap">
+                    <div class="d-flex flex-nowrap gap-1">
+                        <button class="btn btn-outline-primary btn-action btn-sm view-order" data-id="${po.id}">
+                            <i class="fas fa-eye d-none d-sm-inline"></i>
+                            <span class="d-inline d-sm-none">View</span>
+                        </button>
+                        <button class="btn btn-outline-warning btn-action btn-sm edit-order" data-id="${po.id}">
+                            <i class="fas fa-edit d-none d-sm-inline"></i>
+                            <span class="d-inline d-sm-none">Edit</span>
+                        </button>
+                        <button class="btn btn-outline-danger btn-action btn-sm delete-order" data-id="${po.id}">
+                            <i class="fas fa-trash-alt d-none d-sm-inline"></i>
+                            <span class="d-inline d-sm-none">Delete</span>
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+        });
+    }
+    
+    $('#purchaseOrdersTable tbody').html(tableBody);
+}
+
+// Render pagination
+function renderPagination(response) {
+    let paginationHtml = '';
+    
+    // Previous button
+    paginationHtml += `<li class="page-item ${response.current_page === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="changePage(event, ${response.current_page - 1})">Previous</a>
+    </li>`;
+    
+    // Page numbers
+    for (let i = 1; i <= response.last_page; i++) {
+        paginationHtml += `<li class="page-item ${i === response.current_page ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="return changePage(event, ${i})">${i}</a>
+        </li>`;
+    }
+    
+    // Next button
+    paginationHtml += `<li class="page-item ${response.current_page === response.last_page ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="return changePage(event, ${response.current_page + 1})">Next</a>
+    </li>`;
+    
+    $('#poPagination').html(paginationHtml);
+}
+
+// Change page
+function changePage(event, page) {
+    event.preventDefault();
+    const startDate = $('#startDateFilter').val();
+    const endDate = $('#endDateFilter').val();
+    const searchQuery = $('#searchInput').val();
+    fetchPurchaseOrders(page, startDate, endDate, searchQuery);
+    return false;
+}
+
+// Search function
+function searchPurchaseOrders() {
+    const searchQuery = $('#searchInput').val();
+    const startDate = $('#startDateFilter').val();
+    const endDate = $('#endDateFilter').val();
+    fetchPurchaseOrders(1, startDate, endDate, searchQuery);
+}
+
+
+
+
+
+
+
+// Load suppliers for dropdown
+function loadSuppliers() {
+    $.ajax({
+        url: '/company/warehouse/purchasing_order/suppliers/all',
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+            let options = '<option value="">-- Select Supplier --</option>';
+            response.data.forEach(supplier => {
+                options += `<option value="${supplier.id}">${supplier.name}</option>`;
+            });
+            
+            $('#supplierSelect, #editSupplier').html(options);
+        },
+        error: function(xhr) {
+            console.error("Error loading suppliers:", xhr.responseJSON);
+        }
+    });
+}
+
+// View PO details
+$(document).on('click', '.view-order', function(e) {
+    e.preventDefault();
+    const poId = $(this).data('id');
+    
+    $.ajax({
+        url: `/company/warehouse/purchasing_order/${poId}`,
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        beforeSend: function() {
+            $('#viewOrderModal').modal('show');
+            // Just show a spinner OVER the existing content
+            $('#viewOrderModal .modal-body').prepend(
+                '<div id="loadingOverlay" class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center" style="background: rgba(255,255,255,0.7); z-index: 1000; top: 0; left: 0;">' +
+                '<i class="fas fa-spinner fa-spin fa-3x"></i>' +
+                '</div>'
+            );
+        },
+     success: function(response) {
+    
+      $('#loadingOverlay').remove();
+            if (!response) {
+                console.error("Empty response received");
+                $('#viewOrderModal').modal('hide');
+                showSafeSweetAlert({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Received empty response from server',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            console.log("PO details:", response);
+            const po = response.data || response; // Handle both wrapped and raw responses
+            
+            // Verify required fields exist
+            if (!po || !po.supplier || !po.items) {
+                console.error("Invalid PO data structure:", po);
+                $('#viewOrderModal').modal('hide');
+                showSafeSweetAlert({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Invalid purchase order data structure',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            let statusBadge = '';
+            switch((po.status || '').toLowerCase()) {
+                case 'created': statusBadge = 'bg-info'; break;
+                case 'approved': statusBadge = 'bg-primary'; break;
+                case 'delivered': statusBadge = 'bg-success'; break;
+                case 'cancelled': statusBadge = 'bg-danger'; break;
+                default: statusBadge = 'bg-secondary';
+            }
+            
+            // Update modal fields
+            $('#viewPoNumber').text(po.po_number || 'N/A');
+            $('#viewSupplier').text(po.supplier.name || 'N/A');
+            $('#viewOrderDate').text(po.order_date || 'N/A');
+            $('#viewExpectedDelivery').text(po.expected_delivery_date || 'N/A');
+            $('#viewStatus').text(po.status || 'N/A').removeClass().addClass('badge ' + statusBadge);
+            $('#viewTotalItems').text(po.total_items || '0');
+            $('#viewTotalValue').text(window.CurrencyHelper.format(po.total_value || 0));
+            
+            // Build items list
+            let itemsHtml = '<table class="table table-sm"><thead><tr><th>Item</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead><tbody>';
+            
+            (po.items || []).forEach(item => {
+                itemsHtml += `<tr>
+                    <td>${item.name || 'N/A'}</td>
+                    <td>${item.quantity || '0'}</td>
+                    <td>${window.CurrencyHelper.format(item.unit_price || 0)}</td>
+                    <td>${window.CurrencyHelper.format(item.total_price || 0)}</td>
+                </tr>`;
+            });
+            
+            itemsHtml += '</tbody></table>';
+
+            // console.log("Items HTML:", itemsHtml);
+            $('#viewItems').html(itemsHtml);
+            },
+        error: function(xhr) {
+            console.error("Error fetching PO details:", xhr.responseJSON);
+            showSafeSweetAlert({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to load purchase order details.',
+                confirmButtonText: 'OK'
+            });
+            $('#viewOrderModal').modal('hide');
+        }
+    });
+});
+
+// Edit PO
+
+
+$(document).on('click', '.edit-order', function(e) {
+    e.preventDefault();
+    const poId = $(this).data('id');
+    
+    $.ajax({
+        url: `/company/warehouse/purchasing_order/${poId}`,
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        beforeSend: function() {
+            $('#editOrderModal').modal('show');
+            $('#editOrderModal .modal-body').prepend(
+                '<div id="editloadingOverlay" class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center" style="background: rgba(255,255,255,0.7); z-index: 1000; top: 0; left: 0;">' +
+                '<i class="fas fa-spinner fa-spin fa-3x"></i>' +
+                '</div>'
+            );
+        },
+        success: function(response) {
+            $('#editloadingOverlay').remove();
+            const po = response.data || response; 
+            
+            // Set basic info
+            $('#editPoNumber').text(po.po_number);
+            $('#editPoNumberInput').val(po.po_number);
+            
+            // Set supplier - first clear existing options
+            $('#editSupplier').empty();
+            $('#editSupplier').append('<option value="">-- Select Supplier --</option>');
+            
+            // Add current supplier as selected option
+            if (po.supplier) {
+                $('#editSupplier').append(
+                    `<option value="${po.supplier.id}" selected>${po.supplier.name}</option>`
+                );
+            }
+            
+            // You might want to add other suppliers here if needed
+            // Example: $('#editSupplier').append('<option value="1">Other Supplier</option>');
+            
+            $('#editOrderDate').val(po.order_date);
+            $('#editExpectedDelivery').val(po.delivery_date); // Fixed typo from "delivery_date"
+            $('#editStatus').val(po.status.toLowerCase()); // Ensure case matches
+            
+            // Clear existing rows
+            $('#editItemsTable tbody').empty();
+            
+            
+            // Add items to table
+           if (po.items && po.items.length > 0) {
+            console.log("Items found:", po.items); // Debug log
+            
+            // Clear the table first
+            $('#editItemsTable tbody').empty();
+            
+            po.items.forEach((item, index) => {
+                console.log(`Processing item ${index}:`, item); // Debug log
+                
+                // Convert values to proper types
+                const quantity = item.quantity ? Number(item.quantity) : '';
+                const unitPrice = item.unit_price ? Number(item.unit_price).toFixed(2) : '';
+                const totalPrice = item.total_price ? Number(item.total_price).toFixed(2) : '';
+                
+                console.log(`Formatted values - Qty: ${quantity}, Price: ${unitPrice}, Total: ${totalPrice}`); // Debug log
+                
+                // Create new row
+                const row = `
+                    <tr>
+                        <td><input type="text" class="form-control" name="edit_item_name[]" value="${item.name || ''}"></td>
+                        <td><input type="number" class="form-control" name="edit_item_qty[]" value="${quantity}" oninput="calculateEditTotal(this)"></td>
+                        <td><input type="number" step="0.01" class="form-control" name="edit_item_price[]" value="${unitPrice}" oninput="calculateEditTotal(this)"></td>
+                        <td><input type="text" class="form-control" readonly name="edit_item_total[]" value="${totalPrice}"></td>
+                        <td><button type="button" class="btn btn-sm btn-danger" onclick="removeEditRow(this)">x</button></td>
+                    </tr>
+                `;
+                
+                $('#editItemsTable tbody').append(row);
+                
+                // Verify DOM after insertion
+                const addedRow = $('#editItemsTable tbody tr').last();
+                console.log("Added row inputs:", {
+                    name: addedRow.find('input[name="edit_item_name[]"]').val(),
+                    qty: addedRow.find('input[name="edit_item_qty[]"]').val(),
+                    price: addedRow.find('input[name="edit_item_price[]"]').val(),
+                    total: addedRow.find('input[name="edit_item_total[]"]').val()
+                });
+            });
+        } else {
+            console.log("No items found, adding empty row"); // Debug log
+            $('#editItemsTable tbody').empty();
+            addEditItemRow();
+        }
+        
+        // Set totals
+        updateEditTotals();
+    },
+    error: function(xhr) {
+        console.error("Error fetching PO details:", xhr.responseJSON);
+        showSafeSweetAlert({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Failed to load purchase order details for editing.',
+            confirmButtonText: 'OK'
+        });
+        $('#editOrderModal').modal('hide');
+    }
+});
+
+
+// Add row to edit items table
+function addEditItemRow(name = '', quantity = '', price = '', total = '') {
+    const row = `
+        <tr>
+            <td><input type="text" class="form-control" name="edit_item_name[]" value="${name}"></td>
+            <td><input type="number" class="form-control" name="edit_item_qty[]" value="${quantity}" oninput="calculateEditTotal(this)"></td>
+            <td><input type="number" step="0.01" class="form-control" name="edit_item_price[]" value="${price}" oninput="calculateEditTotal(this)"></td>
+            <td><input type="text" class="form-control" readonly name="edit_item_total[]" value="${total}"></td>
+            <td><button type="button" class="btn btn-sm btn-danger" onclick="removeEditRow(this)">x</button></td>
+        </tr>
+    `;
+    $('#editItemsTable tbody').append(row);
+}
+
+// Remove row from edit items table
+function removeEditRow(button) {
+    $(button).closest('tr').remove();
+    updateEditTotals();
+}
+
+// Calculate total for a row in edit table
+function calculateEditTotal(input) {
+    const row = $(input).closest('tr');
+    const quantity = parseFloat(row.find('input[name="edit_item_qty[]"]').val()) || 0;
+    const price = parseFloat(row.find('input[name="edit_item_price[]"]').val()) || 0;
+    const total = quantity * price;
+    row.find('input[name="edit_item_total[]"]').val(total.toFixed(2));
+    updateEditTotals();
+}
+
+
+// Update the summary totals in edit modal
+function updateEditTotals() {
+    let totalItems = 0;
+    let totalValue = 0;
+    
+    $('#editItemsTable tbody tr').each(function() {
+        const quantity = parseFloat($(this).find('input[name="edit_item_qty[]"]').val()) || 0;
+        const total = parseFloat($(this).find('input[name="edit_item_total[]"]').val()) || 0;
+        
+        totalItems += quantity;
+        totalValue += total;
+    });
+    
+    $('#editTotalItems').val(totalItems);
+    $('#editTotalValue').val(totalValue.toFixed(2));
+}
+
+
+
+
+// Add this inside your $(document).ready() function or script section
+$('.newPOModal').on('click', function () {
+    // Clear the form when modal opens
+    $("#newPOModal").show();
+    $('#poForm')[0].reset();
+    
+    // Generate and set PO number
+    generatePONumber();
+});
+
+// Function to generate and set PO number
+function generatePONumber() {
+    $.ajax({
+        url: '/company/warehouse/purchasing_order/generatePONumber', // Your route for generating PO numbers
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        beforeSend: function() {
+            $('#poNumberInput').val('Generating...');
+        },
+        success: function(response) {
+            console.log("PO number generated:", response);
+            if (response.success) {
+                $('#po_number').val(response.po_number);
+            }
+        },
+        error: function(xhr) {
+            console.log("Error generating PO number:", xhr)
+            console.error("Error generating PO number:", xhr.responseJSON);
+            $('#poNumberInput').val('PO-ERROR');
+            showSafeSweetAlert({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to generate PO number. Please try again.',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+}
+
+
+// Save edited PO
+$('#editPOForm').on('submit', function(e) {
+    e.preventDefault();
+    const poId = $('#editPoNumber').text(); // Extract ID from PO number
+    
+    let formData = {
+        _token: $('meta[name="csrf-token"]').attr('content'),
+        _method: 'PUT',
+        po_number: $('#editPoNumberInput').val(),
+        supplier_id: $('#editSupplier').val(),
+        order_date: $('#editOrderDate').val(),
+        expected_delivery_date: $('#editExpectedDelivery').val(),
+        status: $('#editStatus').val(),
+        items: [],
+        total_items: 0,
+        total_value: 0
+    };
+    console.log("poId:", poId);
+
+
+    console.log("Form data before collecting items:", formData); 
+    
+    // Collect items
+    $('#editItemsTable tbody tr').each(function() {
+        const item = {
+            name: $(this).find('[name="edit_item_name[]"]').val(),
+            quantity: $(this).find('[name="edit_item_qty[]"]').val(),
+            unit_price: $(this).find('[name="edit_item_price[]"]').val(),
+            total_price: $(this).find('[name="edit_item_total[]"]').val()
+        };
+        formData.items.push(item);
+        formData.total_items += parseInt(item.quantity) || 0;
+        formData.total_value += parseFloat(item.total_price) || 0;
+    });
+    
+    $.ajax({
+        url: `/company/warehouse/purchasing_order/${poId}`,
+        method: 'POST',
+        data: formData,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        beforeSend: function() {
+            $('#editPOForm button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
+        },
+        success: function(response) {
+            showSafeSweetAlert({
+                icon: 'success',
+                title: 'Success!',
+                text: response.message || 'Purchase order updated successfully.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                $('#editOrderModal').modal('hide');
+                fetchPurchaseOrders();
+            });
+        },
+        error: function(xhr) {
+            console.log("Error updating PO:", xhr);
+            let errorMessage = 'Failed to update purchase order. Please try again.';
+            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                errorMessage = Object.values(xhr.responseJSON.errors).join('<br>');
+            }
+            
+            showSafeSweetAlert({
+                icon: 'error',
+                title: 'Error!',
+                html: errorMessage,
+                confirmButtonText: 'OK'
+            });
+        },
+        complete: function() {
+            $('#editPOForm button[type="submit"]').prop('disabled', false).html('Save Changes');
+        }
+    });
+});
+
+// Delete PO
+$(document).on('click', '.delete-order', function(e) {
+    e.preventDefault();
+    const poId = $(this).data('id');
+    
+    showSafeSweetAlert({
+        icon: 'warning',
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            deletePurchaseOrder(poId);
+        }
+    });
+});
+
+function deletePurchaseOrder(poId) {
+    $.ajax({
+        url: `/company/warehouse/purchasing_order/${poId}`,
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        beforeSend: function() {
+            $('.delete-order[data-id="' + poId + '"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+        },
+        success: function(response) {
+            showSafeSweetAlert({
+                icon: 'success',
+                title: 'Deleted!',
+                text: response.message || 'Purchase order has been deleted.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                fetchPurchaseOrders();
+            });
+        },
+        error: function(xhr) {
+            showSafeSweetAlert({
+                icon: 'error',
+                title: 'Error!',
+                text: xhr.responseJSON.message || 'Failed to delete purchase order.',
+                confirmButtonText: 'OK'
+            });
+        },
+        complete: function() {
+            $('.delete-order[data-id="' + poId + '"]').prop('disabled', false).html('<i class="fas fa-trash-alt d-none d-sm-inline"></i><span class="d-inline d-sm-none">Delete</span>');
+        }
+    });
+}
+
+// Create new PO
+$('#poForm').on('submit', function(e) {
+    e.preventDefault();
+    
+    let formData = {
+        _token: $('meta[name="csrf-token"]').attr('content'),
+        po_number: $('#po_number').val(),
+        order_date: $('[name="order_date"]').val(),
+        delivery_date: $('[name="delivery_date"]').val(),
+        supplier_id: $('#supplierSelect').val(),
+        items: [],  // This will store our properly formatted items
+        total_items: 0,
+        total_value: 0
+    };
+    
+    // Process items correctly
+    $('[name="item_name[]"]').each(function(index) {
+        const item = {
+            name: $(this).val(),
+            quantity: $('[name="item_qty[]"]').eq(index).val(),
+            unit_price: $('[name="item_price[]"]').eq(index).val(),
+            total_price: $('[name="item_total[]"]').eq(index).val()
+        };
+        
+        // Only add if name exists (skip empty rows)
+        if (item.name) {
+            formData.items.push(item);
+            formData.total_items += parseInt(item.quantity) || 0;
+            formData.total_value += parseFloat(item.total_price) || 0;
+        }
+    });
+    
+    console.log("Final form data:", formData);
+    
+
+    //  return;
+    
+    $.ajax({
+        url: '/company/warehouse/purchasing_order/',
+        method: 'POST',
+        data: formData,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        beforeSend: function() {
+            $('#poForm button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
+        },
+        success: function(response) {
+            showSafeSweetAlert({
+                icon: 'success',
+                title: 'Success!',
+                text: response.message || 'Purchase order created successfully.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                $('#newPOModal').modal('hide');
+                $('#poForm')[0].reset();
+                fetchPurchaseOrders();
+            });
+        },
+        error: function(xhr) {
+            console.log(xhr);
+            let errorMessage = 'Failed to create purchase order. Please try again.';
+            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                errorMessage = Object.values(xhr.responseJSON.errors).join('<br>');
+            }
+            
+            showSafeSweetAlert({
+                icon: 'error',
+                title: 'Error!',
+                html: errorMessage,
+                confirmButtonText: 'OK'
+            });
+        },
+        complete: function() {
+            $('#poForm button[type="submit"]').prop('disabled', false).html('<i class="fas fa-save me-2"></i>Save PO');
+        }
+    });
+});
+
+// Add new supplier
+$('#addSupplierForm').on('submit', function(e) {
+    e.preventDefault();
+    
+    let formData = {
+        _token: $('meta[name="csrf-token"]').attr('content'),
+        name: $('#addSupplierForm [name="name"]').val(),
+        email: $('#addSupplierForm [name="email"]').val(),
+        phone: $('#addSupplierForm [name="phone"]').val()
+    };
+
+    console.log(formData);
+    
+    $.ajax({
+        url: '/company/warehouse/purchasing_order/suppliers',
+        method: 'POST',
+        data: formData,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        beforeSend: function() {
+            $('#addSupplierForm button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
+        },
+        success: function(response) {
+            showSafeSweetAlert({
+                icon: 'success',
+                title: 'Success!',
+                text: response.message || 'Supplier added successfully.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                $('#addSupplierModal').modal('hide');
+                $('#addSupplierForm')[0].reset();
+                loadSuppliers();
+            });
+        },
+        error: function(xhr) {
+            console.log(xhr)
+            let errorMessage = 'Failed to add supplier. Please try again.';
+            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                errorMessage = Object.values(xhr.responseJSON.errors).join('<br>');
+            }
+            
+            showSafeSweetAlert({
+                icon: 'error',
+                title: 'Error!',
+                html: errorMessage,
+                confirmButtonText: 'OK'
+            });
+        },
+        complete: function() {
+            $('#addSupplierForm button[type="submit"]').prop('disabled', false).html('Save Supplier');
+        }
+    });
+});
+
+
+
+function addEditItemRow() {
+    const row = `<tr>
+        <td><input type="text" class="form-control" name="edit_item_name[]" required></td>
+        <td><input type="number" class="form-control" name="edit_item_qty[]" min="1" value="1" oninput="calculateEditTotal(this)" required></td>
+        <td><input type="number" step="0.01" class="form-control" name="edit_item_price[]" min="0" value="0" oninput="calculateEditTotal(this)" required></td>
+        <td><input type="text" class="form-control" readonly name="edit_item_total[]" value="0.00"></td>
+        <td><button type="button" class="btn btn-sm btn-danger" onclick="removeEditRow(this)">x</button></td>
+    </tr>`;
+    $('#editItemsTable tbody').append(row);
+}
+
+function removeRow(button) {
+    $(button).closest('tr').remove();
+    calculatePOValues();
+}
+
+function removeEditRow(button) {
+    $(button).closest('tr').remove();
+    calculateEditPOValues();
+}
+
+function calculateTotal(input) {
+    const row = $(input).closest('tr');
+    const qty = parseFloat(row.find('[name="item_qty[]"]').val()) || 0;
+    const price = parseFloat(row.find('[name="item_price[]"]').val()) || 0;
+    const total = qty * price;
+    row.find('[name="item_total[]"]').val(total.toFixed(2));
+    calculatePOValues();
+}
+
+function calculateEditTotal(input) {
+    const row = $(input).closest('tr');
+    const qty = parseFloat(row.find('[name="edit_item_qty[]"]').val()) || 0;
+    const price = parseFloat(row.find('[name="edit_item_price[]"]').val()) || 0;
+    const total = qty * price;
+    row.find('[name="edit_item_total[]"]').val(total.toFixed(2));
+    calculateEditPOValues();
+}
+
+function calculatePOValues() {
+    let totalItems = 0;
+    let totalValue = 0;
+    
+    $('#itemsTable tbody tr').each(function() {
+        const qty = parseInt($(this).find('[name="item_qty[]"]').val()) || 0;
+        const total = parseFloat($(this).find('[name="item_total[]"]').val()) || 0;
+        totalItems += qty;
+        totalValue += total;
+    });
+    
+    // Update any summary fields if needed
+}
+
+function calculateEditPOValues() {
+    let totalItems = 0;
+    let totalValue = 0;
+    
+    $('#editItemsTable tbody tr').each(function() {
+        const qty = parseInt($(this).find('[name="edit_item_qty[]"]').val()) || 0;
+        const total = parseFloat($(this).find('[name="edit_item_total[]"]').val()) || 0;
+        totalItems += qty;
+        totalValue += total;
+    });
+    
+    $('#editTotalItems').val(totalItems);
+    $('#editTotalValue').val(totalValue.toFixed(2));
+}
+
+// Also load departments when window is fully loaded
+$(window).on('load', function() {
+    console.log('Window loaded, ensuring departments are loaded...');
+    setTimeout(function() {
+        const departmentSelect = $('#department');
+        if (departmentSelect.find('option').length <= 1) {
+            console.log('Department select still empty on window load, loading departments...');
+            loadDepartments();
+        }
+    }, 1000);
+});
+</script>
+
+

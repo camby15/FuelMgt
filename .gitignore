@@ -1,0 +1,56 @@
+/.phpunit.cache
+/.docker/pgdata
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.vite
+.env-uat
+.env-production
+.env.backup
+.phpactor.json
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+/.fleet
+/.idea
+/.vscode
+package-lock.json
+yarn.lock
+.flow.txt
+/.docker/db_data
+public/images/signatures/1745606085_Screenshot 2025-04-09 044846.png
+public/images/signatures/1745606105_Screenshot 2025-04-09 044846.png
+public/images/signatures/1745606675_Screenshot 2025-04-09 044846.png
+public/images/signatures/1745605599_img_1.jpg
+public/images/signatures/1745605410_img_2.jpg
+public/images/signatures/1745606690_Screenshot 2025-04-09 044846.png
+public/images/signatures/1745800214_Screenshot 2025-04-09 044846.png
+public/images/signatures/1745800758_Screenshot 2025-04-09 044846.png
+public/images/signatures/1745800835_Screenshot 2025-04-09 044846.png
+public/images/signatures/1745801021_Screenshot 2025-04-09 042659.png
+public/images/signatures/1745801149_Screenshot 2025-04-09 042659.png
+public/images/signatures/1745801742_Screenshot 2025-04-09 042659.png
+public/images/signatures/1745802130_Screenshot 2025-04-09 042659.png
+public/images/signatures/1745864074_Screenshot 2025-04-09 044954.png
+public/images/signatures/1745802301_Screenshot 2025-04-09 042659.png
+public/images/signatures/1745844427_img_1.jpg
+public/images/signatures/1745863948_Screenshot 2025-04-09 044954.png
+public/images/signatures/1745866120_Screenshot 2025-04-09 044954.png
+public/images/signatures/1745866238_Screenshot 2025-04-09 044954.png
+public/images/signatures/1745866263_Screenshot 2025-04-09 044954.png
+public/images/signatures/1745866584_Screenshot 2025-04-09 044954.png
+public/images/signatures/1745866647_Screenshot 2025-04-09 044954.png
+public/images/signatures/1745867088_Screenshot 2025-04-09 044954.png
+public/images/signatures/1745867108_Screenshot 2025-04-09 044954.png
+public/images/signatures/1745867180_Screenshot 2025-04-09 044954.png
+public/images/signatures/1745867203_Screenshot 2025-04-09 044954.png
+public/images/signatures/1745878271_Screenshot 2025-04-09 044954.png
+public/images/signatures/1745878346_Screenshot 2025-04-09 044846.png
+public/images/signatures/1745930987_hero_1.jpg

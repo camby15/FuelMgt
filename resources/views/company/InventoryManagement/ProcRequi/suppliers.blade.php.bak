@@ -1,0 +1,2590 @@
+
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.css" rel="stylesheet">
+
+<style>
+    :root {
+        --primary: #4361ee;
+        --primary-light: #4cc9f0;
+        --secondary: #7209b7;
+        --success: #06d6a0;
+        --info: #4cc9f0;
+        --warning: #ffbe0b;
+        --danger: #ef476f;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --gray: #6c757d;
+        --gray-light: #f8f9fa;
+        --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+        --border-radius: 0.5rem;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+    }
+    
+    .supplier-container {
+        background-color: #f5f7fb;
+        min-height: calc(100vh - 70px);
+        padding: 2rem;
+        transition: var(--transition);
+    }
+    
+    .supplier-card {
+        background: #fff;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        margin-bottom: 1.5rem;
+        border: none;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .supplier-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--primary), var(--primary-light));
+        z-index: 2;
+    }
+    
+    .supplier-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow);
+    }
+    
+    .supplier-card .card-header {
+        background: #fff;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 1.25rem 1.5rem;
+        position: relative;
+    }
+    
+    .supplier-card .card-body {
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .supplier-card .card-header {
+        background: #fff;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 1.25rem 1.5rem;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .supplier-card .card-header h5 {
+        font-weight: 600;
+        color: #2d3748;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .supplier-card .card-header h5 i {
+        color: var(--primary);
+        font-size: 1.1em;
+    }
+    
+    .supplier-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: #fff;
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        box-shadow: 0 4px 6px rgba(67, 97, 238, 0.15);
+        transition: var(--transition);
+    }
+    
+    .supplier-avatar i {
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+    
+    .supplier-avatar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(67, 97, 238, 0.2);
+    }
+    
+    .status-badge {
+        padding: 0.4rem 0.9rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid transparent;
+    }
+    
+    .status-badge i {
+        transition: transform 0.2s ease;
+    }
+    
+    .status-badge:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Hover effect for table rows */
+    tr {
+        position: relative;
+    }
+    
+    tr::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(67, 97, 238, 0.05) 0%, rgba(255,255,255,0) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+    
+    tr:hover::after {
+        opacity: 1;
+    }
+    
+    /* Form Wizard Styles */
+    .steps {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .steps::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #e9ecef;
+        z-index: 1;
+    }
+    
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        background: white;
+        padding: 0 1rem;
+    }
+    
+    .step-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .step.active .step-icon {
+        background-color: #4361ee;
+        color: white;
+        border-color: #4361ee;
+    }
+    
+    .step.completed .step-icon {
+        background-color: #06d6a0;
+        color: white;
+        border-color: #06d6a0;
+    }
+    
+    .step-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-align: center;
+    }
+    
+    .step.active .step-label {
+        color: #4361ee;
+        font-weight: 500;
+    }
+    
+    .step-content {
+        transition: all 0.3s ease;
+    }
+    
+    /* Form Controls */
+    .form-control-lg, .form-select-lg {
+        padding: 0.75rem 1rem;
+        font-size: 0.9375rem;
+        border-radius: 0.5rem;
+    }
+    
+    .input-group-lg > .form-control,
+    .input-group-lg > .form-select,
+    .input-group-lg > .input-group-text {
+        padding: 0.75rem 1rem;
+        font-size: 0.9375rem;
+    }
+    
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-right: none;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #4361ee;
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+    }
+    
+    /* Modal Header */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%) !important;
+    }
+    
+    /* Form Sections */
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 767.98px) {
+        .step-label {
+            display: none !important;
+        }
+        
+        .steps {
+            padding: 0 1rem;
+        }
+        
+        .step {
+            padding: 0 0.5rem;
+        }
+    }
+</style>
+@endpush
+<div class="supplier-container">
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-5">
+        <div class="mb-3 mb-lg-0">
+            <div class="d-flex align-items-center mb-2">
+                <h1 class="h4 mb-0">
+                    <i class="fas fa-truck me-3" style="color:rgb(182, 8, 8);"></i>
+                    <span>Supplier Directory</span>
+                </h1>
+
+            </div>
+            <p class="text-muted mb-0">Efficiently manage your supplier relationships and procurement processes</p>
+        </div>
+        <div class="d-flex align-items-center" style="gap: 1rem;">
+            <div class="search-box" style="flex: 1; max-width: 300px;">
+                <input type="text" class="form-control" placeholder="Search suppliers...">
+            </div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSupplierModal" style="white-space: nowrap;">
+                <i class="fas fa-plus me-2"></i>Add Supplier
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="card supplier-card animate-fade-in">
+        <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <div>
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list-ul me-2"></i>All Suppliers
+                </h5>
+            </div>
+            <div class="d-flex gap-2 mt-3 mt-md-0">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center" type="button" 
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-filter me-1"></i> 
+                        <span>Filter</span>
+                        <span class="badge bg-primary rounded-pill ms-2">3</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="min-width: 220px;">
+                        <li class="dropdown-header fw-semibold text-uppercase small mb-2 text-muted">Status</li>
+                        <li>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center" href="#">
+                                <span>Active</span>
+                                <span class="badge bg-primary-soft text-primary rounded-pill">24</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center" href="#">
+                                <span>Inactive</span>
+                                <span class="badge bg-secondary-soft text-secondary rounded-pill">5</span>
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li class="dropdown-header fw-semibold text-uppercase small mb-2 text-muted">Categories</li>
+                        <li><a class="dropdown-item" href="#">Electronics</a></li>
+                        <li><a class="dropdown-item" href="#">Office Supplies</a></li>
+                        <li><a class="dropdown-item" href="#">Furniture</a></li>
+                        <li><a class="dropdown-item" href="#">Other</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-primary" href="#">
+                                <i class="fas fa-sync-alt me-2"></i>Reset Filters
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="btn-group" role="group">
+                    <button class="btn btn-outline-secondary btn-sm d-flex align-items-center" 
+                            data-bs-toggle="tooltip" 
+                            title="Export Data">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" 
+                            data-bs-toggle="tooltip" 
+                            title="Refresh">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <style>
+                    /* Enhanced table styling */
+                    .table {
+                        --bs-table-hover-bg: rgba(67, 97, 238, 0.03);
+                        margin-bottom: 0;
+                    }
+                    
+                    .table > :not(caption) > * > * {
+                        padding: 1rem 1.25rem;
+                        border-bottom-width: 1px;
+                        box-shadow: none;
+                    }
+                    
+                    .table > thead > tr > th {
+                        border-bottom: 1px solid rgba(0,0,0,0.05);
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        font-size: 0.7rem;
+                        color: #6c757d;
+                        white-space: nowrap;
+                        padding-top: 0.75rem;
+                        padding-bottom: 0.75rem;
+                        background-color: #f8fafc;
+                    }
+                    
+                    .table > tbody > tr {
+                        transition: all 0.2s ease;
+                        position: relative;
+                    }
+                    
+                    .table > tbody > tr:not(:last-child) {
+                        border-bottom: 1px solid rgba(0,0,0,0.03);
+                    }
+                    
+                    .table > tbody > tr:hover {
+                        background-color: #f8fafc !important;
+                        transform: translateX(4px);
+                        box-shadow: -4px 0 0 0 var(--primary);
+                    }
+                    
+                    .table > tbody > tr td {
+                        vertical-align: middle;
+                        transition: all 0.2s ease;
+                        position: relative;
+                        z-index: 1;
+                    }
+                    
+                    /* Checkbox styling */
+                    .form-check-input {
+                        width: 1.1em;
+                        height: 1.1em;
+                        margin-top: 0.15em;
+                        border: 1px solid #dee2e6;
+                        transition: all 0.2s ease;
+                    }
+                    
+                    .form-check-input:checked {
+                        background-color: var(--primary);
+                        border-color: var(--primary);
+                    }
+                    
+                    /* Action buttons */
+                    .btn-icon {
+                        width: 28px;
+                        height: 28px;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 0;
+                        transition: all 0.2s ease;
+                    }
+                    
+                    .btn-icon:hover {
+                        transform: translateY(-2px);
+                    }
+                    
+                    /* Status badges */
+                    .badge {
+                        font-weight: 500;
+                        letter-spacing: 0.3px;
+                    }
+                    
+                    /* Rating stars */
+                    .rating {
+                        color:rgb(255, 193, 7);
+                        letter-spacing: 2px;
+                    }
+                    
+                    /* Hover effect for table rows */
+                    tr {
+                        position: relative;
+                    }
+                    
+                    tr::after {
+                        content: '';
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(90deg, rgba(67, 97, 238, 0.05) 0%, rgba(255,255,255,0) 100%);
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                        pointer-events: none;
+                    }
+                    
+                    tr:hover::after {
+                        opacity: 1;
+                    }
+                </style>
+                <table class="table align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4" style="width: 40px;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAllSuppliers">
+                                    <label class="form-check-label" for="selectAllSuppliers"></label>
+                                </div>
+                            </th>
+                            <th class="text-uppercase small fw-bold text-muted">Supplier</th>
+                            <th class="text-uppercase small fw-bold text-muted">Contact</th>
+                            <th class="text-uppercase small fw-bold text-muted">Location</th>
+                            <th class="text-uppercase small fw-bold text-muted">Status</th>
+                            <th class="text-uppercase small fw-bold text-muted">Last Order</th>
+                            <th class="text-uppercase small fw-bold text-muted">Rating</th>
+                            <th class="text-end pe-4 text-uppercase small fw-bold text-muted">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Sample Supplier Row 1 -->
+                        <tr>
+                            <td class="ps-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="supplierSelect">
+                                </div>
+                            </td>
+                            <td class="align-middle">
+                                <div class="d-flex align-items-center">
+                                    <div class="supplier-avatar me-3" style="background-color:rgb(255, 255, 255); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: #b71c1c;">
+                                        <i class="fas fa-truck"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-semibold text-dark">Ghana Logistics Ltd</h6>
+                                        <small class="text-muted d-flex align-items-center">
+                                            <i class="fas fa-tag me-1" style="font-size: 0.65rem;"></i>
+                                            <span>Logistics & Transportation</span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle">
+                                <div class="d-flex flex-column">
+                                    <span class="fw-medium text-dark">Kwame Mensah</span>
+                                    <div class="d-flex align-items-center text-muted">
+                                        <i class="fas fa-phone-alt me-1" style="font-size: 0.7rem;"></i>
+                                        <small>+233 24 123 4567</small>
+                                    </div>
+                                    <div class="d-flex align-items-center text-muted">
+                                        <i class="fas fa-envelope me-1" style="font-size: 0.7rem;"></i>
+                                        <small>kwame@ghanalogistics.com</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-map-marker-alt text-danger me-2" style="font-size: 0.8rem;"></i>
+                                    <span>Accra, Ghana</span>
+                                </div>
+                                <small class="text-muted d-block mt-1">North Industrial Area</small>
+                            </td>
+                            <td class="align-middle">
+                                <span class="status-badge status-active">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Active</span>
+                                </span>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 85%" 
+                                         aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <small class="text-muted d-block mt-1">Last active: 2h ago</small>
+                            </td>
+                            <td class="align-middle">
+                                <div class="d-flex flex-column">
+                                    <span class="fw-medium">2 days ago</span>
+                                    <small class="text-muted">GHS 12,450.00</small>
+                                    <span class="badge bg-light text-dark mt-1" style="font-weight: 500;">#ORD-7890</span>
+                                </div>
+                            </td>
+                            <td class="align-middle">
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <div class="rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        </div>
+                                        <span class="ms-2 fw-medium text-dark">4.7</span>
+                                    </div>
+                                    <div class="progress" style="height: 4px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 85%" 
+                                             aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <small class="text-muted mt-1">24 reviews</small>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button class="btn btn-icon btn-sm btn-outline-primary view-supplier" 
+                                            data-bs-toggle="tooltip" 
+                                            data-bs-placement="top"
+                                            title="View Details"
+                                            data-bs-target="#viewSupplierModal"
+                                            data-supplier='{"name":"Ghana Logistics Ltd","type":"Logistics & Transportation","status":"Active","location":"Accra, Ghana","email":"info@ghanalogistics.com","phone":"+233 24 123 4567","address":"123 Industrial Area","city":"Accra","region":"Greater Accra","country":"Ghana","website":"www.ghanalogistics.com","taxId":"C12345678","notes":"Reliable logistics partner with nationwide coverage."}}'>
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-icon btn-sm btn-outline-success" 
+                                            data-bs-toggle="tooltip" 
+                                            title="Edit Supplier">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </button>
+                                    <div class="dropdown">
+                                        <button class="btn btn-icon btn-sm btn-outline-secondary" 
+                                                type="button" 
+                                                data-bs-toggle="dropdown" 
+                                                aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width: 150px;">
+                                            <li>
+                                                <a class="dropdown-item" href="#">
+                                                    <i class="fas fa-file-invoice me-2"></i>View Orders
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#">
+                                                    <i class="fas fa-envelope me-2"></i>Send Email
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#">
+                                                    <i class="fas fa-tags me-2"></i>Add Tags
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="#">
+                                                    <i class="fas fa-archive me-2"></i>Archive
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Add more supplier rows as needed -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                <div class="text-muted small">
+                    Showing <span class="fw-semibold">1</span> to <span class="fw-semibold">2</span> of <span class="fw-semibold">2</span> entries
+                </div>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Supplier Modal -->
+<div class="modal fade" id="viewSupplierModal" tabindex="-1" aria-labelledby="viewSupplierModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="viewSupplierModalLabel">Supplier Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <!-- Header with Supplier Info -->
+                <div class="bg-light p-4">
+                    <div class="d-flex flex-column flex-md-row align-items-center">
+                        <div class="me-md-4 mb-3 mb-md-0">
+                            <div class="avatar-xl bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-building fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 text-center text-md-start">
+                            <h3 class="mb-1" id="supplierName">Ghana Logistics Ltd</h3>
+                            <div class="d-flex flex-wrap justify-content-center justify-content-md-start align-items-center gap-2 mb-2">
+                                <span class="badge bg-primary bg-opacity-10 text-primary" id="supplierType">Logistics</span>
+                                <span class="badge bg-success bg-opacity-10 text-success" id="supplierStatus">
+                                    <i class="fas fa-check-circle me-1"></i> Active
+                                </span>
+                                <div class="d-flex align-items-center text-warning" id="supplierRating">
+                                    <i class="fas fa-star"></i>
+                                    <span class="ms-1 text-dark">4.7</span>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-0" id="supplierLocation">Accra, Ghana</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="border-bottom">
+                    <ul class="nav nav-tabs nav-tabs-custom" id="supplierTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
+                                <i class="fas fa-info-circle me-2"></i>Overview
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab">
+                                <i class="fas fa-address-book me-2"></i>Contact
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab">
+                                <i class="fas fa-history me-2"></i>Activity
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content p-4">
+                    <!-- Overview Tab -->
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                        <h5 class="mb-4">Company Information</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small mb-1">Business Type</label>
+                                    <p class="mb-0" id="overviewType">Logistics</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small mb-1">Established</label>
+                                    <p class="mb-0" id="overviewEstablished">2015</p>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small mb-1">Tax ID</label>
+                                    <p class="mb-0" id="overviewTaxId">C12345678</p>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-0">
+                                    <label class="form-label text-muted small mb-1">Notes</label>
+                                    <p class="mb-0" id="overviewNotes">Reliable logistics partner with nationwide coverage.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Tab -->
+                    <div class="tab-pane fade" id="contact" role="tabpanel">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small mb-1">Primary Contact</label>
+                                    <p class="mb-0" id="contactName">Kwame Mensah</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small mb-1">Email</label>
+                                    <p class="mb-0">
+                                        <a href="mailto:kwame@ghanalogistics.gh" id="contactEmail">kwame@ghanalogistics.gh</a>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small mb-1">Phone</label>
+                                    <p class="mb-0" id="contactPhone">+233 24 123 4567</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small mb-1">Website</label>
+                                    <p class="mb-0">
+                                        <a href="https://www.ghanalogistics.gh" target="_blank" id="contactWebsite">www.ghanalogistics.gh</a>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-0">
+                                    <label class="form-label text-muted small mb-1">Address</label>
+                                    <p class="mb-0" id="contactAddress">123 Business Ave, North Industrial Area<br>Accra, Greater Accra GA123<br>Ghana</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Tab -->
+                    <div class="tab-pane fade" id="activity" role="tabpanel">
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-badge bg-success"></div>
+                                <div class="timeline-content">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-1">Order #ORD-2023-1001</h6>
+                                        <small class="text-muted">2 days ago</small>
+                                    </div>
+                                    <p class="mb-1 small">Delivery completed successfully</p>
+                                    <span class="badge bg-success bg-opacity-10 text-success">Completed</span>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge bg-primary"></div>
+                                <div class="timeline-content">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-1">Order #ORD-2023-0998</h6>
+                                        <small class="text-muted">1 week ago</small>
+                                    </div>
+                                    <p class="mb-1 small">In transit - Expected delivery tomorrow</p>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary">In Transit</span>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge bg-warning"></div>
+                                <div class="timeline-content">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-1">Contract Renewal</h6>
+                                        <small class="text-muted">2 weeks ago</small>
+                                    </div>
+                                    <p class="mb-1 small">Annual service contract renewed for 2023-2024</p>
+                                    <span class="badge bg-warning bg-opacity-10 text-warning">Updated</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">
+                    <i class="fas fa-edit me-1"></i> Edit Supplier
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    // Form Wizard Functionality
+    function initializeFormWizard() {
+        let currentStep = 1;
+        const totalSteps = 3;
+        
+        // Next Step Button
+        $('.next-step').on('click', function() {
+            const nextStep = parseInt($(this).data('next'));
+            const currentStepEl = $(`#step-${currentStep}`);
+            const nextStepEl = $(`#step-${nextStep}`);
+            
+            // Validate current step before proceeding
+            if (validateStep(currentStep)) {
+                // Mark current step as completed
+                $(`.step[data-step="${currentStep}"]`).removeClass('active').addClass('completed');
+                
+                // Update progress bar
+                const progressPercentage = Math.min((nextStep / totalSteps) * 100, 100);
+                $('.progress-bar').css('width', `${progressPercentage}%`).attr('aria-valuenow', progressPercentage);
+                
+                // Show next step
+                currentStepEl.addClass('d-none');
+                nextStepEl.removeClass('d-none');
+                
+                // Update current step
+                currentStep = nextStep;
+                
+                // Update step indicator
+                $(`.step[data-step="${currentStep}"]`).addClass('active');
+            }
+        });
+        
+        // Previous Step Button
+        $('.prev-step').on('click', function() {
+            const prevStep = parseInt($(this).data('prev'));
+            const currentStepEl = $(`#step-${currentStep}`);
+            const prevStepEl = $(`#step-${prevStep}`);
+            
+            // Mark current step as not active
+            $(`.step[data-step="${currentStep}"]`).removeClass('active');
+            
+            // Update progress bar
+            const progressPercentage = Math.max(((prevStep - 1) / totalSteps) * 100, 0);
+            $('.progress-bar').css('width', `${progressPercentage}%`).attr('aria-valuenow', progressPercentage);
+            
+            // Show previous step
+            currentStepEl.addClass('d-none');
+            prevStepEl.removeClass('d-none');
+            
+            // Update current step
+            currentStep = prevStep;
+            
+            // Update step indicator
+            $(`.step[data-step="${currentStep}"]`).addClass('active');
+        });
+    }
+    
+    // Form Validation
+    function validateStep(step) {
+        let isValid = true;
+        
+        // Reset validation
+        $(`#step-${step} .is-invalid`).removeClass('is-invalid');
+        
+        // Step 1 Validation
+        if (step === 1) {
+            const companyName = $('#companyName').val().trim();
+            const email = $('#email').val().trim();
+            
+            if (!companyName) {
+                $('#companyName').addClass('is-invalid');
+                isValid = false;
+            }
+            
+            if (email && !isValidEmail(email)) {
+                $('#email').addClass('is-invalid');
+                isValid = false;
+            }
+        }
+        
+        // Step 2 Validation
+        if (step === 2) {
+            const primaryContact = $('#primaryContact').val().trim();
+            const phone = $('#phone').val().trim();
+            
+            if (!primaryContact) {
+                $('#primaryContact').addClass('is-invalid');
+                isValid = false;
+            }
+            
+            if (!phone) {
+                $('#phone').addClass('is-invalid');
+                isValid = false;
+            }
+        }
+        
+        // Step 3 Validation
+        if (step === 3) {
+            if (!$('#termsAgreement').is(':checked')) {
+                $('#termsAgreement').addClass('is-invalid');
+                isValid = false;
+            }
+        }
+        
+        return isValid;
+    }
+    
+    // Email validation helper
+    function isValidEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+    
+    // Initialize application when document is ready
+    $(document).ready(function() {
+        initializeTooltips();
+        initializeSelect2();
+        initializeFormWizard();
+        initializeDatePickers();
+        initializeFormValidation();
+        initializeDataTable();
+        setupRowClickHandlers();
+    });
+
+    /**
+     * Initialize Bootstrap tooltips
+     */
+    function initializeTooltips() {
+        const tooltipTriggerList = [].slice.call(
+            document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        );
+        
+        tooltipTriggerList.forEach(function(tooltipEl) {
+            new bootstrap.Tooltip(tooltipEl, {
+                animation: true,
+                delay: { show: 100, hide: 100 },
+                trigger: 'hover',
+                placement: 'top'
+            });
+        });
+    }
+
+    /**
+     * Initialize Select2 dropdowns
+     */
+    function initializeSelect2() {
+        $('.select2').select2({
+            theme: 'bootstrap',
+            width: '100%',
+            placeholder: 'Select an option',
+            allowClear: true,
+            dropdownParent: $('#addSupplierModal')
+        });
+    }
+
+    /**
+     * Initialize date range pickers
+     */
+    function initializeDatePickers() {
+        const datePickerConfig = {
+            singleDatePicker: true,
+            showDropdowns: true,
+            autoUpdateInput: false,
+            locale: {
+                format: 'YYYY-MM-DD',
+                cancelLabel: 'Clear',
+                applyLabel: 'Apply',
+                daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                monthNames: [
+                    'January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'
+                ],
+                firstDay: 1
+            },
+            opens: 'right',
+            drops: 'down'
+        };
+
+        $('.datepicker')
+            .daterangepicker(datePickerConfig)
+            .on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('YYYY-MM-DD'));
+            })
+            .on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
+    }
+
+    /**
+     * Initialize form validation
+     */
+    function initializeFormValidation() {
+        const form = document.getElementById('addSupplierForm');
+        if (!form) return;
+
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+                $('#supplierCity').text(supplierData.city || 'N/A');
+                $('#supplierRegion').text(supplierData.region || 'N/A');
+                $('#supplierCountry').text(supplierData.country || 'N/A');
+
+                if (supplierData.website) {
+                    const website = supplierData.website.startsWith('http') ? supplierData.website : `https://${supplierData.website}`;
+                    $('#supplierWebsite').attr('href', website).text(supplierData.website);
+                } else {
+                    $('#supplierWebsite').text('N/A').removeAttr('href');
+                }
+
+                $('#supplierTaxId').text(supplierData.taxId || 'N/A');
+                $('#supplierNotes').text(supplierData.notes || 'No additional notes');
+
+                // Show the modal
+                const viewModal = new bootstrap.Modal(document.getElementById('viewSupplierModal'));
+                viewModal.show();
+            }
+        });
+
+        // Handle delete confirmation
+        $('.delete-supplier').on('click', function(e) {
+            e.preventDefault();
+            const supplierName = $(this).data('name');
+
+            if (confirm(`Are you sure you want to delete ${supplierName}? This action cannot be undone.`)) {
+                // Submit the delete form
+                $(this).closest('form').submit();
+            }
+        });
+
+        // Form submission handler
+        (function() {
+            'use strict';
+
+            // Fetch the form element
+            const form = document.getElementById('addSupplierForm');
+            
+            // Add submit event listener
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Validate all steps before submission
+                let allValid = true;
+                for (let i = 1; i <= 3; i++) {
+                    if (!validateStep(i)) {
+                        allValid = false;
+                    }
+                }
+                
+                if (allValid) {
+                    // Show loading state
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    const originalBtnText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving...';
+                    
+                    // Simulate form submission (replace with actual AJAX call)
+                    setTimeout(function() {
+                        // Reset form
+                        form.reset();
+                        
+                        // Show success message
+                        const successAlert = `
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Supplier added successfully!
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `;
+                        
+                        // Insert success message before the form
+                        $(form).prepend(successAlert);
+                        
+                        // Reset button state
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                        
+                        // Close modal after 2 seconds
+                        setTimeout(function() {
+                            $('#addSupplierModal').modal('hide');
+                            $('.alert').alert('close');
+                            
+                            // Reset form wizard
+                            $('.step').removeClass('active completed');
+                            $('.step[data-step="1"]').addClass('active');
+                            $('.step-content').addClass('d-none');
+                            $('#step-1').removeClass('d-none');
+                            $('.progress-bar').css('width', '33%').attr('aria-valuenow', '33');
+                        }, 2000);
+                        
+                    }, 1500);
+                } else {
+                    // If not valid, go to the first step with errors
+                    for (let i = 1; i <= 3; i++) {
+                        if (!validateStep(i)) {
+                            // Update steps UI
+                            $('.step').removeClass('active');
+                            $(`.step[data-step="${i}"]`).addClass('active');
+                            
+                            // Show the step with errors
+                            $('.step-content').addClass('d-none');
+                            $(`#step-${i}`).removeClass('d-none');
+                            
+                            // Update progress bar
+                            const progressPercentage = Math.max(((i - 1) / 3) * 100, 0);
+                            $('.progress-bar').css('width', `${progressPercentage}%`).attr('aria-valuenow', progressPercentage);
+                            
+                            break;
+                        }
+                    }
+                }
+            });
+            
+            if (!form) return;
+
+            // Add event listener for form submission
+            form.addEventListener('submit', function(event) {
+                // Check if form is valid
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                // Add was-validated class to show validation messages
+                form.classList.add('was-validated');
+            }, false);
+
+            // Add custom validation for file input
+            const fileInput = document.getElementById('logo');
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    const fileSize = this.files[0]?.size / 1024 / 1024; // in MB
+                    const fileType = this.files[0]?.type;
+                    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                    
+                    if (fileSize > 2) {
+                        this.setCustomValidity('File size must be less than 2MB');
+                    } else if (!validImageTypes.includes(fileType)) {
+                        this.setCustomValidity('Only JPG, PNG & GIF files are allowed');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
+            }
+            
+            // Add custom validation for website URL
+            const websiteInput = document.getElementById('website');
+            if (websiteInput) {
+                websiteInput.addEventListener('input', function() {
+                    try {
+                        // Check if it's a valid URL
+                        new URL(this.value.startsWith('http') ? this.value : `https://${this.value}`);
+                        this.setCustomValidity('');
+                    } catch (e) {
+                        this.setCustomValidity('Please enter a valid website URL');
+                    }
+                });
+            }
+            
+            // Add custom validation for phone number
+            const phoneInput = document.getElementById('phone');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function() {
+                    const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,15}$/;
+                    if (this.value && !phoneRegex.test(this.value)) {
+                        this.setCustomValidity('Please enter a valid phone number');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
+            }
+            
+            // Add custom validation for year established
+            const yearEstablished = document.getElementById('yearEstablished');
+            if (yearEstablished) {
+                yearEstablished.addEventListener('change', function() {
+                    const currentYear = new Date().getFullYear();
+                    const year = parseInt(this.value);
+                    
+                    if (year && (year < 1900 || year > currentYear)) {
+                        this.setCustomValidity(`Year must be between 1900 and ${currentYear}`);
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
+            }
+        })();
+    });
+</script>
+@endpush
+<style>
+    :root {
+        --primary: #3b7ddd;
+        --primary-light: #6c8ebf;
+        --primary-dark: #2c6ecb;
+        --secondary: #6c757d;
+        --success: #1cc88a;
+        --info: #36b9cc;
+        --warning: #f6c23e;
+        --danger: #e74a3b;
+        --light: #f8f9fc;
+        --dark: #3a3b45;
+        --gray-100: #f8f9fc;
+        --gray-200: #eaecf4;
+        --gray-300: #dddfeb;
+        --gray-400: #d1d3e2;
+        --gray-500: #b7b9cc;
+        --gray-600: #858796;
+        --gray-700: #6e707e;
+        --gray-800: #5a5c69;
+        --gray-900: #3a3b45;
+        --border: #e3e6f0;
+        --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        --transition: all 0.2s ease-in-out;
+    }
+
+    /* Card Styles */
+    .supplier-card {
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        border-radius: 12px;
+        margin-bottom: 1.75rem;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        background: #fff;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .supplier-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    }
+
+    .supplier-header {
+        padding: 1.75rem 1.5rem 1.25rem;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        position: relative;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        overflow: hidden;
+    }
+
+    .supplier-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
+        pointer-events: none;
+    }
+
+    .supplier-rating {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .supplier-avatar {
+        display: flex;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        position: relative;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .supplier-card:hover .supplier-avatar {
+        transform: scale(1.05);
+    }
+
+    .supplier-avatar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.4) 0%,
+            rgba(255, 255, 255, 0.1) 100%
+        );
+        transform: rotate(45deg);
+        z-index: 1;
+    }
+
+    .supplier-stats {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 1.5rem;
+        background: var(--gray-100);
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .stat-item {
+        text-align: center;
+        flex: 1;
+    }
+
+    .stat-value {
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 0.25rem;
+        font-size: 1rem;
+        line-height: 1.2;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        color: var(--gray-700);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        line-height: 1.2;
+    }
+    
+    .contract-badge {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        font-size: 0.65rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .supplier-body {
+        padding: 1.5rem;
+        flex-grow: 1;
+    }
+    
+    .icon-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: var(--gray-100);
+        color: var(--primary);
+    }
+
+    .supplier-body::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    }
+
+    .supplier-info {
+        margin-bottom: 1rem;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        color: var(--gray-600);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        font-size: 0.9rem;
+        color: var(--gray-800);
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+    }
+
+    .performance-metric {
+        margin-bottom: 1.25rem;
+        position: relative;
+        padding-left: 1rem;
+    }
+
+    .performance-metric:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        bottom: -0.75rem;
+        left: 1rem;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent);
+    }
+
+    .performance-metric .progress {
+        height: 8px;
+        border-radius: 10px;
+        background-color: var(--gray-100);
+        overflow: visible;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .progress-bar {
+        border-radius: 10px;
+        position: relative;
+        overflow: visible;
+        transition: width 0.6s ease;
+        background-color: var(--primary);
+    }
+
+    .progress-bar::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        right: 0;
+        width: 1px;
+        height: 12px;
+        background: white;
+        border-radius: 2px;
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+
+    .metric-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .metric-name {
+        font-size: 0.8rem;
+        color: var(--gray-700);
+    }
+
+    .metric-value {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .contract-item {
+        background: var(--gray-100);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--gray-200);
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .contract-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05);
+    }
+
+    .contract-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(180deg, var(--primary), var(--primary-light));
+        border-radius: 4px 0 0 4px;
+    }
+    
+    .contract-item:hover {
+        background: #f0f4ff;
+        transform: translateX(4px);
+    }
+    
+    .contract-title i {
+        font-size: 1.1em;
+        color: var(--primary-color);
+    }
+    
+    .contract-dates {
+        font-size: 0.8rem;
+        color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .contract-dates i {
+        font-size: 0.9em;
+        color: var(--secondary-color);
+        opacity: 0.7;
+    }
+    
+    .supplier-actions {
+        padding: 1.25rem 1.5rem;
+        background: #f8fafd;
+        border-top: 1px solid rgba(0, 0, 0, 0.04);
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: auto;
+        border-bottom-left-radius: 12px;
+        border-bottom-right-radius: 12px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .supplier-actions::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent);
+    }
+    
+    .supplier-actions::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent);
+    }
+    
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        color: #5a5c69;
+        flex-shrink: 0;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .action-btn::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%, -50%);
+        transform-origin: 50% 50%;
+        border-color: var(--primary);
+    }
+    
+    .action-btn i {
+        font-size: 0.9em;
+        margin-right: 0.4rem;
+        transition: all 0.2s ease;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .action-btn:active {
+        transform: translateY(0);
+    }
+    
+    .action-btn.view {
+        color: var(--primary);
+    }
+    
+    .action-btn.view:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+    
+    .action-btn.edit:hover {
+        background: var(--warning);
+        color: var(--dark);
+        border-color: var(--warning);
+    }
+    
+    .action-btn.delete:hover {
+        background: var(--danger);
+        color: white;
+        border-color: var(--danger);
+    }
+    
+    .action-btn.view:hover {
+        background: rgba(78, 115, 223, 0.15);
+        color: var(--primary-dark);
+    }
+    
+    .action-btn.edit {
+        background: rgba(108, 117, 125, 0.1);
+        color: var(--secondary-color);
+    }
+    
+    .action-btn.edit:hover {
+        background: rgba(108, 117, 125, 0.15);
+        color: #495057;
+    }
+    
+    .action-btn.po {
+        background: rgba(28, 200, 138, 0.1);
+        color: var(--success-color);
+    }
+    
+    .action-btn.po:hover {
+        background: rgba(28, 200, 138, 0.15);
+        color: #169b6b;
+    }
+    
+    .action-btn.contact {
+        background: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+    }
+    
+    .action-btn.contact:hover {
+        background: rgba(13, 110, 253, 0.15);
+        color: #0a58ca;
+    }
+    
+    /* Search and filter styles */
+    .search-box {
+        position: relative;
+        transition: var(--transition);
+    }
+    
+    .search-box:focus-within {
+        transform: translateY(-1px);
+    }
+    
+    .search-box .form-control {
+        padding: 0.5rem 1rem 0.5rem 2.75rem;
+        border: 1px solid var(--border);
+        border-radius: 0.375rem;
+        font-size: 0.9rem;
+        transition: var(--transition);
+        height: 2.5rem;
+    }
+    
+    .search-box .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 1.1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a1a5b7;
+        z-index: 5;
+        transition: all 0.2s ease;
+    }
+    
+    .search-box:focus-within .search-icon {
+        color: var(--primary-color);
+    }
+    
+    .form-select {
+        height: 2.5rem;
+        padding: 0.5rem 2.25rem 0.5rem 1rem;
+        font-size: 0.9rem;
+        border: 1px solid var(--border);
+        border-radius: 0.375rem;
+        background-color: #fff;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236c757d' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+    
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+    }
+    
+    .btn-outline-secondary {
+        color: #6c757d;
+        border-color: #e2e5ec;
+        height: calc(2.5rem + 2px);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #f8f9fa;
+        border-color: #d7dae0;
+        color: #5a5f6e;
+    }
+    
+    .btn-outline-secondary i {
+        margin-right: 0.4rem;
+    }
+    
+    /* Custom badges */
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em;
+    }
+    
+    /* Ripple effect */
+
+    
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+</style>
+<!-- Add Supplier Modal -->
+<div class="modal fade" id="addSupplierModal" tabindex="-1" aria-labelledby="addSupplierModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus-circle me-2"></i>Add New Supplier
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress rounded-0" style="height: 4px;">
+                <div class="progress-bar" role="progressbar" style="width: 33%" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            
+            <form id="addSupplierForm" class="needs-validation" novalidate>
+                <div class="modal-body p-4">
+                    <!-- Step 1: Company Information -->
+                    <div class="step-content" id="step-1">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-soft-primary rounded-circle p-2 me-3">
+                                <i class="fas fa-building text-primary"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Company Information</h6>
+                                <p class="text-muted small mb-0">Basic details about the supplier's company</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="companyName" class="form-label">Company/Enterprise Name <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-building text-muted"></i></span>
+                                    <input type="text" class="form-control" id="companyName" placeholder="e.g., ABC Suppliers Limited" required>
+                                </div>
+                                <div class="invalid-feedback">Please enter company/enterprise name</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="companyType" class="form-label">Business Type <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-tag text-muted"></i></span>
+                                    <select class="form-select" id="companyType" required>
+                                        <option value="">Select Business Type</option>
+                                        <option value="sole_proprietor">Sole Proprietorship</option>
+                                        <option value="partnership">Partnership</option>
+                                        <option value="ltd">Private Limited Company (Ltd)</option>
+                                        <option value="plc">Public Limited Company (PLC)</option>
+                                        <option value="ngo">NGO/Foundation</option>
+                                        <option value="cooperative">Cooperative Society</option>
+                                        <option value="government">Government Entity</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="invalid-feedback">Please select a business type</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="tin" class="form-label">Tax Identification Number (TIN) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-id-card text-muted"></i></span>
+                                    <input type="text" class="form-control" id="tin" placeholder="C0000000000" pattern="[A-Z]\d{10}" required>
+                                </div>
+                                <small class="form-text text-muted">Format: C followed by 10 digits</small>
+                                <div class="invalid-feedback">Please enter a valid TIN (e.g., C0001234567)</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="vatNumber" class="form-label">VAT Registration Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-file-invoice-dollar text-muted"></i></span>
+                                    <input type="text" class="form-control" id="vatNumber" placeholder="e.g., 123456789101">
+                                </div>
+                                <small class="form-text text-muted">12-digit VAT number (if registered)</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="ssnitNumber" class="form-label">SSNIT Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-user-shield text-muted"></i></span>
+                                    <input type="text" class="form-control" id="ssnitNumber" placeholder="e.g., C0000000000">
+                                </div>
+                                <small class="form-text text-muted">For employee contributions</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="yearEstablished" class="form-label">Year Established</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-calendar-alt text-muted"></i></span>
+                                    <input type="number" class="form-control" id="yearEstablished" min="1957" max="2099" step="1" value="2023">
+                                </div>
+                                <small class="form-text text-muted">Year of business registration in Ghana</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="registrationNumber" class="form-label">Registrar General's Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-file-contract text-muted"></i></span>
+                                    <input type="text" class="form-control" id="registrationNumber" placeholder="e.g., BN123456789">
+                                </div>
+                                <small class="form-text text-muted">From Registrar General's Department</small>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="companyDescription" class="form-label">Nature of Business</label>
+                                <textarea class="form-control" id="companyDescription" rows="2" placeholder="Detailed description of business activities (e.g., Import/Export, Manufacturing, Retail, Services)"></textarea>
+                                <small class="form-text text-muted">Please describe your main business activities in Ghana</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="businessSector" class="form-label">Business Sector <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-industry text-muted"></i></span>
+                                    <select class="form-select" id="businessSector" required>
+                                        <option value="">Select Business Sector</option>
+                                        <option value="agriculture">Agriculture & Agro-processing</option>
+                                        <option value="mining">Mining & Quarrying</option>
+                                        <option value="manufacturing">Manufacturing</option>
+                                        <option value="utilities">Utilities (Water, Electricity, Gas)</option>
+                                        <option value="construction">Construction</option>
+                                        <option value="trade">Trade (Wholesale & Retail)</option>
+                                        <option value="hospitality">Hospitality & Tourism</option>
+                                        <option value="transport">Transport & Storage</option>
+                                        <option value="finance">Financial Services</option>
+                                        <option value="real_estate">Real Estate</option>
+                                        <option value="professional">Professional Services</option>
+                                        <option value="education">Education</option>
+                                        <option value="health">Health & Social Work</option>
+                                        <option value="other">Other Services</option>
+                                    </select>
+                                </div>
+                                <div class="invalid-feedback">Please select a business sector</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="companySize" class="form-label">Company Size <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-users text-muted"></i></span>
+                                    <select class="form-select" id="companySize" required>
+                                        <option value="">Select Company Size</option>
+                                        <option value="micro">Micro Enterprise (1-5 employees)</option>
+                                        <option value="small">Small Enterprise (6-29 employees)</option>
+                                        <option value="medium">Medium Enterprise (30-99 employees)</option>
+                                        <option value="large">Large Enterprise (100+ employees)</option>
+                                    </select>
+                                </div>
+                                <div class="invalid-feedback">Please select company size</div>
+                            </div>
+                        </div>
+                    </div>
+                        
+                    <!-- Step 2: Contact Information -->
+                    <div class="step-content d-none" id="step-2">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-soft-primary rounded-circle p-2 me-3">
+                                <i class="fas fa-address-book text-primary"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Contact Information</h6>
+                                <p class="text-muted small mb-0">Primary contact details for this supplier</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="primaryContact" class="form-label">Primary Contact Person <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-user text-muted"></i></span>
+                                    <input type="text" class="form-control" id="primaryContact" placeholder="Full name (as on ID)" required>
+                                </div>
+                                <div class="invalid-feedback">Please enter the full name of primary contact person</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="contactPosition" class="form-label">Position in Company <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-id-badge text-muted"></i></span>
+                                    <select class="form-select" id="contactPosition" required>
+                                        <option value="">Select Position</option>
+                                        <option value="ceo">CEO/Managing Director</option>
+                                        <option value="director">Director</option>
+                                        <option value="manager">Manager</option>
+                                        <option value="officer">Administrative Officer</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="invalid-feedback">Please select a position</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="jobTitle" class="form-label">Job Title</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-briefcase text-muted"></i></span>
+                                    <input type="text" class="form-control" id="jobTitle" placeholder="e.g., Sales Manager">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Business Email <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-envelope text-muted"></i></span>
+                                    <input type="email" class="form-control" id="email" placeholder="contact@company.com.gh" required>
+                                </div>
+                                <div class="invalid-feedback">Please enter a valid business email address</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Mobile Number <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">+233</span>
+                                    <input type="tel" class="form-control" id="phone" placeholder="24 123 4567" pattern="[0-9]{9}" required>
+                                </div>
+                                <small class="form-text text-muted">Format: 24/20/26/54/55/59 followed by 7 digits</small>
+                                <div class="invalid-feedback">Please enter a valid Ghanaian mobile number (e.g., 24 123 4567)</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="whatsappNumber" class="form-label">WhatsApp Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fab fa-whatsapp text-muted"></i></span>
+                                    <input type="tel" class="form-control" id="whatsappNumber" placeholder="24 123 4567" pattern="[0-9]{9}">
+                                </div>
+                                <small class="form-text text-muted">If different from mobile number</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="landline" class="form-label">Landline (Office)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-phone-alt text-muted"></i></span>
+                                    <input type="tel" class="form-control" id="landline" placeholder="0302 123456">
+                                </div>
+                                <small class="form-text text-muted">Include area code (e.g., 0302 for Accra)</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="website" class="form-label">Company Website</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-globe text-muted"></i></span>
+                                    <input type="url" class="form-control" id="website" placeholder="https://">
+                                </div>
+                                <small class="form-text text-muted">e.g., https://www.yourcompany.com.gh</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="socialMedia" class="form-label">Social Media</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-hashtag text-muted"></i></span>
+                                    <input type="text" class="form-control" id="socialMedia" placeholder="Facebook/Twitter/LinkedIn">
+                                </div>
+                                <small class="form-text text-muted">Social media handles (e.g., @yourcompany_gh)</small>
+                            </div>
+                            
+                            <!-- Ghana-Specific Business Information -->
+                            <div class="col-12 mt-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-soft-primary rounded-circle p-2 me-3">
+                                        <i class="fas fa-building-flag text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Ghana Business Details</h6>
+                                        <p class="text-muted small mb-0">Additional information for Ghanaian businesses</p>
+                                    </div>
+                                </div>
+                                <hr class="mt-2">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="gipcRegistration" class="form-label">GIPC Registration Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-file-signature text-muted"></i></span>
+                                    <input type="text" class="form-control" id="gipcRegistration" placeholder="e.g., GIPC/12345/2023">
+                                </div>
+                                <small class="form-text text-muted">If registered with Ghana Investment Promotion Centre</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="fdiaStatus" class="form-label">FDIA Status</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-passport text-muted"></i></span>
+                                    <select class="form-select" id="fdiaStatus">
+                                        <option value="">Select Status</option>
+                                        <option value="none">Not Applicable</option>
+                                        <option value="partial">Partially Foreign Owned</option>
+                                        <option value="wholly">Wholly Foreign Owned</option>
+                                        <option value="joint">Joint Venture</option>
+                                    </select>
+                                </div>
+                                <small class="form-text text-muted">Foreign Direct Investment Act status</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="ghanapostAddress" class="form-label">Ghana Post Digital Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-map-marked text-muted"></i></span>
+                                    <input type="text" class="form-control" id="ghanapostAddress" placeholder="e.g., GA-123-4567">
+                                </div>
+                                <small class="form-text text-muted">Official Ghana Post GPS address</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="localCouncil" class="form-label">Metro/Municipal/District Assembly</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-landmark text-muted"></i></span>
+                                    <input type="text" class="form-control" id="localCouncil" placeholder="e.g., Accra Metropolitan Assembly">
+                                </div>
+                                <small class="form-text text-muted">Local government authority</small>
+                            </div>
+                            
+                            <div class="col-12 mt-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-soft-primary rounded-circle p-2 me-3">
+                                        <i class="fas fa-map-marker-alt text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Address Information</h6>
+                                        <p class="text-muted small mb-0">Physical location of the company</p>
+                                    </div>
+                                </div>
+                                <hr class="mt-2">
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="streetAddress" class="form-label">Street Address/Landmark <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-map-marked-alt text-muted"></i></span>
+                                    <input type="text" class="form-control" id="streetAddress" placeholder="e.g., 123 Osu Ako-Adjei Road" required>
+                                </div>
+                                <small class="form-text text-muted">Include street name and number, or well-known landmark</small>
+                                <div class="invalid-feedback">Please enter the street address or landmark</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="area" class="form-label">Area/Suburb <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-map-marker-alt text-muted"></i></span>
+                                    <input type="text" class="form-control" id="area" placeholder="e.g., Osu" required>
+                                </div>
+                                <div class="invalid-feedback">Please enter the area or suburb</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="city" class="form-label">City/Town <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-city text-muted"></i></span>
+                                    <select class="form-select" id="city" required>
+                                        <option value="">Select City/Town</option>
+                                        <option value="accra">Accra</option>
+                                        <option value="kumasi">Kumasi</option>
+                                        <option value="tema">Tema</option>
+                                        <option value="tamale">Tamale</option>
+                                        <option value="sekondi-takoradi">Sekondi-Takoradi</option>
+                                        <option value="cape-coast">Cape Coast</option>
+                                        <option value="sunyani">Sunyani</option>
+                                        <option value="ho">Ho</option>
+                                        <option value="wa">Wa</option>
+                                        <option value="bolgatanga">Bolgatanga</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="invalid-feedback">Please select a city or town</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="region" class="form-label">Region <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-map text-muted"></i></span>
+                                    <select class="form-select" id="region" required>
+                                        <option value="">Select Region</option>
+                                        <option value="greater_accra">Greater Accra</option>
+                                        <option value="ashanti">Ashanti</option>
+                                        <option value="eastern">Eastern</option>
+                                        <option value="central">Central</option>
+                                        <option value="western">Western</option>
+                                        <option value="western_north">Western North</option>
+                                        <option value="volta">Volta</option>
+                                        <option value="oti">Oti</option>
+                                        <option value="northern">Northern</option>
+                                        <option value="savannah">Savannah</option>
+                                        <option value="north_east">North East</option>
+                                        <option value="upper_east">Upper East</option>
+                                        <option value="upper_west">Upper West</option>
+                                        <option value="bono">Bono</option>
+                                        <option value="bono_east">Bono East</option>
+                                        <option value="ahafo">Ahafo</option>
+                                    </select>
+                                </div>
+                                <div class="invalid-feedback">Please select a region</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="gpsAddress" class="form-label">GPS Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-map-pin text-muted"></i></span>
+                                    <input type="text" class="form-control" id="gpsAddress" placeholder="e.g., GA-123-4567">
+                                </div>
+                                <small class="form-text text-muted">Optional: Ghana Post GPS address</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="postalCode" class="form-label">Postal Code</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-mail-bulk text-muted"></i></span>
+                                    <input type="text" class="form-control" id="postalCode" placeholder="e.g., GA123">
+                                </div>
+                                <small class="form-text text-muted">Ghana Post GPS code (if available)</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Additional Information -->
+                    <div class="step-content d-none" id="step-3">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-soft-primary rounded-circle p-2 me-3">
+                                <i class="fas fa-info-circle text-primary"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Additional Information</h6>
+                                <p class="text-muted small mb-0">Payment terms and other details</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="paymentTerms" class="form-label">Payment Terms</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-file-invoice-dollar text-muted"></i></span>
+                                    <select class="form-select" id="paymentTerms" required>
+                                        <option value="">Select Payment Terms</option>
+                                        <option value="net15">Net 15 Days</option>
+                                        <option value="net30" selected>Net 30 Days</option>
+                                        <option value="net60">Net 60 Days</option>
+                                        <option value="cod">Cash on Delivery</option>
+                                    </select>
+                                </div>
+                                <div class="invalid-feedback">Please select payment terms</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="currency" class="form-label">Preferred Currency</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-money-bill-wave text-muted"></i></span>
+                                    <select class="form-select" id="currency" required>
+                                        <option value="GHS" selected>Ghana Cedi (GHS)</option>
+                                        <option value="USD">US Dollar (USD)</option>
+                                        <option value="EUR">Euro (EUR)</option>
+                                        <option value="GBP">British Pound (GBP)</option>
+                                    </select>
+                                </div>
+                                <div class="invalid-feedback">Please select a currency</div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="notes" class="form-label">Additional Notes</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light align-items-start pt-2"><i class="fas fa-sticky-note text-muted"></i></span>
+                                    <textarea class="form-control" id="notes" rows="3" placeholder="Any additional information about this supplier"></textarea>
+                                </div>
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-1"></i> Save Supplier
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- Progress Bar -->
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: 33%" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        // Initialize tooltips with custom animation
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                animation: true,
+                trigger: 'hover',
+                placement: 'top',
+                delay: { "show": 100, "hide": 50 }
+            });
+        });
+
+        // Initialize date range picker
+        $('input[name="dateRange"]').daterangepicker({
+            opens: 'left',
+            locale: {
+                format: 'DD/MM/YYYY',
+                separator: ' - ',
+                applyLabel: 'Apply',
+                cancelLabel: 'Cancel',
+                fromLabel: 'From',
+                toLabel: 'To',
+                customRangeLabel: 'Custom',
+                weekLabel: 'W',
+                daysOfWeek: [
+                    'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'
+                ],
+                monthNames: [
+                    'January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'
+                ],
+                firstDay: 1
+            },
+            startDate: moment().subtract(29, 'days'),
+            endDate: moment(),
+            ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        });
+        
+        // Handle view supplier modal - using event delegation for dynamic content
+        $(document).on('click', '.view-supplier', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            try {
+                const supplierData = JSON.parse($(this).data('supplier').replace(/&quot;/g, '"'));
+                
+                // Update modal content with supplier data
+                $('#viewSupplierModalLabel').text(supplierData.name || 'Supplier Details');
+                $('#supplierName').text(supplierData.name || 'N/A');
+                $('#supplierType').text(supplierData.type || 'N/A');
+                
+                // Update status badge
+                const statusBadge = supplierData.status === 'Active' ? 
+                    '<span class="badge bg-success">Active</span>' : 
+                    '<span class="badge bg-secondary">Inactive</span>';
+                $('#supplierStatus').html(statusBadge);
+                
+                // Update contact info
+                $('#supplierEmail').html(`
+                    <i class="fas fa-envelope me-2"></i>${supplierData.email || 'N/A'}
+                `);
+                
+                $('#supplierPhone').html(`
+                    <i class="fas fa-phone-alt me-2"></i>${supplierData.phone || 'N/A'}
+                `);
+                
+                // Format address
+                const addressParts = [
+                    supplierData.address,
+                    supplierData.city,
+                    supplierData.region,
+                    supplierData.country
+                ].filter(Boolean);
+                
+                $('#supplierAddress').html(`
+                    <i class="fas fa-map-marker-alt me-2"></i>
+                    ${addressParts.join(', ') || 'N/A'}
+                `);
+                
+                // Format website with link
+                if (supplierData.website) {
+                    const websiteUrl = supplierData.website.startsWith('http') ? 
+                        supplierData.website : 
+                        `https://${supplierData.website}`;
+                    $('#supplierWebsite').html(`
+                        <i class="fas fa-globe me-2"></i>
+                        <a href="${websiteUrl}" target="_blank" class="text-primary text-decoration-none">
+                            ${supplierData.website}
+                        </a>
+                    `);
+                } else {
+                    $('#supplierWebsite').html('<i class="fas fa-globe me-2"></i>N/A');
+                }
+                
+                // Update additional info
+                $('#supplierTaxId').text(supplierData.taxId || 'N/A');
+                $('#supplierNotes').text(supplierData.notes || 'No additional notes available.');
+                
+                // Show the modal
+                const viewModal = new bootstrap.Modal(document.getElementById('viewSupplierModal'));
+                viewModal.show();
+                
+            } catch (error) {
+                console.error('Error loading supplier details:', error);
+                // Show error toast
+                const toastEl = document.getElementById('errorToast');
+                if (toastEl) {
+                    const toast = new bootstrap.Toast(toastEl);
+                    const toastBody = toastEl.querySelector('.toast-body');
+                    if (toastBody) {
+                        toastBody.textContent = 'Error loading supplier details. Please try again.';
+                    }
+                    toast.show();
+                }
+            }
+        });
+        
+        // Initialize Select2 for multi-select dropdowns
+        $('.select2').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: 'Select categories',
+            allowClear: true,
+            dropdownParent: $('#addSupplierModal'),
+            closeOnSelect: false
+        });
+        
+        // Form validation
+        (function () {
+            'use strict';
+            
+            // Fetch the form element
+            const form = document.getElementById('addSupplierForm');
+            
+            // Validate on submit
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                } else {
+                    handleFormSubmit(event);
+                }
+                
+                form.classList.add('was-validated');
+            }, false);
+            
+            // Handle form submission
+            function handleFormSubmit(event) {
+                event.preventDefault();
+                
+                const submitBtn = $('#saveSupplierBtn');
+                const originalBtnText = submitBtn.html();
+                
+                // Show loading state
+                submitBtn.prop('disabled', true).html(
+                    '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving...'
+                );
+                
+                // Get form data
+                const formData = {
+                    company: {
+                        name: $('#companyName').val(),
+                        type: $('#companyType').val(),
+                        taxId: $('#taxId').val(),
+                        yearEstablished: $('#yearEstablished').val()
+                    },
+                    contact: {
+                        name: $('#primaryContact').val(),
+                        jobTitle: $('#jobTitle').val(),
+                        email: $('#email').val(),
+                        phone: $('#phone').val()
+                    }
+                };
+                
+                // Simulate API call (replace with actual API call)
+                setTimeout(function() {
+                    console.log('Form submitted:', formData);
+                    
+                    // Show success message
+                    const successAlert = `
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Success!</strong> Supplier has been added successfully.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
+                    
+                    // Add alert before the form
+                    $('#addSupplierForm').prepend(successAlert);
+                    
+                    // Reset form and button state after delay
+                    setTimeout(function() {
+                        form.reset();
+                        form.classList.remove('was-validated');
+                        submitBtn.html(originalBtnText).prop('disabled', false);
+                        
+                        // Close modal after successful submission
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('addSupplierModal'));
+                        modal.hide();
+                        
+                        // Show toast notification
+                        const toastEl = document.getElementById('successToast');
+                        const toast = new bootstrap.Toast(toastEl);
+                        toast.show();
+                        
+                        // Reload page after a short delay
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1500);
+                        
+                    }, 2000);
+                    
+                }, 1500);
+            }
+            
+            // Add ripple effect to buttons
+            $(document).on('click', '.btn', function(e) {
+                const $btn = $(this);
+                const btnOffset = $btn.offset();
+                const x = e.pageX - btnOffset.left;
+                const y = e.pageY - btnOffset.top;
+                
+                const $ripple = $('<span class="ripple"></span>');
+                $ripple.css({
+                    left: x + 'px',
+                    top: y + 'px'
+                });
+                
+                $btn.append($ripple);
+                
+                setTimeout(function() {
+                    $ripple.remove();
+                }, 600);
+            });
+            
+            // Year validation
+            $('#yearEstablished').on('change', function() {
+                const currentYear = new Date().getFullYear();
+                const year = parseInt($(this).val());
+                
+                if (year < 1900 || year > currentYear) {
+                    $(this).addClass('is-invalid');
+                    $(this).next('.invalid-feedback').text('Please enter a valid year between 1900 and ' + currentYear);
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+        })();
+        
+    /**
+     * Initialize DataTable with configuration
+     */
+    function initializeDataTable() {
+        const dataTable = $('.datatable').DataTable({
+            responsive: true,
+            pageLength: 10,
+            lengthMenu: [
+                [5, 10, 25, 50, -1],
+                [5, 10, 25, 50, 'All']
+            ],
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search...",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                infoEmpty: "No entries found",
+                infoFiltered: "(filtered from _MAX_ total entries)",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            },
+            dom: `
+                <'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>
+                <'row'<'col-sm-12'tr>>
+                <'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>
+            `,
+            drawCallback: function() {
+                $('.dataTables_paginate > .pagination')
+                    .addClass('pagination-rounded');
+            }
+        });
+
+        return dataTable;
+    }
+
+    /**
+     * Set up row click handlers with ripple effect
+     */
+    function setupRowClickHandlers() {
+        $('table tbody').on('click', 'tr', function(e) {
+            // Don't trigger if clicking on action buttons or checkboxes
+            if ($(e.target).closest('.btn, .form-check-input').length) {
+                return;
+            }
+            
+            const $row = $(this);
+            const $ripple = $('<span class="ripple"></span>');
+            const pos = $row.offset();
+            
+            // Position ripple at click location
+            $ripple.css({
+                left: (e.pageX - pos.left) + 'px',
+                top: (e.pageY - pos.top) + 'px'
+            }).appendTo($row);
+            
+            // Clean up ripple after animation
+            setTimeout(() => {
+                $ripple.animate({ opacity: 0 }, 500, function() {
+                    $(this).remove();
+                });
+            }, 600);
+            
+            // Handle row click (e.g., navigate to details)
+            const supplierId = $row.data('supplier-id');
+            if (supplierId) {
+                console.log('Viewing supplier:', supplierId);
+                // window.location.href = `/suppliers/${supplierId}`;
+            }
+        });
+    }
+</script>
+@endpush

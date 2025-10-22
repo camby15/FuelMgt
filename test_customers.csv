@@ -1,0 +1,4 @@
+MSISDN,Customer Name,Email,Contact Number,Connection Type,Location,GPS Address,Latitude,Longitude,Status,Business Unit
+541234567,John Doe,john.doe@example.com,541234567,Traditional,Adenta - Accra,GA-767,5.6037,-0.1870,Active,GESL
+541234568,Jane Smith,jane.smith@example.com,541234568,Quick ODN,East Legon - Accra,GA-123,5.6040,-0.1860,Pending,LINFRA
+541234569,Bob Johnson,bob.johnson@example.com,541234569,Traditional,Madina - Accra,GA-456,5.6045,-0.1850,Active,GESL

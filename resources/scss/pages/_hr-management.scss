@@ -1,0 +1,338 @@
+// HR Management Module Styles
+
+// Main content layout
+.content-page {
+  margin-left: 0;
+  margin-top: 70px;
+  min-height: calc(100vh - 70px);
+  transition: all 0.3s ease;
+  
+  @media (min-width: 1200px) {
+    margin-left: 250px;
+  }
+}
+
+// Page title
+.page-title-box {
+  padding: 20px 0;
+  
+  .page-title {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #2d3748;
+  }
+  
+  .breadcrumb {
+    background-color: transparent;
+    padding: 0.5rem 0;
+    margin-bottom: 0;
+    
+    .breadcrumb-item {
+      a {
+        color: #6c757d;
+        text-decoration: none;
+        
+        &:hover {
+          color: #4a5568;
+        }
+      }
+      
+      &.active {
+        color: #4a5568;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// Cards
+.card {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1rem 1.5rem;
+    
+    h6 {
+      margin: 0;
+      font-weight: 600;
+    }
+    
+    .text-muted {
+      font-size: 0.8rem;
+    }
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  .card-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1rem 1.5rem;
+  }
+}
+
+// Navigation Tabs
+.nav-tabs {
+  border-bottom: 1px solid #dee2e6;
+  
+  .nav-link {
+    color: #6c757d;
+    font-weight: 500;
+    border: none;
+    padding: 12px 24px;
+    margin-right: 5px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    
+    &:hover:not(.active) {
+      background-color: rgba(108, 117, 125, 0.1);
+    }
+    
+    &.active {
+      color: #033c42;
+      background-color: rgba(3, 60, 66, 0.1);
+      border-bottom: 3px solid #033c42;
+    }
+    
+    i {
+      margin-right: 8px;
+    }
+  }
+}
+
+.tab-content {
+  padding: 20px 0;
+}
+
+// Buttons
+.btn {
+  font-weight: 500;
+  padding: 0.5rem 1.25rem;
+  
+  i {
+    margin-right: 8px;
+  }
+  
+  &.btn-primary {
+    background-color: #033c42;
+    border-color: #033c42;
+    
+    &:hover, &:focus {
+      background-color: darken(#033c42, 5%);
+      border-color: darken(#033c42, 5%);
+    }
+  }
+}
+
+// Tables
+.table {
+  th {
+    font-weight: 600;
+    color: #4a5568;
+    border-top: none;
+    border-bottom: 1px solid #e2e8f0;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+  }
+  
+  td {
+    vertical-align: middle;
+    border-color: #edf2f7;
+  }
+  
+  .badge {
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+  }
+}
+
+// Form Controls
+.form-control, .form-select {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  
+  &:focus {
+    border-color: #033c42;
+    box-shadow: 0 0 0 0.2rem rgba(3, 60, 66, 0.25);
+  }
+}
+
+// Leave Management Calendar
+#leaveManagementCalendar {
+  margin-top: 1.5rem;
+  
+  .card {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  
+  .calendar-container {
+    background: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  }
+  
+  .calendar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #edf2f7;
+    
+    h5 {
+      margin: 0;
+      font-weight: 600;
+    }
+    
+    .btn-group {
+      .btn {
+        padding: 0.5rem 1rem;
+        
+        i {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+  
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background-color: #f8f9fa;
+    padding: 0.75rem 0;
+    text-align: center;
+    font-weight: 600;
+    color: #4a5568;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+  }
+  
+  .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background-color: #edf2f7;
+  }
+  
+  .calendar-day {
+    aspect-ratio: 1;
+    padding: 0.5rem;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100px;
+    
+    &.other-month {
+      background-color: #f8f9fa;
+      color: #a0aec0;
+    }
+    
+    &.today {
+      background-color: #f0f9ff;
+      
+      .day-number {
+        background-color: #0369a1;
+        color: #fff;
+      }
+    }
+    
+    .day-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .events {
+      flex: 1;
+      overflow-y: auto;
+      
+      .event {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        margin-bottom: 0.25rem;
+        border-radius: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        
+        &.event-annual {
+          background-color: rgba(78, 115, 223, 0.1);
+          color: #4e73df;
+        }
+        
+        &.event-sick {
+          background-color: rgba(28, 200, 138, 0.1);
+          color: #1cc88a;
+        }
+        
+        &.event-maternity {
+          background-color: rgba(54, 185, 204, 0.1);
+          color: #36b9cc;
+        }
+        
+        &.event-paternity {
+          background-color: rgba(254, 192, 15, 0.1);
+          color: #f6c23e;
+        }
+        
+        &.event-unpaid {
+          background-color: rgba(231, 74, 59, 0.1);
+          color: #e74a3b;
+        }
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 767.98px) {
+  .nav-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    padding-bottom: 1px;
+    
+    .nav-link {
+      padding: 12px 16px;
+    }
+  }
+  
+  .card {
+    .card-header, .card-body, .card-footer {
+      padding: 1rem;
+    }
+  }
+  
+  .table-responsive {
+    border: none;
+  }
+}
+
+// Print styles
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .card {
+    border: none;
+    box-shadow: none;
+    
+    .card-header {
+      background-color: transparent !important;
+      border-bottom: 1px solid #dee2e6;
+    }
+  }
+}
