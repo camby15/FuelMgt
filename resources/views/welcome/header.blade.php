@@ -1,18 +1,18 @@
 <div class="slider-container">
     <div class="slider">
-        <div class="slide" style="background-image: url('images/Banner-1\ 1.png')">
+        <div class="slide" style="background-image: url('images/Station-3.jpg')">
             <div class="content">
                 <h1>
                     Boost Your
-                    <span class="text-out">Business with Stak</span>
+                    <span class="text-out">Power your Station with StationMgt</span>
                 </h1>
                 <p>
-                    A cloud-based enterprise resource planning platform designed to let you manage and boost you
-                    business.
+                    A comprehensive fuel management solution designed to optimize your station's operations,
+                    track inventory, and maximize profitability.
                 </p>
             </div>
         </div>
-        <div class="slide" style="background-image: url('images/v617batch2-bb-02-technology.png')">
+        <div class="slide" style="background-image: url('images/tankfarm.jpg')">
             <div class="content">
                 <h1>
                     Best ERP Platform To
@@ -24,7 +24,7 @@
                 </p>
             </div>
         </div>
-        <div class="slide" style="background-image: url('images/7076118\ copy.png')">
+        <div class="slide" style="background-image: url('images/Oil-2.jpg')">
             <div class="content">
                 <h1>
                     Empower teams
@@ -61,8 +61,8 @@
 }
 
 .fixed-get-started .btn {
-    background-color: #069a9a;
-    color: rgb(255, 255, 255);
+    background-color: #f0f2f4e7;
+    color: rgba(10, 2, 2, 1);
     border: none;
     padding: 15px 35px;
     cursor: pointer;

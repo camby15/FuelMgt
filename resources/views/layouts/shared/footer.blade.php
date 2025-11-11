@@ -8,7 +8,7 @@
                     <script>
                         document.write(new Date().getFullYear());
                     </script>
-                    STAK CLOUD - Powered by<img src="{{ asset('images/colored.png') }}" alt="ShrinQ" height="100" width="150" style="margin-left: -25px;">
+                    STATION MGT - Powered by <img src="{{ asset('images/PangaTranparent.png') }}" alt="ShrinQ" height="80" width="120" style="margin-left: -15px;">
                 </div>
                 <div class="text-center footer-links mt-2">
                     <a href="javascript: void(0);">About</a>

@@ -3,9 +3,9 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="author" content="ShrinQ" />
+        <meta name="author" content="Panga" />
         <meta name="description" content="Login Form" />
-        <link rel="icon" href="{{ asset('images/logo 1.png') }}" />
+        <link rel="icon" href="{{ asset('images/logoMgt-1.PNG') }}" />
         <link rel="stylesheet" href="{{ asset('style/auth-2.css') }}" />
         <link rel="stylesheet" href="{{ asset('style/mediaQuery.css') }}" />
 
@@ -14,7 +14,7 @@
         <!-- SweetAlert2 CDN -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <title>Stak | Login</title>
+        <title>StationMgt | Login</title>
     </head>
     <body id="company-body">
         <div class="picture-roll">
@@ -22,7 +22,7 @@
         </div>
         <div class="form-box">
             <div class="logo-container">
-                <img src="{{ asset('images/gesl_logo.png') }}" alt="Company Logo" class="login-logo">
+                <img src="{{ asset('images/logoMgt-1.PNG') }}" alt="Company Logo" class="login-logo">
             </div>
             <form id="Signin" class="input-group" method="POST" action="{{ route('auth.otp.request') }}">
                 @csrf

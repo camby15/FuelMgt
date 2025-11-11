@@ -7,7 +7,7 @@
                 <!-- Logo light -->
                 <a href="/" class="logo-light">
                     <span class="logo-lg">
-                        <img src="/images/logo 1.png" alt="logo" />
+                        <img src="/images/yash.png" alt="logo" />
                     </span>
                     <span class="logo-sm">
                         <img src="/images/logo_white_sm.png" alt="small logo" />

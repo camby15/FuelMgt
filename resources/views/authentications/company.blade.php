@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="author" content="Shrinq" />
+    <meta name="author" content="Panga" />
     <meta name="description" content="Company Signup Form" />
     <link rel="icon" href="{{ asset('images/logo 1.png') }}" />
     <link rel="stylesheet" href="{{ asset('style/auth-2.css') }}" />
@@ -15,7 +15,7 @@
     <!-- SweetAlert2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <title>Stak | Company</title>
+    <title>StationMgt | Company</title>
 
 
     <style>
