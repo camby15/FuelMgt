@@ -14,6 +14,6 @@
         color: inherit;
     ">
         <p style="margin: 0;">&copy; 2025 Powered by</p>
-        <img src="images/colored.png" alt="Admin Dashboard" style="height: 100px;" />
+        <img src="images/PangaTranparent.png" alt="Admin Dashboard" style="height: 70px;" />
     </a>
 </div>

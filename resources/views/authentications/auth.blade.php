@@ -3,15 +3,15 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="author" content="ShrinQ Limited" />
+        <meta name="author" content="Panga Limited" />
         <meta name="description" content="" />
-        <link rel="icon" href="{{ asset('images/logo 1.png') }}" />
+        <link rel="icon" href="{{ asset('images/logoMgt-1.PNG') }}" />
         <link rel="stylesheet" href="{{ asset('style/mediaQuery.css') }}" />
         <link rel="stylesheet" href="{{ asset('style/auth-1.css') }}" />
         <link href="https://fonts.cdnfonts.com/css/poppins" rel="stylesheet" />
 
         <link rel="stylesheet" href="{{ asset('style/style.css') }}" />
-        <title>Stak | Auth</title>
+        <title>StationMgt | Auth</title>
     </head>
 
     <body>

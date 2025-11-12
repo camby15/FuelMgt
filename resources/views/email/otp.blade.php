@@ -149,7 +149,7 @@
             </div>
             <footer>
                 <p class="reason">
-                    You received this email to provide you an OTP to assist you to log in to your Stak Account.
+                    You received this email to provide you an OTP to assist you to log in to your Station Account.
                 </p>
             </footer>
         </main>

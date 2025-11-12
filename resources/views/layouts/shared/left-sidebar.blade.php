@@ -1,22 +1,31 @@
 <!-- ========== Left Sidebar Start ========== -->
 <div class="leftside-menu">
     <!-- Brand Logo Light -->
+    <style>
+        .logo img {
+            max-height: 100px;  /* Increased from default size */
+            width: auto;
+        }
+        .logo-sm img {
+            max-height: 100px;  /* Slightly smaller for mobile */
+        }
+    </style>
     <a href="{{ route('any', 'index') }}" class="logo logo-light">
         <span class="logo-lg">
-            <img src="/images/gesl_logo.png" alt="logo" />
+            <img src="/images/logoMgt-1.PNG" alt="logo" />
         </span>
         <span class="logo-sm">
-            <img src="/images/gesl_logo.png" alt="small logo" />
+            <img src="/images/logoMgt-1.PNG" alt="small logo" />
         </span>
     </a>
 
     <!-- Brand Logo Dark -->
     <a href="{{ route('any', 'index') }}" class="logo logo-dark">
         <span class="logo-lg">
-            <img src="/images/gesl_logo.png" alt="logo" />
+            <img src="/images/logoMgt-1.PNG" alt="logo" />
         </span>
         <span class="logo-sm">
-            <img src="/images/gesl_logo.png" alt="small logo" />
+            <img src="/images/logoMgt-1.PNG" alt="small logo" />
         </span>
     </a>
 
@@ -36,7 +45,7 @@
         <div class="leftbar-user">
             <a href="{{ route('second', ['pages', 'profile']) }}">
                 <img src="/images/users/avatar-1.jpg" alt="user-image" height="42" class="rounded-circle shadow-sm" />
-                <span class="leftbar-user-name mt-2">Roach Appiah</span>
+                <span class="leftbar-user-name mt-2">Hamid</span>
             </a>
         </div>
 
@@ -83,17 +92,14 @@
                 </div>
             </li>
 -->
-
-
             @if($hasMenuAccess('dashboard'))
             <li class="side-nav-item">
-                <a href="{{ route('any', 'company/index') }}" class="side-nav-link">
+                <a href="{{ route('any', 'company/FuelManagement/dashboard') }}" class="side-nav-link">
                     <i class="ri-home-4-line"></i>
                     <span>Dashboards</span>
                 </a>
             </li>
             @endif
-
            @if($hasSubmenuAccess('administration'))
            <li class="side-nav-item">
                 <a data-bs-toggle="collapse" 
@@ -322,8 +328,136 @@
                 </div>
             </li> 
             @endif
+            <!-- Fuel Sales Management System -->
+            @if($hasSubmenuAccess('fuel_management'))
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse"
+                   href="#fuelManagement"
+                   aria-expanded="false"
+                   aria-controls="fuelManagement"
+                   class="side-nav-link">
+                    <i class="ri-gas-station-line"></i>
+                    <span>Fuel Sales Management</span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="fuelManagement">
+                    <ul class="side-nav-second-level">
+                        <!--@if($hasMenuAccess('fuel_dashboard'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/dashboard') }}">
+                                <i class="ri-dashboard-line"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        @endif -->
+                        
+                        @if($hasMenuAccess('station_management'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/allstations') }}">
+                                <i class="ri-building-4-line"></i>
+                                <span>Stations</span>
+                            </a>
+                        </li>
+                        @endif
+                        
+                        @if($hasMenuAccess('stock_management'))
+                        <li>
+                            
+                        </li>
+                        @endif
+                        
+                        @if($hasMenuAccess('sales_management'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/sales') }}">
+                                <i class="ri-money-dollar-circle-line"></i>
+                                <span>Sales</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($hasMenuAccess('station_managers'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/stationmanager') }}">
+                                <i class="ri-user-line"></i>
+                                <span>Station Managers</span>
+                            </a>
+                        </li>
+                        @endif
+                    </ul>
+                </div>
+            </li>
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse"
+                    href="#stockActivity"
+                    aria-expanded="false"
+                    aria-controls="stockActivity"
+                    class="side-nav-link">
+                    <i class="ri-stack-line"></i>
+                    <span>Stock Activity</span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="stockActivity">
+                    <ul class="side-nav-second-level">
+                        @if($hasMenuAccess('stock_received'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/stock') }}">
+                                <i class="ri-stack-line"></i>
+                                <span>Stock Received</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($hasMenuAccess('stock_dispatched'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/DispatchStock') }}">
+                                <i class="ri-truck-line"></i>
+                                <span>Stock Dispatched</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($hasMenuAccess('stock_recon'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/stockRecon') }}">
+                                <i class="ri-exchange-line"></i>
+                                <span>Stock Reconciliation</span>
+                            </a>
+                        </li>
+                        @endif
+                    </ul>
+                </div>
+            </li>
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" 
+                   href="#Accounts" 
+                   aria-expanded="false" 
+                   aria-controls="Accounts" 
+                   class="side-nav-link">
+                    <i class='ri-bank-card-line'></i>
+                    <span>Accounts & Deposits</span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="Accounts">
+                    <ul class="side-nav-second-level">
+                        @if($hasMenuAccess('bank_deposit'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/bankdeposit') }}">
+                                <i class="ri-money-dollar-circle-line"></i>
+                                <span>Bank Deposit</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($hasMenuAccess('all_account'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/allaccount') }}">
+                                <i class="ri-money-dollar-circle-line"></i>
+                                <span>All Accounts</span>
+                            </a>
+                        </li>
+                        @endif
+                    </ul>
+                </div>
+            </li>
+            @endif
 
-            @if($hasSubmenuAccess('master_tracker'))
+            <!-- @if($hasSubmenuAccess('master_tracker'))
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" 
                    href="#MasterTracker" 
@@ -372,10 +506,10 @@
                     </ul>
                 </div>
             </li>
-            @endif
+            @endif -->
             
             
-            @if($hasSubmenuAccess('human_resources'))
+            <!-- @if($hasSubmenuAccess('human_resources'))
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" 
                    href="#HR" 
@@ -397,8 +531,8 @@
                     </ul>
                 </div>
             </li>
-            @endif
-            @if($hasSubmenuAccess('crm'))
+            @endif -->
+           <!-- @if($hasSubmenuAccess('crm'))
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" 
                    href="#CRM" 
@@ -423,9 +557,9 @@
                     </ul>
                 </div>
             </li>
-            @endif
+            @endif -->
             
-            @if($hasSubmenuAccess('management'))
+            <!-- @if($hasSubmenuAccess('management'))
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" 
                    href="#Management" 
@@ -447,9 +581,9 @@
                     </ul>
                 </div>
             </li>
-            @endif
+            @endif -->
             
-            @if($hasSubmenuAccess('warehouse_management'))
+           <!-- @if($hasSubmenuAccess('warehouse_management'))
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" 
                    href="#warehousemanagement" 
@@ -477,14 +611,14 @@
                     </ul>
                 </div>
             </li>
-            @endif
+            @endif -->
            <!-- <li class="side-nav-item">
                 <a href="{{ route('any', 'id-verification') }}" class="side-nav-link">
                     <i class="ri-fingerprint-line"></i>
                     <span>ID Verification</span>
                 </a>
             </li> -->
-            @if($hasSubmenuAccess('project_management'))
+           <!-- @if($hasSubmenuAccess('project_management'))
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" 
                    href="#projectManagement" 
@@ -517,7 +651,7 @@
                             <a href="{{ route('any', 'company/ProjectManagement/qualityAudit') }}">Quality Audit</a>
                         </li>
                         @endif
-                    </ul>
+                    </ul>  -->
                     <!-- <li class="side-nav-item">
                         <a href="{{ route('any', 'company/LoyaltyPoints/loyalty') }}" class="side-nav-link">
                             <i class="ri-star-line"></i>
@@ -525,7 +659,7 @@
                         </a>
                     </li> -->
 
-                    <li class="side-nav-item">
+                   <!-- <li class="side-nav-item">
                         <a href="{{ route('any', 'company/ProjectManagement/generalService') }}" class="side-nav-link">
                             <i class="ri-settings-5-line"></i>
                             <span>General Service</span>
@@ -533,7 +667,7 @@
                     </li>
                 </div>
             </li>
-            @endif 
+            @endif -->
         </ul>
         <!--- End Sidemenu -->
 

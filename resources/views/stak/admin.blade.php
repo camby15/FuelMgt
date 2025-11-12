@@ -326,7 +326,7 @@
             width: 44px;
             height: 44px;
             border: 4px solid #fff;
-            border-top: 4px solid #2563eb;
+            border-top: 4px solid #a9eb25ff;
             border-radius: 50%;
             animation: loaderSpin 1.1s linear infinite;
             box-shadow: 0 2px 16px #2563eb22;
