@@ -581,6 +581,7 @@
                                             </div>
                                         </div>
 
+                                        {{--
                                         <!-- Category Management -->
                                         <div class="menu-section mb-4">
                                             <div class="menu-item">
@@ -614,8 +615,177 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        --}}
 
-                                        
+                                        <!-- Fuel Sale Management -->
+                                        <div class="menu-section mb-4">
+                                            <div class="menu-item">
+                                                <div class="form-check">
+                                                    <input
+                                                        type="checkbox"
+                                                        class="form-check-input menu-parent"
+                                                        id="menu_fuel_management"
+                                                        data-key="fuel_management"
+                                                        data-name="Fuel Sale Management"
+                                                        data-icon="ri-gas-station-line" />
+                                                    <label class="form-check-label" for="menu_fuel_management">
+                                                        <i class="ri-gas-station-line me-1"></i>
+                                                        Fuel Sale Management
+                                                    </label>
+                                                </div>
+                                                <div class="ms-4 mt-2 submenu">
+                                                    <div class="form-check">
+                                                        <input
+                                                            type="checkbox"
+                                                            class="form-check-input menu-child"
+                                                            id="menu_station_management"
+                                                            data-key="station_management"
+                                                            data-name="Stations"
+                                                            data-parent="fuel_management"
+                                                            data-route="{{ route('any', 'company/FuelManagement/allstations') }}" />
+                                                        <label class="form-check-label" for="menu_station_management">
+                                                            Stations
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input
+                                                            type="checkbox"
+                                                            class="form-check-input menu-child"
+                                                            id="menu_sales_management"
+                                                            data-key="sales_management"
+                                                            data-name="Sales"
+                                                            data-parent="fuel_management"
+                                                            data-route="{{ route('any', 'company/FuelManagement/sales') }}" />
+                                                        <label class="form-check-label" for="menu_sales_management">
+                                                            Sales
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input
+                                                            type="checkbox"
+                                                            class="form-check-input menu-child"
+                                                            id="menu_station_managers"
+                                                            data-key="station_managers"
+                                                            data-name="Station Manager"
+                                                            data-parent="fuel_management"
+                                                            data-route="{{ route('any', 'company/FuelManagement/stationmanager') }}" />
+                                                        <label class="form-check-label" for="menu_station_managers">
+                                                            Station Manager
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Stock Activity -->
+                                        <div class="menu-section mb-4">
+                                            <div class="menu-item">
+                                                <div class="form-check">
+                                                    <input
+                                                        type="checkbox"
+                                                        class="form-check-input menu-parent"
+                                                        id="menu_stock_activity"
+                                                        data-key="stock_activity"
+                                                        data-name="Stock Activity"
+                                                        data-icon="ri-stack-line" />
+                                                    <label class="form-check-label" for="menu_stock_activity">
+                                                        <i class="ri-stack-line me-1"></i>
+                                                        Stock Activity
+                                                    </label>
+                                                </div>
+                                                <div class="ms-4 mt-2 submenu">
+                                                    <div class="form-check">
+                                                        <input
+                                                            type="checkbox"
+                                                            class="form-check-input menu-child"
+                                                            id="menu_stock_received"
+                                                            data-key="stock_received"
+                                                            data-name="Stock Received"
+                                                            data-parent="stock_activity"
+                                                            data-route="{{ route('any', 'company/FuelManagement/stock') }}" />
+                                                        <label class="form-check-label" for="menu_stock_received">
+                                                            Stock Received
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input
+                                                            type="checkbox"
+                                                            class="form-check-input menu-child"
+                                                            id="menu_stock_dispatched"
+                                                            data-key="stock_dispatched"
+                                                            data-name="Stock Dispatched"
+                                                            data-parent="stock_activity"
+                                                            data-route="{{ route('any', 'company/FuelManagement/DispatchStock') }}" />
+                                                        <label class="form-check-label" for="menu_stock_dispatched">
+                                                            Stock Dispatched
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input
+                                                            type="checkbox"
+                                                            class="form-check-input menu-child"
+                                                            id="menu_stock_recon"
+                                                            data-key="stock_recon"
+                                                            data-name="Stock Reconciliation"
+                                                            data-parent="stock_activity"
+                                                            data-route="{{ route('any', 'company/FuelManagement/stockRecon') }}" />
+                                                        <label class="form-check-label" for="menu_stock_recon">
+                                                            Stock Reconciliation
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Accounts & Deposits -->
+                                        <div class="menu-section mb-4">
+                                            <div class="menu-item">
+                                                <div class="form-check">
+                                                    <input
+                                                        type="checkbox"
+                                                        class="form-check-input menu-parent"
+                                                        id="menu_accounts_deposit"
+                                                        data-key="accounts_deposit"
+                                                        data-name="Accounts & Deposits"
+                                                        data-icon="ri-bank-card-line" />
+                                                    <label class="form-check-label" for="menu_accounts_deposit">
+                                                        <i class="ri-bank-card-line me-1"></i>
+                                                        Accounts & Deposits
+                                                    </label>
+                                                </div>
+                                                <div class="ms-4 mt-2 submenu">
+                                                    <div class="form-check">
+                                                        <input
+                                                            type="checkbox"
+                                                            class="form-check-input menu-child"
+                                                            id="menu_bank_deposit"
+                                                            data-key="bank_deposit"
+                                                            data-name="Bank Deposit"
+                                                            data-parent="accounts_deposit"
+                                                            data-route="{{ route('any', 'company/FuelManagement/bankdeposit') }}" />
+                                                        <label class="form-check-label" for="menu_bank_deposit">
+                                                            Bank Deposit
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input
+                                                            type="checkbox"
+                                                            class="form-check-input menu-child"
+                                                            id="menu_all_account"
+                                                            data-key="all_account"
+                                                            data-name="All Accounts"
+                                                            data-parent="accounts_deposit"
+                                                            data-route="{{ route('any', 'company/FuelManagement/allaccount') }}" />
+                                                        <label class="form-check-label" for="menu_all_account">
+                                                            All Accounts
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        {{--
                                         <!-- Master Tracker -->
                                         <div class="menu-section mb-4">
                                             <div class="menu-item">
@@ -779,7 +949,9 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        --}}
 
+                                        {{--
                                         <!-- Human Resources -->
                                         <div class="menu-section mb-4">
                                             <div class="menu-item">
@@ -826,7 +998,9 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        --}}
 
+                                        {{--
                                         <!-- CRM -->
                                         <div class="menu-section mb-4">
                                             <div class="menu-item">
@@ -886,7 +1060,9 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        --}}
 
+                                        {{--
                                         <!-- Management -->
                                         <div class="menu-section mb-4">
                                             <div class="menu-item">
@@ -933,7 +1109,9 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        --}}
 
+                                        {{--
                                         <!-- Warehouse Management -->
                                         <div class="menu-section mb-4">
                                             <div class="menu-item">
@@ -1006,7 +1184,9 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        --}}
 
+                                        {{--
                                         <!-- Project Management -->
                                         <div class="menu-section mb-4">
                                             <div class="menu-item">
@@ -1092,6 +1272,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        --}}
 
                                     </div>
 
