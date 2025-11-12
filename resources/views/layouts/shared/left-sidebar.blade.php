@@ -12,20 +12,20 @@
     </style>
     <a href="{{ route('any', 'index') }}" class="logo logo-light">
         <span class="logo-lg">
-            <img src="/images/yash.png" alt="logo" />
+            <img src="/images/logoMgt-1.PNG" alt="logo" />
         </span>
         <span class="logo-sm">
-            <img src="/images/yash.png" alt="small logo" />
+            <img src="/images/logoMgt-1.PNG" alt="small logo" />
         </span>
     </a>
 
     <!-- Brand Logo Dark -->
     <a href="{{ route('any', 'index') }}" class="logo logo-dark">
         <span class="logo-lg">
-            <img src="/images/yash.png" alt="logo" />
+            <img src="/images/logoMgt-1.PNG" alt="logo" />
         </span>
         <span class="logo-sm">
-            <img src="/images/yash.png" alt="small logo" />
+            <img src="/images/logoMgt-1.PNG" alt="small logo" />
         </span>
     </a>
 

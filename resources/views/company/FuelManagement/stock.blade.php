@@ -32,6 +32,13 @@
             flex-wrap: wrap;
         }
 
+        .stock-card__header-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-left: auto;
+        }
+
         .stock-card__header-main {
             display: flex;
             flex-direction: column;
@@ -77,6 +84,48 @@
             font-weight: 700;
             letter-spacing: 0.5px;
             color: #ffffff;
+        }
+
+        .stock-alert-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            border-radius: 999px;
+            padding: 0.55rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.38);
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 12px 26px rgba(3, 26, 67, 0.32);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .stock-alert-btn i {
+            font-size: 1rem;
+        }
+
+        .stock-alert-btn__badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 0.4rem;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #ff5f6d 0%, #ffc371 100%);
+            color: #0a1d44;
+            font-size: 0.68rem;
+            font-weight: 700;
+            box-shadow: 0 6px 14px rgba(255, 111, 90, 0.42);
+        }
+
+        .stock-alert-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24), 0 16px 28px rgba(3, 26, 67, 0.42);
         }
 
         .stock-summary {
@@ -401,12 +450,19 @@
                         <h2 class="stock-card__title">Recieving Stock</h2>
                         <p class="stock-card__subtitle">Track receipts and available stock across all stations</p>
                     </div>
-                    @if ($assignedStationName)
-                        <div class="stock-card__station" data-role="assigned-station">
-                            <span class="stock-card__station-label">Station</span>
-                            <span class="stock-card__station-name">{{ $assignedStationName }}</span>
-                        </div>
-                    @endif
+                    <div class="stock-card__header-actions">
+                        @if ($assignedStationName)
+                            <div class="stock-card__station" data-role="assigned-station">
+                                <span class="stock-card__station-label">Station</span>
+                                <span class="stock-card__station-name">{{ $assignedStationName }}</span>
+                            </div>
+                        @endif
+                        <button type="button" class="stock-alert-btn" title="View Notifications">
+                            <i class="ri-notification-3-line"></i>
+                            <span>Alerts</span>
+                            <span class="stock-alert-btn__badge">5</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="stock-summary" id="stockSummary">

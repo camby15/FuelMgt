@@ -62,88 +62,6 @@
             opacity: 0.8;
         }
 
-        .dispatch-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.4rem;
-            margin: 2.4rem;
-            margin-bottom: 1.1rem;
-        }
-
-        .dispatch-summary__item {
-            position: relative;
-            border-radius: 22px;
-            padding: 1.5rem 1.75rem;
-            color: #ffffff;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-            background: linear-gradient(122deg, rgba(8, 40, 109, 0.95) 0%, rgba(43, 109, 239, 0.9) 58%, rgba(5, 30, 78, 0.92) 100%);
-            box-shadow: 0 18px 42px rgba(7, 37, 96, 0.28);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transform: translateY(0);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
-
-        .dispatch-summary__item[data-product="AGO"] {
-            background: linear-gradient(120deg, rgba(17, 58, 124, 0.95) 0%, rgba(60, 142, 250, 0.9) 56%, rgba(3, 20, 62, 0.9) 100%);
-        }
-
-        .dispatch-summary__item[data-product="PMS"] {
-            background: linear-gradient(118deg, rgba(91, 26, 137, 0.95) 0%, rgba(198, 95, 219, 0.92) 54%, rgba(45, 7, 66, 0.9) 100%);
-        }
-
-        .dispatch-summary__item:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 26px 54px rgba(7, 37, 96, 0.4);
-        }
-
-        .dispatch-summary__meta {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            z-index: 1;
-        }
-
-        .dispatch-summary__label {
-            font-size: 0.74rem;
-            text-transform: uppercase;
-            letter-spacing: 0.55px;
-            color: rgba(232, 242, 255, 0.8);
-            margin: 0;
-        }
-
-        .dispatch-summary__icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.18);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
-            color: inherit;
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
-        }
-
-        .dispatch-summary__value {
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: 0.4px;
-            color: #ffffff;
-            position: relative;
-            z-index: 1;
-        }
-
-        .dispatch-summary__footer {
-            font-size: 0.68rem;
-            text-transform: uppercase;
-            letter-spacing: 0.45px;
-            color: rgba(232, 244, 255, 0.8);
-            position: relative;
-            z-index: 1;
-        }
 
         .dispatch-form,
         .dispatch-ledger,
@@ -695,10 +613,6 @@
         }
 
         @media (max-width: 1200px) {
-            .dispatch-summary {
-                margin: 2rem 1.8rem 1rem;
-            }
-
             .dispatch-form,
             .dispatch-ledger,
             .dispatch-report {
@@ -711,7 +625,6 @@
                 padding: 1.6rem 1.8rem;
             }
 
-            .dispatch-summary,
             .dispatch-form,
             .dispatch-ledger,
             .dispatch-report {
@@ -745,29 +658,6 @@
                     <div class="dispatch-card__meta">
                         <span>BRV = Bulk Road Vehicle</span>
                         <span>Ensure waybill and invoice details are verified before submission</span>
-                    </div>
-                </div>
-
-                <div class="dispatch-summary" id="dispatchSummary">
-                    <div class="dispatch-summary__item" data-product="AGO">
-                        <div class="dispatch-summary__meta">
-                            <div class="dispatch-summary__label">AGO (Diesel) Dispatched</div>
-                            <div class="dispatch-summary__icon">
-                                <i class="ri-truck-line"></i>
-                            </div>
-                        </div>
-                        <div class="dispatch-summary__value" data-role="dispatch-total-AGO">0.00 L</div>
-                        <div class="dispatch-summary__footer">Total litres dispatched across all stations</div>
-                    </div>
-                    <div class="dispatch-summary__item" data-product="PMS">
-                        <div class="dispatch-summary__meta">
-                            <div class="dispatch-summary__label">PMS (Super) Dispatched</div>
-                            <div class="dispatch-summary__icon">
-                                <i class="ri-gas-station-line"></i>
-                            </div>
-                        </div>
-                        <div class="dispatch-summary__value" data-role="dispatch-total-PMS">0.00 L</div>
-                        <div class="dispatch-summary__footer">Aggregate volumes shipped this period</div>
                     </div>
                 </div>
 
@@ -1073,78 +963,6 @@
                             </button>
                         </div>
                     </div>
-                    <div class="dispatch-report__summary" data-role="reconciliation-summary">
-                        <div class="dispatch-report__summary-card">
-                            <div class="dispatch-report__summary-icon dispatch-report__summary-icon--dispatches">
-                                <i class="ri-checkbox-multiple-line"></i>
-                            </div>
-                            <div class="dispatch-report__summary-content">
-                                <div class="dispatch-report__summary-label">Total Dispatches</div>
-                                <div class="dispatch-report__summary-value" data-role="summary-dispatch-count">0</div>
-                                <div class="dispatch-report__summary-caption">Monthly sequences confirmed</div>
-                            </div>
-                        </div>
-                        <div class="dispatch-report__summary-card">
-                            <div class="dispatch-report__summary-icon dispatch-report__summary-icon--volume">
-                                <i class="ri-oil-line"></i>
-                            </div>
-                            <div class="dispatch-report__summary-content">
-                                <div class="dispatch-report__summary-label">Total Volume (L)</div>
-                                <div class="dispatch-report__summary-value" data-role="summary-volume">0.00</div>
-                                <div class="dispatch-report__summary-caption">Across all stations for month</div>
-                            </div>
-                        </div>
-                        <div class="dispatch-report__summary-card">
-                            <div class="dispatch-report__summary-icon dispatch-report__summary-icon--ago">
-                                <i class="ri-gas-station-line"></i>
-                            </div>
-                            <div class="dispatch-report__summary-content">
-                                <div class="dispatch-report__summary-label">AGO Volume (L)</div>
-                                <div class="dispatch-report__summary-value" data-role="summary-AGO">0.00</div>
-                                <div class="dispatch-report__summary-caption">Diesel uplifted to outlets</div>
-                            </div>
-                        </div>
-                        <div class="dispatch-report__summary-card">
-                            <div class="dispatch-report__summary-icon dispatch-report__summary-icon--pms">
-                                <i class="ri-flask-line"></i>
-                            </div>
-                            <div class="dispatch-report__summary-content">
-                                <div class="dispatch-report__summary-label">PMS Volume (L)</div>
-                                <div class="dispatch-report__summary-value" data-role="summary-PMS">0.00</div>
-                                <div class="dispatch-report__summary-caption">Super distributed to network</div>
-                            </div>
-                        </div>
-                        <div class="dispatch-report__summary-card">
-                            <div class="dispatch-report__summary-icon dispatch-report__summary-icon--stations">
-                                <i class="ri-store-3-line"></i>
-                            </div>
-                            <div class="dispatch-report__summary-content">
-                                <div class="dispatch-report__summary-label">Stations Served</div>
-                                <div class="dispatch-report__summary-value" data-role="summary-stations">0</div>
-                                <div class="dispatch-report__summary-caption">Unique outlets receiving supply</div>
-                                <div class="dispatch-report__summary-meta" data-role="summary-product-split" hidden>
-                                    <span data-role="summary-stations-ago">AGO only</span>
-                                    <span data-role="summary-stations-pms">PMS only</span>
-                                    <span data-role="summary-stations-mixed">Both products</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="dispatch-report__summary-card dispatch-report__summary-card--highlight" data-role="summary-top-station-card" data-empty="true">
-                            <div class="dispatch-report__summary-icon dispatch-report__summary-icon--top">
-                                <i class="ri-bar-chart-grouped-line"></i>
-                            </div>
-                            <div class="dispatch-report__summary-content">
-                                <div class="dispatch-report__summary-label">Top Station</div>
-                                <div class="dispatch-report__summary-value" data-role="summary-top-station">—</div>
-                                <div class="dispatch-report__summary-caption" data-role="summary-top-volume">Awaiting data</div>
-                                <div class="dispatch-report__summary-meta" data-role="summary-top-breakdown" hidden>
-                                    <span data-role="summary-top-dispatches">0 dispatches</span>
-                                    <span data-role="summary-top-ago">AGO: 0.00 L</span>
-                                    <span data-role="summary-top-pms">PMS: 0.00 L</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="table-responsive" id="reconciliationTableWrapper">
                         <table class="dispatch-report__table" id="reconciliationTable">
                             <thead>
@@ -1185,30 +1003,6 @@
             const dispatchTableBody = document.querySelector('[data-role="dispatch-tbody"]');
             const reconciliationTableBody = document.querySelector('[data-role="reconciliation-tbody"]');
 
-            const summaryDisplays = {
-                AGO: document.querySelector('[data-role="dispatch-total-AGO"]'),
-                PMS: document.querySelector('[data-role="dispatch-total-PMS"]'),
-            };
-
-            const reconciliationSummaryDisplays = {
-                dispatchCount: document.querySelector('[data-role="summary-dispatch-count"]'),
-                totalVolume: document.querySelector('[data-role="summary-volume"]'),
-                AGO: document.querySelector('[data-role="summary-AGO"]'),
-                PMS: document.querySelector('[data-role="summary-PMS"]'),
-                stations: document.querySelector('[data-role="summary-stations"]'),
-                productSplit: document.querySelector('[data-role="summary-product-split"]'),
-                stationsAGO: document.querySelector('[data-role="summary-stations-ago"]'),
-                stationsPMS: document.querySelector('[data-role="summary-stations-pms"]'),
-                stationsMixed: document.querySelector('[data-role="summary-stations-mixed"]'),
-                topCard: document.querySelector('[data-role="summary-top-station-card"]'),
-                topStation: document.querySelector('[data-role="summary-top-station"]'),
-                topVolume: document.querySelector('[data-role="summary-top-volume"]'),
-                topBreakdown: document.querySelector('[data-role="summary-top-breakdown"]'),
-                topAGO: document.querySelector('[data-role="summary-top-ago"]'),
-                topPMS: document.querySelector('[data-role="summary-top-pms"]'),
-                topDispatches: document.querySelector('[data-role="summary-top-dispatches"]'),
-            };
-
             const reconciliationMonthInput = document.getElementById('reconciliationMonth');
             const reconciliationMonthLabel = document.querySelector('[data-role="reconciliation-month-label"]');
             const generateReconciliationBtn = document.getElementById('generateReconciliationBtn');
@@ -1219,7 +1013,6 @@
             const dispatchTableWrapper = document.getElementById('dispatchTableWrapper');
             const reconciliationTableWrapper = document.getElementById('reconciliationTableWrapper');
 
-            const productTotals = { AGO: 0, PMS: 0 };
             let dispatchCounter = 0;
             const dispatchRecords = [];
             let lastReconciliationMonth = null;
@@ -1289,14 +1082,6 @@
                 reconciliationTableBody.appendChild(row);
             }
 
-            function updateSummaryDisplays() {
-                Object.entries(summaryDisplays).forEach(([product, el]) => {
-                    if (el) {
-                        el.textContent = `${formatNumber(productTotals[product])} L`;
-                    }
-                });
-            }
-
             function updateWaybillMeta() {
                 if (!waybillMeta) {
                     return;
@@ -1309,6 +1094,46 @@
 
                 const file = waybillInput.files[0];
                 waybillMeta.textContent = `Selected: ${file.name}`;
+            }
+
+            function generateRecordId() {
+                if (typeof window !== 'undefined') {
+                    const cryptoSource = window.crypto || window.msCrypto;
+                    if (cryptoSource && typeof cryptoSource.randomUUID === 'function') {
+                        return cryptoSource.randomUUID();
+                    }
+                }
+
+                const randomSegment = () => Math.floor(Math.random() * 0x100000000).toString(16).padStart(8, '0');
+                return `dispatch-${Date.now().toString(16)}-${randomSegment()}`;
+            }
+
+            function addDispatchRecord(data) {
+                dispatchCounter += 1;
+
+                const record = {
+                    id: data.id || generateRecordId(),
+                    sequence: dispatchCounter,
+                    dispatchDate: data.dispatchDate || '',
+                    formattedDate: data.formattedDate || (data.dispatchDate ? data.dispatchDate.split('-').reverse().join('-') : '—'),
+                    productType: data.productType || '—',
+                    loadingFacility: data.loadingFacility || '—',
+                    loadedFrom: data.loadedFrom || '—',
+                    quantity: Number(data.quantity) || 0,
+                    brvNumber: data.brvNumber || '—',
+                    driverName: data.driverName || '—',
+                    driverPhone: data.driverPhone || '—',
+                    receivingStation: data.receivingStation || '—',
+                    inspectedBy: data.inspectedBy || '—',
+                    invoiceNumber: data.invoiceNumber || '—',
+                    waybillUrl: data.waybillUrl || null,
+                    isObjectUrl: Boolean(data.isObjectUrl),
+                };
+
+                dispatchRecords.push(record);
+
+                clearLedgerEmptyState();
+                renderLedgerRow(record);
             }
 
             function renderLedgerRow(record) {
@@ -1364,143 +1189,6 @@
                 if (actionBtn) {
                     actionBtn.dataset.recordId = record.id;
                 }
-            }
-
-            function generateRecordId() {
-                if (typeof window !== 'undefined') {
-                    const cryptoSource = window.crypto || window.msCrypto;
-                    if (cryptoSource && typeof cryptoSource.randomUUID === 'function') {
-                        return cryptoSource.randomUUID();
-                    }
-                }
-
-                const randomSegment = () => Math.floor(Math.random() * 0x100000000).toString(16).padStart(8, '0');
-                return `dispatch-${Date.now().toString(16)}-${randomSegment()}`;
-            }
-
-            function addDispatchRecord(data) {
-                const productType = data.productType;
-                const quantity = Number(data.quantity) || 0;
-
-                dispatchCounter += 1;
-
-                const record = {
-                    id: data.id || generateRecordId(),
-                    sequence: dispatchCounter,
-                    dispatchDate: data.dispatchDate || '',
-                    formattedDate: data.formattedDate || (data.dispatchDate ? data.dispatchDate.split('-').reverse().join('-') : '—'),
-                    productType,
-                    loadingFacility: data.loadingFacility || '—',
-                    loadedFrom: data.loadedFrom || '—',
-                    quantity,
-                    brvNumber: data.brvNumber || '—',
-                    driverName: data.driverName || '—',
-                    driverPhone: data.driverPhone || '—',
-                    receivingStation: data.receivingStation || '—',
-                    inspectedBy: data.inspectedBy || '—',
-                    invoiceNumber: data.invoiceNumber || '—',
-                    waybillUrl: data.waybillUrl || null,
-                    isObjectUrl: Boolean(data.isObjectUrl),
-                };
-
-                if (productType) {
-                    if (Object.prototype.hasOwnProperty.call(productTotals, productType)) {
-                        productTotals[productType] += quantity;
-                    } else {
-                        productTotals[productType] = quantity;
-                    }
-                }
-
-                dispatchRecords.push(record);
-
-                clearLedgerEmptyState();
-                renderLedgerRow(record);
-                updateSummaryDisplays();
-
-                return record;
-            }
-
-            const sampleDispatchData = [
-                {
-                    dispatchDate: '2024-09-12',
-                    productType: 'AGO',
-                    loadingFacility: 'Tema Loading Gantry',
-                    loadedFrom: 'Vivo Energy BDC',
-                    quantity: 18500,
-                    brvNumber: 'GT-2489-24',
-                    driverName: 'Kwame Amanfo',
-                    driverPhone: '+233 24 555 0199',
-                    receivingStation: 'Navrongo Main',
-                    inspectedBy: 'Adjoa Owusu',
-                    invoiceNumber: 'INV-DS-0001',
-                    waybillUrl: 'https://example.com/waybills/INV-DS-0001.pdf',
-                },
-                {
-                    dispatchDate: '2024-09-14',
-                    productType: 'PMS',
-                    loadingFacility: 'Buipe Depot',
-                    loadedFrom: 'Star Oil BDC',
-                    quantity: 21250,
-                    brvNumber: 'NR-5512-23',
-                    driverName: 'Mariam Sule',
-                    driverPhone: '+233 20 883 4410',
-                    receivingStation: 'Larabanga',
-                    inspectedBy: 'Richard Bawa',
-                    invoiceNumber: 'INV-DS-0002',
-                    waybillUrl: 'https://example.com/waybills/INV-DS-0002.pdf',
-                },
-                {
-                    dispatchDate: '2024-09-18',
-                    productType: 'AGO',
-                    loadingFacility: 'TOR - Theme',
-                    loadedFrom: 'Goil BDC',
-                    quantity: 16780,
-                    brvNumber: 'GR-9134-24',
-                    driverName: 'Efua Quaye',
-                    driverPhone: '+233 55 771 2299',
-                    receivingStation: 'Bububele',
-                    inspectedBy: 'Daniel Addae',
-                    invoiceNumber: 'INV-DS-0003',
-                    waybillUrl: null,
-                },
-            ];
-
-            let sampleDataInitialized = false;
-
-            function loadSampleData() {
-                if (sampleDataInitialized || dispatchRecords.length) {
-                    return;
-                }
-
-                const seedRows = dispatchTableBody.querySelectorAll('[data-seed-record]');
-
-                seedRows.forEach(row => {
-                    const seedRecord = {
-                        id: generateRecordId(),
-                        sequence: Number(row.dataset.sequence) || 0,
-                        dispatchDate: row.dataset.dispatchDate || '',
-                        formattedDate: row.dataset.formattedDate || '—',
-                        productType: row.dataset.productType || '—',
-                        loadingFacility: row.dataset.loadingFacility || '—',
-                        loadedFrom: row.dataset.loadedFrom || '—',
-                        quantity: Number(row.dataset.quantity) || 0,
-                        brvNumber: row.dataset.brvNumber || '—',
-                        driverName: row.dataset.driverName || '—',
-                        driverPhone: row.dataset.driverPhone || '—',
-                        receivingStation: row.dataset.receivingStation || '—',
-                        inspectedBy: row.dataset.inspectedBy || '—',
-                        invoiceNumber: row.dataset.invoiceNumber || '—',
-                        waybillUrl: row.dataset.waybillUrl || null,
-                    };
-
-                    productTotals[seedRecord.productType] = (productTotals[seedRecord.productType] || 0) + seedRecord.quantity;
-                    dispatchCounter = Math.max(dispatchCounter, seedRecord.sequence);
-                    dispatchRecords.push(seedRecord);
-
-                    attachRecordToRow(row, seedRecord);
-                });
-
-                sampleDataInitialized = true;
             }
 
             function showDispatchDetails(recordId) {
@@ -1566,83 +1254,6 @@
                 return date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
             }
 
-            function updateReconciliationSummary(summary) {
-                if (reconciliationSummaryDisplays.dispatchCount) {
-                    reconciliationSummaryDisplays.dispatchCount.textContent = summary.dispatchCount || 0;
-                }
-
-                if (reconciliationSummaryDisplays.totalVolume) {
-                    reconciliationSummaryDisplays.totalVolume.textContent = formatNumber(summary.totalVolume);
-                }
-
-                if (reconciliationSummaryDisplays.AGO) {
-                    reconciliationSummaryDisplays.AGO.textContent = formatNumber(summary.AGO);
-                }
-
-                if (reconciliationSummaryDisplays.PMS) {
-                    reconciliationSummaryDisplays.PMS.textContent = formatNumber(summary.PMS);
-                }
-
-                if (reconciliationSummaryDisplays.stations) {
-                    reconciliationSummaryDisplays.stations.textContent = summary.stations || 0;
-                }
-
-                if (reconciliationSummaryDisplays.productSplit) {
-                    const splitTotals = (summary.stationsAGO || 0) + (summary.stationsPMS || 0) + (summary.stationsMixed || 0);
-                    const shouldShowSplit = splitTotals > 0;
-                    reconciliationSummaryDisplays.productSplit.hidden = !shouldShowSplit;
-
-                    if (shouldShowSplit) {
-                        if (reconciliationSummaryDisplays.stationsAGO) {
-                            reconciliationSummaryDisplays.stationsAGO.textContent = `AGO only: ${summary.stationsAGO || 0}`;
-                        }
-
-                        if (reconciliationSummaryDisplays.stationsPMS) {
-                            reconciliationSummaryDisplays.stationsPMS.textContent = `PMS only: ${summary.stationsPMS || 0}`;
-                        }
-
-                        if (reconciliationSummaryDisplays.stationsMixed) {
-                            reconciliationSummaryDisplays.stationsMixed.textContent = `Both products: ${summary.stationsMixed || 0}`;
-                        }
-                    }
-                }
-
-                if (!reconciliationSummaryDisplays.topCard) {
-                    return;
-                }
-
-                const hasTopStation = Boolean(summary.topStationName);
-                reconciliationSummaryDisplays.topCard.dataset.empty = hasTopStation ? 'false' : 'true';
-
-                if (!hasTopStation) {
-                    reconciliationSummaryDisplays.topStation.textContent = '—';
-                    reconciliationSummaryDisplays.topVolume.textContent = 'Awaiting data';
-                    if (reconciliationSummaryDisplays.topBreakdown) {
-                        reconciliationSummaryDisplays.topBreakdown.hidden = true;
-                    }
-                    return;
-                }
-
-                reconciliationSummaryDisplays.topStation.textContent = summary.topStationName;
-                reconciliationSummaryDisplays.topVolume.textContent = `Total dispatched: ${formatNumber(summary.topVolume)} L`;
-
-                if (reconciliationSummaryDisplays.topBreakdown) {
-                    reconciliationSummaryDisplays.topBreakdown.hidden = false;
-
-                    if (reconciliationSummaryDisplays.topAGO) {
-                        reconciliationSummaryDisplays.topAGO.textContent = `AGO: ${formatNumber(summary.topAGO)} L`;
-                    }
-
-                    if (reconciliationSummaryDisplays.topPMS) {
-                        reconciliationSummaryDisplays.topPMS.textContent = `PMS: ${formatNumber(summary.topPMS)} L`;
-                    }
-
-                    if (reconciliationSummaryDisplays.topDispatches) {
-                        reconciliationSummaryDisplays.topDispatches.textContent = `${summary.topDispatchCount || 0} dispatch${summary.topDispatchCount === 1 ? '' : 'es'}`;
-                    }
-                }
-            }
-
             function generateReconciliation(monthValue) {
                 if (!monthValue) {
                     alert('Please select a month to generate the reconciliation report.');
@@ -1658,28 +1269,10 @@
 
                 if (!filtered.length) {
                     resetReconciliationEmptyState('No dispatch data available for the selected month.');
-                    updateReconciliationSummary({
-                        dispatchCount: 0,
-                        totalVolume: 0,
-                        AGO: 0,
-                        PMS: 0,
-                        stations: 0,
-                        stationsAGO: 0,
-                        stationsPMS: 0,
-                        stationsMixed: 0,
-                        topStationName: null,
-                        topVolume: 0,
-                        topAGO: 0,
-                        topPMS: 0,
-                        topDispatchCount: 0,
-                    });
                     return;
                 }
 
-                const stationTotals = new Map();
-                const summary = { dispatchCount: filtered.length, totalVolume: 0, AGO: 0, PMS: 0 };
-
-                reconciliationTableBody.innerHTML = '';
+                clearReconciliationEmptyState();
 
                 const rowsFragment = document.createDocumentFragment();
 
@@ -1700,19 +1293,6 @@
                 });
 
                 sortedRecords.forEach(record => {
-                    const stationKey = record.receivingStation || 'Unassigned Station';
-
-                    if (!stationTotals.has(stationKey)) {
-                        stationTotals.set(stationKey, { AGO: 0, PMS: 0, dispatchCount: 0 });
-                    }
-
-                    const station = stationTotals.get(stationKey);
-                    station[record.productType] += record.quantity;
-                    station.dispatchCount += 1;
-
-                    summary.totalVolume += record.quantity;
-                    summary[record.productType] += record.quantity;
-
                     const row = document.createElement('tr');
                     const formattedDate = record.formattedDate || (record.dispatchDate ? record.dispatchDate.split('-').reverse().join('-') : '—');
 
@@ -1729,47 +1309,7 @@
                     rowsFragment.appendChild(row);
                 });
 
-                let stationsAGO = 0;
-                let stationsPMS = 0;
-                let stationsMixed = 0;
-                let topStationName = null;
-                let topStationTotals = { AGO: 0, PMS: 0, dispatchCount: 0 };
-                let topStationVolume = 0;
-
                 reconciliationTableBody.appendChild(rowsFragment);
-
-                [...stationTotals.entries()].sort((a, b) => a[0].localeCompare(b[0])).forEach(([stationName, totals]) => {
-                    const totalStationVolume = totals.AGO + totals.PMS;
-
-                    if (totals.AGO > 0 && totals.PMS > 0) {
-                        stationsMixed += 1;
-                    } else if (totals.AGO > 0) {
-                        stationsAGO += 1;
-                    } else if (totals.PMS > 0) {
-                        stationsPMS += 1;
-                    }
-
-                    if (
-                        totalStationVolume > topStationVolume ||
-                        (totalStationVolume === topStationVolume && topStationName && stationName.localeCompare(topStationName) < 0)
-                    ) {
-                        topStationName = stationName;
-                        topStationTotals = { ...totals };
-                        topStationVolume = totalStationVolume;
-                    }
-                });
-
-                summary.stations = stationTotals.size;
-                summary.stationsAGO = stationsAGO;
-                summary.stationsPMS = stationsPMS;
-                summary.stationsMixed = stationsMixed;
-                summary.topStationName = topStationName;
-                summary.topVolume = topStationVolume;
-                summary.topAGO = topStationTotals.AGO || 0;
-                summary.topPMS = topStationTotals.PMS || 0;
-                summary.topDispatchCount = topStationTotals.dispatchCount || 0;
-
-                updateReconciliationSummary(summary);
             }
 
             dispatchForm.addEventListener('submit', function (event) {
@@ -1978,9 +1518,7 @@
             });
 
             ensureDateDefault();
-            loadSampleData();
             resetLedgerEmptyState();
-            updateSummaryDisplays();
         }
 
         if (document.readyState === 'loading') {
