@@ -31,6 +31,7 @@ use App\Models\Campaign;
 use App\Http\Controllers\CRM\ContractController;
 use App\Models\Contract;
 use App\Http\Controllers\DemoRequestController;
+use App\Http\Controllers\FuelManagement\FuelStationController;
 
 use App\Http\Controllers\LoyaltyProgramController;
 use App\Http\Controllers\CustomerTierController;
@@ -163,7 +164,7 @@ Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('auth.otp
 Route::post('/sub-user-logout', [AuthController::class, 'subUserLogout'])->name('auth.sub_user.logout');
 
 // Debug route to check authentication state
-Route::get('/debug-auth', function() {
+Route::get('/debug-auth', function () {
     return response()->json([
         'regular_user_check' => auth()->check(),
         'regular_user_id' => auth()->id(),
@@ -176,13 +177,13 @@ Route::get('/debug-auth', function() {
 })->name('debug.auth');
 
 // Debug route to check categories
-Route::get('/debug-categories', function() {
+Route::get('/debug-categories', function () {
     $companyId = session('selected_company_id');
-    
+
     $allCategories = \App\Models\Category::count();
     $companyScopedCategories = $companyId ? \App\Models\Category::where('company_id', $companyId)->count() : 0;
     $sampleCategories = \App\Models\Category::take(3)->get(['id', 'name', 'company_id', 'status']);
-    
+
     return response()->json([
         'session_company_id' => $companyId,
         'all_categories_count' => $allCategories,
@@ -276,8 +277,6 @@ Route::prefix('company')->name('company.')->group(function () {
     // Menu access routes for profiles
     Route::get('user-profiles/{profile}/menu-access', [CompanyUserProfileController::class, 'getMenuAccess'])->name('user-profiles.get-menu-access');
     Route::post('user-profiles/{profile}/menu-access', [CompanyUserProfileController::class, 'updateMenuAccess'])->name('user-profiles.update-menu-access');
-
-
 });
 
 // Partner Management Routes
@@ -317,25 +316,25 @@ Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.sessi
         Route::get('/departments', [App\Http\Controllers\Categories\DepartmentCategories::class, 'index'])->name('index');
         Route::get('/departments/data', [App\Http\Controllers\Categories\DepartmentCategories::class, 'getDepartmentsData'])->name('data');
         Route::post('/departments', [App\Http\Controllers\Categories\DepartmentCategories::class, 'store'])->name('store');
-        
+
         // Statistics and utility routes (before {id} routes)
         Route::get('/departments/stats/overview', [App\Http\Controllers\Categories\DepartmentCategories::class, 'getStats'])->name('stats');
-        
+
         // Import/Export routes (before {id} routes)
         Route::post('/departments/import', [App\Http\Controllers\Categories\DepartmentCategories::class, 'import'])->name('import');
         Route::get('/departments/export', [App\Http\Controllers\Categories\DepartmentCategories::class, 'export'])->name('export');
         Route::get('/departments/template/download', [App\Http\Controllers\Categories\DepartmentCategories::class, 'downloadTemplate'])->name('template.download');
-        
-        
+
+
         // CRUD routes with {id} parameter (must come AFTER specific routes)
         Route::get('/departments/{id}', [App\Http\Controllers\Categories\DepartmentCategories::class, 'show'])->name('show');
         Route::put('/departments/{id}', [App\Http\Controllers\Categories\DepartmentCategories::class, 'update'])->name('update');
         Route::delete('/departments/{id}', [App\Http\Controllers\Categories\DepartmentCategories::class, 'destroy'])->name('destroy');
-        
+
         // Sub-department management routes
         Route::post('/departments/{id}/sub-departments', [App\Http\Controllers\Categories\DepartmentCategories::class, 'addSubDepartment'])->name('sub-departments.add');
         Route::delete('/departments/{id}/sub-departments', [App\Http\Controllers\Categories\DepartmentCategories::class, 'removeSubDepartment'])->name('sub-departments.remove');
-        
+
         // Sort order management
         Route::put('/departments/sort-order', [App\Http\Controllers\Categories\DepartmentCategories::class, 'updateSortOrder'])->name('sort-order.update');
     });
@@ -348,25 +347,25 @@ Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.sessi
         Route::get('/categories', [App\Http\Controllers\Categories\CategoriesManagement::class, 'index'])->name('index');
         Route::get('/categories/data', [App\Http\Controllers\Categories\CategoriesManagement::class, 'getCategoriesData'])->name('data');
         Route::post('/categories', [App\Http\Controllers\Categories\CategoriesManagement::class, 'store'])->name('store');
-        
+
         // Statistics and utility routes (before {id} routes)
         Route::get('/categories/stats/overview', [App\Http\Controllers\Categories\CategoriesManagement::class, 'getStats'])->name('stats');
-        
+
         // Import/Export routes (before {id} routes)
         Route::post('/categories/import', [App\Http\Controllers\Categories\CategoriesManagement::class, 'import'])->name('import');
         Route::get('/categories/export', [App\Http\Controllers\Categories\CategoriesManagement::class, 'export'])->name('export');
         Route::get('/categories/template/download', [App\Http\Controllers\Categories\CategoriesManagement::class, 'downloadTemplate'])->name('template.download');
-        
-        
+
+
         // CRUD routes with {id} parameter (must come AFTER specific routes)
         Route::get('/categories/{id}', [App\Http\Controllers\Categories\CategoriesManagement::class, 'show'])->name('show');
         Route::put('/categories/{id}', [App\Http\Controllers\Categories\CategoriesManagement::class, 'update'])->name('update');
         Route::delete('/categories/{id}', [App\Http\Controllers\Categories\CategoriesManagement::class, 'destroy'])->name('destroy');
-        
+
         // Sub-category management routes
         Route::post('/categories/{id}/sub-categories', [App\Http\Controllers\Categories\CategoriesManagement::class, 'addSubCategory'])->name('sub-categories.add');
         Route::delete('/categories/{id}/sub-categories', [App\Http\Controllers\Categories\CategoriesManagement::class, 'removeSubCategory'])->name('sub-categories.remove');
-        
+
         // Sort order management
         Route::put('/categories/sort-order', [App\Http\Controllers\Categories\CategoriesManagement::class, 'updateSortOrder'])->name('sort-order.update');
     });
@@ -379,20 +378,20 @@ Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.sessi
         Route::get('/business-sectors', [App\Http\Controllers\Categories\BusinessSector::class, 'index'])->name('index');
         Route::get('/business-sectors/data', [App\Http\Controllers\Categories\BusinessSector::class, 'getData'])->name('data');
         Route::post('/business-sectors', [App\Http\Controllers\Categories\BusinessSector::class, 'store'])->name('store');
-        
+
         // Statistics and utility routes (before {id} routes)
         Route::get('/business-sectors/stats', [App\Http\Controllers\Categories\BusinessSector::class, 'getStats'])->name('stats');
-        
+
         // Import/Export routes (before {id} routes)
         Route::post('/business-sectors/import', [App\Http\Controllers\Categories\BusinessSector::class, 'import'])->name('import');
         Route::get('/business-sectors/export', [App\Http\Controllers\Categories\BusinessSector::class, 'export'])->name('export');
         Route::get('/business-sectors/template/download', [App\Http\Controllers\Categories\BusinessSector::class, 'downloadTemplate'])->name('template.download');
-        
+
         // CRUD routes with {id} parameter (must come AFTER specific routes)
         Route::get('/business-sectors/{id}', [App\Http\Controllers\Categories\BusinessSector::class, 'show'])->name('show');
         Route::put('/business-sectors/{id}', [App\Http\Controllers\Categories\BusinessSector::class, 'update'])->name('update');
         Route::delete('/business-sectors/{id}', [App\Http\Controllers\Categories\BusinessSector::class, 'destroy'])->name('destroy');
-        
+
         // Sort order management
         Route::put('/business-sectors/sort-order', [App\Http\Controllers\Categories\BusinessSector::class, 'updateSortOrder'])->name('sort-order.update');
     });
@@ -403,25 +402,25 @@ Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.sessi
     Route::prefix('MasterTracker')->group(function () {
         // Main workforce-fleet page (GET only)
         Route::get('/workforce-fleet', [App\Http\Controllers\MasterTracker\TeamMemberController::class, 'index'])->name('workforce-fleet.index');
-        
+
         // Team Members CRUD routes
         Route::prefix('team-members')->name('team-members.')->group(function () {
             // Main CRUD routes (index and store first)
             Route::get('/', [App\Http\Controllers\MasterTracker\TeamMemberController::class, 'index'])->name('index');
             Route::get('/data', [App\Http\Controllers\MasterTracker\TeamMemberController::class, 'getData'])->name('data');
             Route::post('/', [App\Http\Controllers\MasterTracker\TeamMemberController::class, 'store'])->name('store');
-            
+
             // Statistics and utility routes (before {id} routes)
             Route::get('/stats', [App\Http\Controllers\MasterTracker\TeamMemberController::class, 'getStats'])->name('stats');
-            
+
             // Import/Export routes (before {id} routes)
             Route::post('/import', [App\Http\Controllers\MasterTracker\TeamMemberController::class, 'import'])->name('import');
             Route::get('/export', [App\Http\Controllers\MasterTracker\TeamMemberController::class, 'export'])->name('export');
             Route::get('/template/download', [App\Http\Controllers\MasterTracker\TeamMemberController::class, 'downloadTemplate'])->name('template.download');
-            
+
             // Sort order management
             Route::put('/sort-order', [App\Http\Controllers\MasterTracker\TeamMemberController::class, 'updateSortOrder'])->name('sort-order.update');
-            
+
             // CRUD routes with {id} parameter (must come AFTER specific routes)
             Route::get('/{id}', [App\Http\Controllers\MasterTracker\TeamMemberController::class, 'show'])->name('show');
             Route::put('/{id}', [App\Http\Controllers\MasterTracker\TeamMemberController::class, 'update'])->name('update');
@@ -434,15 +433,15 @@ Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.sessi
             Route::get('/', [App\Http\Controllers\MasterTracker\DriverMemberController::class, 'index'])->name('index');
             Route::get('/data', [App\Http\Controllers\MasterTracker\DriverMemberController::class, 'getData'])->name('data');
             Route::post('/', [App\Http\Controllers\MasterTracker\DriverMemberController::class, 'store'])->name('store');
-            
+
             // Statistics and utility routes (before {id} routes)
             Route::get('/stats', [App\Http\Controllers\MasterTracker\DriverMemberController::class, 'getStats'])->name('stats');
-            
+
             // Import/Export routes (before {id} routes)
             Route::post('/import', [App\Http\Controllers\MasterTracker\DriverMemberController::class, 'import'])->name('import');
             Route::get('/export', [App\Http\Controllers\MasterTracker\DriverMemberController::class, 'export'])->name('export');
             Route::get('/template/download', [App\Http\Controllers\MasterTracker\DriverMemberController::class, 'downloadTemplate'])->name('template.download');
-            
+
             // CRUD routes with {id} parameter (must come AFTER specific routes)
             Route::get('/{id}', [App\Http\Controllers\MasterTracker\DriverMemberController::class, 'show'])->name('show');
             Route::put('/{id}', [App\Http\Controllers\MasterTracker\DriverMemberController::class, 'update'])->name('update');
@@ -455,15 +454,15 @@ Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.sessi
             Route::get('/', [App\Http\Controllers\MasterTracker\VehicleManagementController::class, 'index'])->name('index');
             Route::get('/data', [App\Http\Controllers\MasterTracker\VehicleManagementController::class, 'getData'])->name('data');
             Route::post('/', [App\Http\Controllers\MasterTracker\VehicleManagementController::class, 'store'])->name('store');
-            
+
             // Statistics and utility routes (before {id} routes)
             Route::get('/stats', [App\Http\Controllers\MasterTracker\VehicleManagementController::class, 'getStats'])->name('stats');
-            
+
             // Import/Export routes (before {id} routes)
             Route::post('/import', [App\Http\Controllers\MasterTracker\VehicleManagementController::class, 'import'])->name('import');
             Route::get('/export', [App\Http\Controllers\MasterTracker\VehicleManagementController::class, 'export'])->name('export');
             Route::get('/template/download', [App\Http\Controllers\MasterTracker\VehicleManagementController::class, 'downloadTemplate'])->name('template.download');
-            
+
             // CRUD routes with {id} parameter (must come AFTER specific routes)
             Route::get('/{id}', [App\Http\Controllers\MasterTracker\VehicleManagementController::class, 'show'])->name('show');
             Route::put('/{id}', [App\Http\Controllers\MasterTracker\VehicleManagementController::class, 'update'])->name('update');
@@ -476,18 +475,18 @@ Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.sessi
             Route::get('/', [App\Http\Controllers\MasterTracker\TeamParingController::class, 'index'])->name('index');
             Route::get('/data', [App\Http\Controllers\MasterTracker\TeamParingController::class, 'getData'])->name('data');
             Route::post('/', [App\Http\Controllers\MasterTracker\TeamParingController::class, 'store'])->name('store');
-            
+
             // Statistics and utility routes (before {id} routes)
             Route::get('/stats', [App\Http\Controllers\MasterTracker\TeamParingController::class, 'getStats'])->name('stats');
             Route::get('/members', [App\Http\Controllers\MasterTracker\TeamParingController::class, 'getTeamMembers'])->name('members');
             Route::get('/vehicles', [App\Http\Controllers\MasterTracker\TeamParingController::class, 'getVehicles'])->name('vehicles');
             Route::get('/drivers', [App\Http\Controllers\MasterTracker\TeamParingController::class, 'getDrivers'])->name('drivers');
-            
+
             // Bulk operations and export routes (before {id} routes)
             Route::post('/bulk-allocation', [App\Http\Controllers\MasterTracker\TeamParingController::class, 'bulkAllocation'])->name('bulk-allocation');
             Route::get('/export', [App\Http\Controllers\MasterTracker\TeamParingController::class, 'export'])->name('export');
             Route::get('/report', [App\Http\Controllers\MasterTracker\TeamParingController::class, 'report'])->name('report');
-            
+
             // CRUD routes with {id} parameter (must come AFTER specific routes)
             Route::get('/{team_paring}', [App\Http\Controllers\MasterTracker\TeamParingController::class, 'show'])->name('show');
             Route::get('/{team_paring}/edit', [App\Http\Controllers\MasterTracker\TeamParingController::class, 'edit'])->name('edit');
@@ -529,12 +528,12 @@ Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.sessi
         Route::get('/{assignment}/edit', [\App\Http\Controllers\ProjectManagement\SiteAssignmentController::class, 'edit'])->name('edit');
         Route::put('/{assignment}', [\App\Http\Controllers\ProjectManagement\SiteAssignmentController::class, 'update'])->name('update');
         Route::delete('/{assignment}', [\App\Http\Controllers\ProjectManagement\SiteAssignmentController::class, 'destroy'])->name('destroy');
-        
+
         // Additional routes for site assignment actions
         Route::post('/{assignment}/report-issue', [\App\Http\Controllers\ProjectManagement\SiteAssignmentController::class, 'reportIssue'])->name('report-issue');
         Route::post('/{assignment}/resolve-issue/{issueId}', [\App\Http\Controllers\ProjectManagement\SiteAssignmentController::class, 'resolveIssue'])->name('resolve-issue');
     });
-    
+
     // Home Connection Site Assignment Routes (with company prefix)
     Route::prefix('home-connection/site-assignments')->name('company.home-connection.site-assignments.')->group(function () {
         Route::get('/{assignment}', [\App\Http\Controllers\ProjectManagement\SiteAssignmentController::class, 'show'])->name('show');
@@ -598,22 +597,22 @@ Route::prefix('company')->name('company.')->group(function () {
 });
 
 // Main Home Connection Route - Must be before catch-all routes
-Route::get('/company/ProjectManagement/homeConnection', function(Request $request) {
+Route::get('/company/ProjectManagement/homeConnection', function (Request $request) {
     $companyId = Session::get('selected_company_id') ?? 1;
-    
+
     // Get business unit filter from request
     $businessUnit = $request->get('business_unit');
-    
+
     // Get team filter from request
     $teamId = $request->get('team_id');
-    
+
     // Build query with optional business unit filter
     $query = App\Models\ProjectManagement\HomeConnectionCustomer::where('company_id', $companyId);
-    
+
     if ($businessUnit && in_array($businessUnit, ['GESL', 'LINFRA'])) {
         $query->where('business_unit', $businessUnit);
     }
-    
+
     $customers = $query->orderBy('created_at', 'desc')
         ->paginate(5); // 5 customers per page
 
@@ -624,12 +623,12 @@ Route::get('/company/ProjectManagement/homeConnection', function(Request $reques
     $assignmentsQuery = App\Models\ProjectManagement\SiteAssignment::where('company_id', $companyId)
         ->whereNotIn('status', ['completed', 'cancelled'])
         ->with(['customer', 'team.teamMembers', 'assignedBy', 'resolvedBy']);
-    
+
     // Apply team filter if specified
     if ($teamId && $teamId !== 'all') {
         $assignmentsQuery->where('team_id', $teamId);
     }
-    
+
     $assignments = $assignmentsQuery->orderBy('created_at', 'desc')
         ->paginate(5); // 5 assignments per page
 
@@ -681,18 +680,18 @@ Route::get('/company/ProjectManagement/homeConnection', function(Request $reques
         $totalConnectionsQuery->where('business_unit', $businessUnit);
     }
     $totalConnections = $totalConnectionsQuery->count();
-    
+
     // Active teams count (includes active, deployed, and maintenance - excludes only inactive)
     $activeTeams = App\Models\TeamParing::where('company_id', $companyId)
         ->whereIn('team_status', ['active', 'deployed', 'maintenance'])
         ->count();
-    
+
     // Teams on field (teams with active assignments)
     $teamsOnField = App\Models\ProjectManagement\SiteAssignment::where('company_id', $companyId)
         ->whereIn('status', ['pending', 'in_progress'])
         ->distinct('team_id')
         ->count('team_id');
-    
+
     // Pending requests count
     $pendingRequestsQuery = App\Models\ProjectManagement\HomeConnectionCustomer::where('company_id', $companyId)
         ->where('status', 'Pending');
@@ -700,43 +699,43 @@ Route::get('/company/ProjectManagement/homeConnection', function(Request $reques
         $pendingRequestsQuery->where('business_unit', $businessUnit);
     }
     $pendingRequests = $pendingRequestsQuery->count();
-    
+
     // New pending requests today
     $newPendingToday = App\Models\ProjectManagement\HomeConnectionCustomer::where('company_id', $companyId)
         ->where('status', 'Pending')
         ->whereDate('created_at', today())
         ->count();
-    
+
     // Calculate satisfaction rate (completed assignments without issues)
     $completedAssignments = App\Models\ProjectManagement\SiteAssignment::where('company_id', $companyId)
         ->where('status', App\Models\ProjectManagement\SiteAssignment::STATUS_COMPLETED)
         ->count();
-    
+
     $completedWithoutIssues = App\Models\ProjectManagement\SiteAssignment::where('company_id', $companyId)
         ->where('status', App\Models\ProjectManagement\SiteAssignment::STATUS_COMPLETED)
-        ->where(function($query) {
+        ->where(function ($query) {
             $query->where('has_issue', false)
-                  ->orWhereNull('has_issue');
+                ->orWhereNull('has_issue');
         })
         ->count();
-    
-    $satisfactionRate = $completedAssignments > 0 
-        ? round(($completedWithoutIssues / $completedAssignments) * 100) 
+
+    $satisfactionRate = $completedAssignments > 0
+        ? round(($completedWithoutIssues / $completedAssignments) * 100)
         : 0;
-    
+
     // Calculate growth percentage (compare with last month)
     $lastMonthConnections = App\Models\ProjectManagement\HomeConnectionCustomer::where('company_id', $companyId)
         ->whereMonth('created_at', now()->subMonth()->month)
         ->whereYear('created_at', now()->subMonth()->year)
         ->count();
-    
+
     $currentMonthConnections = App\Models\ProjectManagement\HomeConnectionCustomer::where('company_id', $companyId)
         ->whereMonth('created_at', now()->month)
         ->whereYear('created_at', now()->year)
         ->count();
-    
-    $growthPercentage = $lastMonthConnections > 0 
-        ? round((($currentMonthConnections - $lastMonthConnections) / $lastMonthConnections) * 100, 1) 
+
+    $growthPercentage = $lastMonthConnections > 0
+        ? round((($currentMonthConnections - $lastMonthConnections) / $lastMonthConnections) * 100, 1)
         : 0;
 
     return view('company.ProjectManagement.homeConnection', [
@@ -908,11 +907,11 @@ Route::prefix('individual')->name('individual.')->group(function () {
 Route::get('company/projects/export-csv', [App\Http\Controllers\ProjectManagement\ProjectController::class, 'export'])
     ->name('company.projects.export')
     ->middleware(['auth', 'company.session']);
-    // Project Management Routes
+// Project Management Routes
 Route::prefix('company')->middleware(['auth', 'company.session'])->name('company.')->group(function () {
     // Main Project Management Dashboard
     Route::get('/projects', [App\Http\Controllers\ProjectManagement\ProjectManagementController::class, 'index'])->name('projects.dashboard');
-    
+
     Route::prefix('projects')->name('projects.')->group(function () {
         Route::post('/all', [App\Http\Controllers\ProjectManagement\ProjectController::class, 'index'])->name('index');
         Route::post('/', [App\Http\Controllers\ProjectManagement\ProjectController::class, 'store'])->name('store');
@@ -921,8 +920,8 @@ Route::prefix('company')->middleware(['auth', 'company.session'])->name('company
         Route::get('/{id}/edit', [App\Http\Controllers\ProjectManagement\ProjectController::class, 'edit'])->name('edit');
         Route::delete('/{id}', [App\Http\Controllers\ProjectManagement\ProjectController::class, 'destroy'])->name('destroy');
         Route::put('/{id}/status', [App\Http\Controllers\ProjectManagement\ProjectController::class, 'updateStatus'])->name('status');
-       
-            
+
+
         Route::get('/managers', [App\Http\Controllers\ProjectManagement\ProjectController::class, 'getManagers'])->name('managers');
     });
 
@@ -933,7 +932,7 @@ Route::prefix('company')->middleware(['auth', 'company.session'])->name('company
         Route::put('/{id}', [App\Http\Controllers\ProjectManagement\TaskController::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\ProjectManagement\TaskController::class, 'destroy'])->name('destroy');
         Route::put('/{id}/status', [App\Http\Controllers\ProjectManagement\TaskController::class, 'updateStatus'])->name('status');
-        
+
         // Additional Task Actions
         Route::get('/projects', [App\Http\Controllers\ProjectManagement\TaskController::class, 'getProjects'])->name('projects');
         Route::get('/teams', [App\Http\Controllers\ProjectManagement\TaskController::class, 'getTeams'])->name('teams');
@@ -943,11 +942,11 @@ Route::prefix('company')->middleware(['auth', 'company.session'])->name('company
     Route::prefix('pmreports')->name('pmreports.')->group(function () {
         // Main reports dashboard
         Route::get('/', [App\Http\Controllers\ProjectManagement\PmReportController::class, 'index'])->name('index');
-        
+
         // AJAX endpoints for analytics data
         Route::get('/analytics', [App\Http\Controllers\ProjectManagement\PmReportController::class, 'getAnalytics'])->name('analytics');
         Route::get('/priority-tasks', [App\Http\Controllers\ProjectManagement\PmReportController::class, 'getPriorityTasks'])->name('priority-tasks');
-        
+
         // Report generation and export
         Route::post('/generate', [App\Http\Controllers\ProjectManagement\PmReportController::class, 'generateReport'])->name('generate');
         Route::post('/export', [App\Http\Controllers\ProjectManagement\PmReportController::class, 'exportData'])->name('export');
@@ -956,13 +955,20 @@ Route::prefix('company')->middleware(['auth', 'company.session'])->name('company
 
 // Management Routes - Must be before catch-all routes
 Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.session'])->group(function () {
-    Route::get('/Management/purchase-order-approval', function() {
+    Route::get('/Management/purchase-order-approval', function () {
         return view('company.Management.purchase-order-approval');
     })->name('management.purchase-order-approval');
-    
-    Route::get('/Management/requisition-approval', function() {
+
+    Route::get('/Management/requisition-approval', function () {
         return view('company.Management.requisition-approval');
     })->name('management.requisition-approval');
+});
+
+// Fuel Management Routes
+Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.session'])->name('company.')->group(function () {
+    Route::prefix('fuel-management')->name('fuel.')->group(function () {
+        Route::resource('stations', FuelStationController::class)->except(['create', 'edit']);
+    });
 });
 
 // Catch-all routes - Keep these last
@@ -1179,7 +1185,7 @@ Route::prefix('company/hr/staff')->name('staff.')->group(function () {
 });
 
 // Debug route for testing performance API
-Route::get('/debug-performance-api', function() {
+Route::get('/debug-performance-api', function () {
     try {
         session(['selected_company_id' => 1]);
 
@@ -1214,7 +1220,7 @@ Route::prefix('company/hr/documentation')->name('documentation.')->group(functio
     Route::post('/folders/create', [DocumentationController::class, 'createFolder'])->name('folders.create');
     Route::put('/folders/{id}', [DocumentationController::class, 'updateFolder'])->name('folders.update');
     Route::delete('/folders/{id}', [DocumentationController::class, 'deleteFolder'])->name('folders.delete');
-    
+
     // Document routes
     Route::post('/', [DocumentationController::class, 'index'])->name('index');
     Route::post('/store', [DocumentationController::class, 'store'])->name('store');
@@ -1227,7 +1233,7 @@ Route::prefix('company/hr/documentation')->name('documentation.')->group(functio
 });
 
 // Debug route for testing folders API
-Route::post('/debug-folders', function() {
+Route::post('/debug-folders', function () {
     return response()->json([
         'success' => true,
         'message' => 'Debug route working',
@@ -1248,7 +1254,7 @@ Route::prefix('company/warehouse/purchasing_order')->name('purchasing_order.')->
     Route::post('/suppliers', [POController::class, 'supplierStore'])->name('supplier.store');
     Route::post('/generatePONumber', [POController::class, 'generatePONumber'])->name('generate.po.number');
     Route::post('/validate-batch-number', [POController::class, 'validateBatchNumber'])->name('validate.batch.number');
-    
+
     // Tax configuration routes
     Route::get('/tax-configurations', [POController::class, 'getTaxConfigurations'])->name('tax.configurations');
     Route::post('/calculate-tax', [POController::class, 'calculateTax'])->name('calculate.tax');
@@ -1280,122 +1286,122 @@ Route::prefix('company')->middleware(['auth', 'company.session'])->group(functio
         Route::post('/bulk-approve', [POApprovalController::class, 'bulkApprove'])->name('bulk_approve');
         Route::get('/export', [POApprovalController::class, 'exportApprovals'])->name('export');
         Route::post('/statistics', [POApprovalController::class, 'getProcurementStatistics'])->name('statistics');
-        
+
         // Invoice upload routes
         Route::post('/upload-invoice/{id}', [POApprovalController::class, 'uploadInvoice'])->name('upload_invoice');
         Route::delete('/delete-invoice/{poId}/{invoiceId}', [POApprovalController::class, 'deleteInvoice'])->name('delete_invoice');
         Route::get('/download-invoice/{poId}/{invoiceId}', [POApprovalController::class, 'downloadInvoice'])->name('download_invoice');
         Route::post('/batch-invoice-status', [POApprovalController::class, 'batchInvoiceStatus'])->name('batch_invoice_status');
-        
+
         // Test route for debugging
         Route::get('/test-upload/{id}', [POApprovalController::class, 'testUpload'])->name('test_upload');
     });
     Route::prefix('warehouse/suppliers')->name('suppliers.')->group(function () {
-    Route::post('/all', [SupplierController::class, 'index'])->name('index');
+        Route::post('/all', [SupplierController::class, 'index'])->name('index');
         Route::post('/search', [SupplierController::class, 'search'])->name('search');
         Route::post('/export', [SupplierController::class, 'export'])->name('export');
         Route::get('/filter-data', [SupplierController::class, 'getFilterData'])->name('filter-data');
-    Route::post('/', [SupplierController::class, 'store'])->name('store');
-    
-    // Test route for debugging
-    Route::get('/test', function() {
-        return response()->json([
-            'success' => true,
-            'message' => 'Supplier route is working',
-            'auth' => auth()->check(),
-            'company_id' => session('selected_company_id')
-        ]);
-    })->name('test');
-    
-    // Test purchase orders data
-    Route::get('/test-purchase-orders', function() {
-        $companyId = session('selected_company_id');
-        $suppliers = \App\Models\Wh_Supplier::where('company_id', $companyId)
-            ->with(['purchaseOrders' => function($q) {
-                $q->latest()->take(1);
-            }])
-            ->get();
-        
-        return response()->json([
-            'suppliers' => $suppliers->map(function($supplier) {
-                return [
-                    'id' => $supplier->id,
-                    'company_name' => $supplier->company_name,
-                    'purchase_orders_count' => $supplier->purchaseOrders->count(),
-                    'purchase_orders' => $supplier->purchaseOrders->map(function($order) {
-                        return [
-                            'id' => $order->id,
-                            'po_number' => $order->po_number,
-                            'total_value' => $order->total_value,
-                            'created_at' => $order->created_at,
-                            'supplier_id' => $order->supplier_id
-                        ];
-                    })
+        Route::post('/', [SupplierController::class, 'store'])->name('store');
+
+        // Test route for debugging
+        Route::get('/test', function () {
+            return response()->json([
+                'success' => true,
+                'message' => 'Supplier route is working',
+                'auth' => auth()->check(),
+                'company_id' => session('selected_company_id')
+            ]);
+        })->name('test');
+
+        // Test purchase orders data
+        Route::get('/test-purchase-orders', function () {
+            $companyId = session('selected_company_id');
+            $suppliers = \App\Models\Wh_Supplier::where('company_id', $companyId)
+                ->with(['purchaseOrders' => function ($q) {
+                    $q->latest()->take(1);
+                }])
+                ->get();
+
+            return response()->json([
+                'suppliers' => $suppliers->map(function ($supplier) {
+                    return [
+                        'id' => $supplier->id,
+                        'company_name' => $supplier->company_name,
+                        'purchase_orders_count' => $supplier->purchaseOrders->count(),
+                        'purchase_orders' => $supplier->purchaseOrders->map(function ($order) {
+                            return [
+                                'id' => $order->id,
+                                'po_number' => $order->po_number,
+                                'total_value' => $order->total_value,
+                                'created_at' => $order->created_at,
+                                'supplier_id' => $order->supplier_id
+                            ];
+                        })
+                    ];
+                })
+            ]);
+        })->name('test-purchase-orders');
+
+        // Simple test route to check purchase orders
+        Route::get('/check-orders', function () {
+            $orders = \App\Models\Wh_PurchaseOrder::with('supplier')->get();
+            $data = [];
+            foreach ($orders as $order) {
+                $data[] = [
+                    'po_number' => $order->po_number,
+                    'supplier_name' => $order->supplier->company_name,
+                    'supplier_id' => $order->supplier_id,
+                    'total_value' => $order->total_value,
+                    'created_at' => $order->created_at
                 ];
-            })
-        ]);
-    })->name('test-purchase-orders');
-    
-    // Simple test route to check purchase orders
-    Route::get('/check-orders', function() {
-        $orders = \App\Models\Wh_PurchaseOrder::with('supplier')->get();
-        $data = [];
-        foreach($orders as $order) {
-            $data[] = [
-                'po_number' => $order->po_number,
-                'supplier_name' => $order->supplier->company_name,
-                'supplier_id' => $order->supplier_id,
-                'total_value' => $order->total_value,
-                'created_at' => $order->created_at
-            ];
-        }
-        return response()->json($data);
-    })->name('check-orders');
-    
-    // Rating endpoints - must come before {id} routes
-    Route::post('/rate', [SupplierController::class, 'rateSupplier'])->name('rate');
-    Route::get('/{id}/ratings', [SupplierController::class, 'getSupplierRatings'])->name('ratings');
-    
-    Route::post('/{id}', [SupplierController::class, 'show'])->name('show');
-    Route::put('/{id}', [SupplierController::class, 'update'])->name('update');
-    Route::delete('/{id}', [SupplierController::class, 'destroy'])->name('destroy');
-});
+            }
+            return response()->json($data);
+        })->name('check-orders');
+
+        // Rating endpoints - must come before {id} routes
+        Route::post('/rate', [SupplierController::class, 'rateSupplier'])->name('rate');
+        Route::get('/{id}/ratings', [SupplierController::class, 'getSupplierRatings'])->name('ratings');
+
+        Route::post('/{id}', [SupplierController::class, 'show'])->name('show');
+        Route::put('/{id}', [SupplierController::class, 'update'])->name('update');
+        Route::delete('/{id}', [SupplierController::class, 'destroy'])->name('destroy');
+    });
 
     Route::prefix('warehouse/quality-inspections')->name('quality-inspections.')->group(function () {
-    // Main CRUD operations
-    Route::post('/all', [QualityInspectionController::class, 'index'])->name('index');
+        // Main CRUD operations
+        Route::post('/all', [QualityInspectionController::class, 'index'])->name('index');
 
-    
-    // Special endpoints
-    Route::post('/suppliers-with-pending-pos', [QualityInspectionController::class, 'getSuppliersWithPendingPOs'])->name('suppliers-with-pending-pos');
-    Route::post('/generate-batch-number', [QualityInspectionController::class, 'generateBatchNumber'])->name('generate-batch-number');
-    Route::post('/categories', [QualityInspectionController::class, 'getCategories'])->name('categories');
-    
-    Route::post('/{supplierId}/pending-pos', [QualityInspectionController::class, 'getPendingPOsForSupplier'])->name('pending-pos');
-    Route::post('/{poId}/uninspected-items', [QualityInspectionController::class, 'getUninspectedItems'])->name('uninspected-items');
-    // Route::post('/{id}/update-status', [QualityInspectionController::class, 'updateStatus'])->name('update-status');
-    
-Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('edit');
+
+        // Special endpoints
+        Route::post('/suppliers-with-pending-pos', [QualityInspectionController::class, 'getSuppliersWithPendingPOs'])->name('suppliers-with-pending-pos');
+        Route::post('/generate-batch-number', [QualityInspectionController::class, 'generateBatchNumber'])->name('generate-batch-number');
+        Route::post('/categories', [QualityInspectionController::class, 'getCategories'])->name('categories');
+
+        Route::post('/{supplierId}/pending-pos', [QualityInspectionController::class, 'getPendingPOsForSupplier'])->name('pending-pos');
+        Route::post('/{poId}/uninspected-items', [QualityInspectionController::class, 'getUninspectedItems'])->name('uninspected-items');
+        // Route::post('/{id}/update-status', [QualityInspectionController::class, 'updateStatus'])->name('update-status');
+
+        Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('edit');
         Route::post('/', [QualityInspectionController::class, 'store'])->name('store');
-    Route::post('/{id}', [QualityInspectionController::class, 'show'])->name('show');
-    Route::put('/{id}', [QualityInspectionController::class, 'update'])->name('update');
-    Route::delete('/{id}', [QualityInspectionController::class, 'destroy'])->name('destroy');
-});
+        Route::post('/{id}', [QualityInspectionController::class, 'show'])->name('show');
+        Route::put('/{id}', [QualityInspectionController::class, 'update'])->name('update');
+        Route::delete('/{id}', [QualityInspectionController::class, 'destroy'])->name('destroy');
+    });
 
     // Central Store Routes
     Route::prefix('warehouse/central-store')->name('central-store.')->group(function () {
-    Route::get('/', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'index'])->name('index');
-    Route::post('/page-data', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getPageData'])->name('page-data');
-    Route::post('/suppliers-with-approved-pos', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getSuppliersWithApprovedPOs'])->name('suppliers-with-approved-pos');
-    Route::post('/{supplierId}/approved-pos', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getApprovedPOsForSupplier'])->name('approved-pos');
-    Route::post('/{poId}/approved-items', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getApprovedItemsFromPO'])->name('approved-items');
-    Route::post('/add-item', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'addNewItem'])->name('add-item');
-    Route::post('/items', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getAllItems'])->name('items');
-    Route::post('/{itemId}/complete', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'markItemCompleted'])->name('complete');
-    Route::post('/items/{itemId}/update', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'updateItem'])->name('update-item');
-    
-    // Debug route for testing
-            Route::get('/test-update-route', function() {
+        Route::get('/', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'index'])->name('index');
+        Route::post('/page-data', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getPageData'])->name('page-data');
+        Route::post('/suppliers-with-approved-pos', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getSuppliersWithApprovedPOs'])->name('suppliers-with-approved-pos');
+        Route::post('/{supplierId}/approved-pos', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getApprovedPOsForSupplier'])->name('approved-pos');
+        Route::post('/{poId}/approved-items', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getApprovedItemsFromPO'])->name('approved-items');
+        Route::post('/add-item', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'addNewItem'])->name('add-item');
+        Route::post('/items', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getAllItems'])->name('items');
+        Route::post('/{itemId}/complete', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'markItemCompleted'])->name('complete');
+        Route::post('/items/{itemId}/update', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'updateItem'])->name('update-item');
+
+        // Debug route for testing
+        Route::get('/test-update-route', function () {
             return response()->json([
                 'success' => true,
                 'message' => 'Update route is accessible',
@@ -1405,11 +1411,11 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
                 'route_exists' => true
             ]);
         })->name('test-update-route');
-        
-        Route::get('/test-images', function() {
+
+        Route::get('/test-images', function () {
             $items = \App\Models\CentralStore::whereNotNull('images')->get(['id', 'item_name', 'images']);
             return response()->json([
-                'items_with_images' => $items->map(function($item) {
+                'items_with_images' => $items->map(function ($item) {
                     return [
                         'id' => $item->id,
                         'item_name' => $item->item_name,
@@ -1418,44 +1424,44 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
                 })
             ]);
         })->name('test-images');
-    Route::post('/statistics', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getStatistics'])->name('statistics');
-    Route::post('/check-sku-uniqueness', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'checkSkuUniqueness'])->name('check-sku-uniqueness');
-    Route::post('/check-barcode-uniqueness', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'checkBarcodeUniqueness'])->name('check-barcode-uniqueness');
-    Route::post('/available-items-for-requisition', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getAvailableItemsForRequisition'])->name('available-items-for-requisition');
-    
-    // Debug routes for testing
-    Route::get('/debug/suppliers', function() {
-        $companyId = session('selected_company_id');
-        $suppliers = \App\Models\Wh_Supplier::where('company_id', $companyId)->get();
-        return response()->json([
-            'company_id' => $companyId,
-            'suppliers' => $suppliers->map(function($s) {
-                return ['id' => $s->id, 'name' => $s->company_name];
-            })
-        ]);
-    });
-    
-    Route::get('/debug/pos/{supplierId}', function($supplierId) {
-        $companyId = session('selected_company_id');
-        $pos = \App\Models\Wh_PurchaseOrder::where('supplier_id', $supplierId)
-            ->where('company_id', $companyId)
-            ->get();
-        return response()->json([
-            'supplier_id' => $supplierId,
-            'pos' => $pos->map(function($po) {
-                $items = is_string($po->items) ? json_decode($po->items, true) : $po->items;
-                return [
-                    'id' => $po->id,
-                    'po_number' => $po->po_number,
-                    'status' => $po->status,
-                    'items_count' => is_array($items) ? count($items) : 0
-                ];
-            })
-        ]);
-    });
-});
+        Route::post('/statistics', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getStatistics'])->name('statistics');
+        Route::post('/check-sku-uniqueness', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'checkSkuUniqueness'])->name('check-sku-uniqueness');
+        Route::post('/check-barcode-uniqueness', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'checkBarcodeUniqueness'])->name('check-barcode-uniqueness');
+        Route::post('/available-items-for-requisition', [App\Http\Controllers\WareHouse\CentralStoreController::class, 'getAvailableItemsForRequisition'])->name('available-items-for-requisition');
 
-    Route::prefix('warehouse/receivings')->group(function() {
+        // Debug routes for testing
+        Route::get('/debug/suppliers', function () {
+            $companyId = session('selected_company_id');
+            $suppliers = \App\Models\Wh_Supplier::where('company_id', $companyId)->get();
+            return response()->json([
+                'company_id' => $companyId,
+                'suppliers' => $suppliers->map(function ($s) {
+                    return ['id' => $s->id, 'name' => $s->company_name];
+                })
+            ]);
+        });
+
+        Route::get('/debug/pos/{supplierId}', function ($supplierId) {
+            $companyId = session('selected_company_id');
+            $pos = \App\Models\Wh_PurchaseOrder::where('supplier_id', $supplierId)
+                ->where('company_id', $companyId)
+                ->get();
+            return response()->json([
+                'supplier_id' => $supplierId,
+                'pos' => $pos->map(function ($po) {
+                    $items = is_string($po->items) ? json_decode($po->items, true) : $po->items;
+                    return [
+                        'id' => $po->id,
+                        'po_number' => $po->po_number,
+                        'status' => $po->status,
+                        'items_count' => is_array($items) ? count($items) : 0
+                    ];
+                })
+            ]);
+        });
+    });
+
+    Route::prefix('warehouse/receivings')->group(function () {
         Route::post('/pending-pos', [POReceivingController::class, 'getPendingPOs']);
         Route::post('/po-items/{po}', [POReceivingController::class, 'getPOItems']);
         Route::post('/', [POReceivingController::class, 'store']);
@@ -1468,28 +1474,28 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
         Route::post('/po-receive-numbers', [POReceivingController::class, 'getPOReceiveNumbers']);
         Route::post('/reference-items', [POReceivingController::class, 'getReferenceItems']);
         Route::post('/current-user', [POReceivingController::class, 'getCurrentUser']);
-        
+
         // Supplier return routes
         Route::post('/supplier-references', [POReceivingController::class, 'getSupplierReferences']);
         Route::post('/receiving-items/{id}', [POReceivingController::class, 'getReceivingItems']);
         Route::post('/all-suppliers', [POReceivingController::class, 'getAllSuppliers']);
-        
+
         // Return management routes
         Route::post('/return-details/{id}', [POReceivingController::class, 'getReturnDetails']);
         Route::post('/process-return/{id}', [POReceivingController::class, 'processReturn']);
-        
+
         // Additional routes for table data
         Route::post('/purchase-orders', [POReceivingController::class, 'getPurchaseOrders']);
-        
+
         // GRN details and print routes - Changed to POST for AJAX compatibility
         Route::post('/grn-details/{id}', [POReceivingController::class, 'getGRNDetails']);
         Route::post('/print-grn/{id}', [POReceivingController::class, 'printGRN']);
-        
+
         // PO details route - Changed to POST for AJAX compatibility
         Route::post('/po-details/{id}', [POReceivingController::class, 'getPODetails']);
-        
+
         // Debug route
-        Route::get('/debug-session', function() {
+        Route::get('/debug-session', function () {
             return response()->json([
                 'session_company_id' => session('selected_company_id'),
                 'auth_check' => auth()->check(),
@@ -1500,23 +1506,23 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
                 ] : null
             ]);
         });
-        
+
         // Debug route for GRN data
         Route::get('/debug-grn-data', [POReceivingController::class, 'debugGRNData']);
-        
+
         // Debug route for database data
-        Route::get('/debug-data', function() {
+        Route::get('/debug-data', function () {
             $companyId = session('selected_company_id') ?? 1;
-            
+
             $purchaseOrders = \App\Models\Wh_PurchaseOrder::where('company_id', $companyId)->count();
             $receivings = \App\Models\POReceiving::where('company_id', $companyId)->count();
             $supplierReturns = \App\Models\SupplierReturn::where('company_id', $companyId)->count();
-            
+
             // Get detailed receiving data
             $receivingDetails = \App\Models\POReceiving::where('company_id', $companyId)
                 ->with(['purchaseOrder.supplier', 'user'])
                 ->get()
-                ->map(function($receiving) {
+                ->map(function ($receiving) {
                     return [
                         'id' => $receiving->id,
                         'receiving_number' => $receiving->receiving_number,
@@ -1531,7 +1537,7 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
                         'created_at' => $receiving->created_at
                     ];
                 });
-            
+
             return response()->json([
                 'company_id' => $companyId,
                 'purchase_orders_count' => $purchaseOrders,
@@ -1555,7 +1561,7 @@ Route::get('/test-email', function () {
             '<tr><td>Test Item</td><td>1</td><td>GH₵ 100.00</td><td>GH₵ 100.00</td></tr>',
             100.00
         );
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Test email job dispatched successfully. Check the queue and logs.'
@@ -1579,7 +1585,6 @@ Route::get('/individual/index', [IndividualUserController::class, 'index'])->nam
 Route::prefix('individual')->name('individual.')->group(function () {
 
     Route::get('/', [IndividualUserController::class, 'index'])->name('dashboard');
-
 });
 
 
@@ -1623,9 +1628,7 @@ Route::prefix('company')->name('company.')->group(function () {
         Route::delete('/{id}', [App\Http\Controllers\CRM\CrmSalesController::class, 'destroy'])->name('destroy');
 
         Route::put('/{id}/status', [App\Http\Controllers\CRM\CrmSalesController::class, 'updateStatus'])->name('status');
-
     });
-
 });
 
 
@@ -1643,7 +1646,6 @@ Route::prefix('company')->name('company.')->group(function () {
         Route::put('close/{id}', [App\Http\Controllers\CRM\TicketController::class, 'close'])->name('destroy'); // Soft delete ticket
 
     });
-
 });
 
 
@@ -1703,7 +1705,6 @@ Route::prefix('company')->group(function () {
             Route::put('/{tierId}', [CustomerTierController::class, 'update']);
 
             Route::delete('/{tierId}', [CustomerTierController::class, 'destroy']);
-
         });
 
 
@@ -1723,7 +1724,6 @@ Route::prefix('company')->group(function () {
             Route::delete('/{rewardId}', [RewardController::class, 'destroy']);
 
             Route::post('/getrewards', [RewardController::class, 'getRewards']);
-
         });
 
 
@@ -1763,11 +1763,8 @@ Route::prefix('company')->group(function () {
             Route::put('/{referralId}', [ReferralController::class, 'update']);
 
             Route::delete('/{referralId}', [ReferralController::class, 'destroy']);
-
         });
-
     });
-
 });
 
 
@@ -1800,7 +1797,6 @@ Route::prefix('company/hr/employees')->name('hr.employees.')->group(function () 
     Route::post('/{employee}/send-message', [EmployeeController::class, 'sendMessage'])->name('send-message');
 
     Route::get('/export', [EmployeeController::class, 'export'])->name('export');
-
 });
 
 
@@ -1827,7 +1823,6 @@ Route::prefix('company/hr/jobs')->name('jobs.')->group(function () {
     Route::post('/update', [JobsController::class, 'update'])->name('update');
 
     Route::post('/delete', [JobsController::class, 'delete'])->name('delete');
-
 });
 
 
@@ -1855,7 +1850,6 @@ Route::prefix('company/hr/attendance')->name('attendance.')->group(function () {
     Route::post('/employees', [AttendanceController::class, 'getEmployees'])->name('employees');
 
     Route::post('/import', [AttendanceController::class, 'import'])->name('import');
-
 });
 
 
@@ -1891,7 +1885,6 @@ Route::prefix('company/hr/payroll')->name('payroll.')->group(function () {
     Route::post('/export/pdf', [PayrollController::class, 'exportPdf'])->name('export.pdf');
 
     Route::post('/export/csv', [PayrollController::class, 'exportCsv'])->name('export.csv');
-
 });
 
 
@@ -1935,7 +1928,6 @@ Route::prefix('company/warehouse/purchasing_order')->name('purchasing_order.')->
     Route::put('/suppliers/{id}', [POController::class, 'supplierUpdate'])->name('supplier.update');
 
     Route::delete('/suppliers/{id}', [POController::class, 'supplierDestroy'])->name('supplier.destroy');
-
 });
 
 
@@ -1952,137 +1944,135 @@ Route::prefix('company')->middleware(['auth', 'company.session'])->group(functio
         Route::post('/bulk-approve', [POApprovalController::class, 'bulkApprove'])->name('bulk_approve');
         Route::get('/export', [POApprovalController::class, 'exportApprovals'])->name('export');
         Route::post('/statistics', [POApprovalController::class, 'getProcurementStatistics'])->name('statistics');
-        
+
         // Invoice upload routes
         Route::post('/upload-invoice/{id}', [POApprovalController::class, 'uploadInvoice'])->name('upload_invoice');
         Route::delete('/delete-invoice/{poId}/{invoiceId}', [POApprovalController::class, 'deleteInvoice'])->name('delete_invoice');
         Route::get('/download-invoice/{poId}/{invoiceId}', [POApprovalController::class, 'downloadInvoice'])->name('download_invoice');
         Route::post('/batch-invoice-status', [POApprovalController::class, 'batchInvoiceStatus'])->name('batch_invoice_status');
-        
+
         // Test route for debugging
         Route::get('/test-upload/{id}', [POApprovalController::class, 'testUpload'])->name('test_upload');
     });
     Route::prefix('warehouse/suppliers')->name('suppliers.')->group(function () {
 
-    Route::post('/all', [SupplierController::class, 'index'])->name('index');
+        Route::post('/all', [SupplierController::class, 'index'])->name('index');
 
         Route::post('/search', [SupplierController::class, 'search'])->name('search');
 
         Route::post('/export', [SupplierController::class, 'export'])->name('export');
         Route::get('/filter-data', [SupplierController::class, 'getFilterData'])->name('filter-data');
-    Route::post('/', [SupplierController::class, 'store'])->name('store');
+        Route::post('/', [SupplierController::class, 'store'])->name('store');
 
-    
-    // Test route for debugging
-    Route::get('/test', function() {
-        return response()->json([
-            'success' => true,
-            'message' => 'Supplier route is working',
-            'auth' => auth()->check(),
-            'company_id' => session('selected_company_id')
-        ]);
-    })->name('test');
-    
-    // Test purchase orders data
-    Route::get('/test-purchase-orders', function() {
-        $companyId = session('selected_company_id');
-        $suppliers = \App\Models\Wh_Supplier::where('company_id', $companyId)
-            ->with(['purchaseOrders' => function($q) {
-                $q->latest()->take(1);
-            }])
-            ->get();
-        
-        return response()->json([
-            'suppliers' => $suppliers->map(function($supplier) {
-                return [
-                    'id' => $supplier->id,
-                    'company_name' => $supplier->company_name,
-                    'purchase_orders_count' => $supplier->purchaseOrders->count(),
-                    'purchase_orders' => $supplier->purchaseOrders->map(function($order) {
-                        return [
-                            'id' => $order->id,
-                            'po_number' => $order->po_number,
-                            'total_value' => $order->total_value,
-                            'created_at' => $order->created_at,
-                            'supplier_id' => $order->supplier_id
-                        ];
-                    })
+
+        // Test route for debugging
+        Route::get('/test', function () {
+            return response()->json([
+                'success' => true,
+                'message' => 'Supplier route is working',
+                'auth' => auth()->check(),
+                'company_id' => session('selected_company_id')
+            ]);
+        })->name('test');
+
+        // Test purchase orders data
+        Route::get('/test-purchase-orders', function () {
+            $companyId = session('selected_company_id');
+            $suppliers = \App\Models\Wh_Supplier::where('company_id', $companyId)
+                ->with(['purchaseOrders' => function ($q) {
+                    $q->latest()->take(1);
+                }])
+                ->get();
+
+            return response()->json([
+                'suppliers' => $suppliers->map(function ($supplier) {
+                    return [
+                        'id' => $supplier->id,
+                        'company_name' => $supplier->company_name,
+                        'purchase_orders_count' => $supplier->purchaseOrders->count(),
+                        'purchase_orders' => $supplier->purchaseOrders->map(function ($order) {
+                            return [
+                                'id' => $order->id,
+                                'po_number' => $order->po_number,
+                                'total_value' => $order->total_value,
+                                'created_at' => $order->created_at,
+                                'supplier_id' => $order->supplier_id
+                            ];
+                        })
+                    ];
+                })
+            ]);
+        })->name('test-purchase-orders');
+
+        // Simple test route to check purchase orders
+        Route::get('/check-orders', function () {
+            $orders = \App\Models\Wh_PurchaseOrder::with('supplier')->get();
+            $data = [];
+            foreach ($orders as $order) {
+                $data[] = [
+                    'po_number' => $order->po_number,
+                    'supplier_name' => $order->supplier->company_name,
+                    'supplier_id' => $order->supplier_id,
+                    'total_value' => $order->total_value,
+                    'created_at' => $order->created_at
                 ];
-            })
-        ]);
-    })->name('test-purchase-orders');
-    
-    // Simple test route to check purchase orders
-    Route::get('/check-orders', function() {
-        $orders = \App\Models\Wh_PurchaseOrder::with('supplier')->get();
-        $data = [];
-        foreach($orders as $order) {
-            $data[] = [
-                'po_number' => $order->po_number,
-                'supplier_name' => $order->supplier->company_name,
-                'supplier_id' => $order->supplier_id,
-                'total_value' => $order->total_value,
-                'created_at' => $order->created_at
-            ];
-        }
-        return response()->json($data);
-    })->name('check-orders');
-    
-    // Rating endpoints - must come before {id} routes
-    Route::post('/rate', [SupplierController::class, 'rateSupplier'])->name('rate');
-    Route::get('/{id}/ratings', [SupplierController::class, 'getSupplierRatings'])->name('ratings');
-    
-    Route::post('/{id}', [SupplierController::class, 'show'])->name('show');
+            }
+            return response()->json($data);
+        })->name('check-orders');
 
-    Route::put('/{id}', [SupplierController::class, 'update'])->name('update');
+        // Rating endpoints - must come before {id} routes
+        Route::post('/rate', [SupplierController::class, 'rateSupplier'])->name('rate');
+        Route::get('/{id}/ratings', [SupplierController::class, 'getSupplierRatings'])->name('ratings');
 
-    Route::delete('/{id}', [SupplierController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}', [SupplierController::class, 'show'])->name('show');
 
-});
+        Route::put('/{id}', [SupplierController::class, 'update'])->name('update');
+
+        Route::delete('/{id}', [SupplierController::class, 'destroy'])->name('destroy');
+    });
 
 
 
     Route::prefix('warehouse/quality-inspections')->name('quality-inspections.')->group(function () {
 
-    // Main CRUD operations
+        // Main CRUD operations
 
-    Route::post('/all', [QualityInspectionController::class, 'index'])->name('index');
+        Route::post('/all', [QualityInspectionController::class, 'index'])->name('index');
 
 
 
-    
 
-    // Special endpoints
 
-    Route::post('/suppliers-with-pending-pos', [QualityInspectionController::class, 'getSuppliersWithPendingPOs'])->name('suppliers-with-pending-pos');
+        // Special endpoints
 
-    Route::post('/generate-batch-number', [QualityInspectionController::class, 'generateBatchNumber'])->name('generate-batch-number');
+        Route::post('/suppliers-with-pending-pos', [QualityInspectionController::class, 'getSuppliersWithPendingPOs'])->name('suppliers-with-pending-pos');
 
-    
+        Route::post('/generate-batch-number', [QualityInspectionController::class, 'generateBatchNumber'])->name('generate-batch-number');
 
-    Route::post('/{supplierId}/pending-pos', [QualityInspectionController::class, 'getPendingPOsForSupplier'])->name('pending-pos');
 
-    Route::post('/{poId}/uninspected-items', [QualityInspectionController::class, 'getUninspectedItems'])->name('uninspected-items');
 
-    // Route::post('/{id}/update-status', [QualityInspectionController::class, 'updateStatus'])->name('update-status');
+        Route::post('/{supplierId}/pending-pos', [QualityInspectionController::class, 'getPendingPOsForSupplier'])->name('pending-pos');
 
-    
+        Route::post('/{poId}/uninspected-items', [QualityInspectionController::class, 'getUninspectedItems'])->name('uninspected-items');
 
-Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('edit');
+        // Route::post('/{id}/update-status', [QualityInspectionController::class, 'updateStatus'])->name('update-status');
+
+
+
+        Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('edit');
 
         Route::post('/', [QualityInspectionController::class, 'store'])->name('store');
 
-    Route::post('/{id}', [QualityInspectionController::class, 'show'])->name('show');
+        Route::post('/{id}', [QualityInspectionController::class, 'show'])->name('show');
 
-    Route::put('/{id}', [QualityInspectionController::class, 'update'])->name('update');
+        Route::put('/{id}', [QualityInspectionController::class, 'update'])->name('update');
 
-    Route::delete('/{id}', [QualityInspectionController::class, 'destroy'])->name('destroy');
-
-});
-
+        Route::delete('/{id}', [QualityInspectionController::class, 'destroy'])->name('destroy');
+    });
 
 
-    Route::prefix('warehouse/receivings')->group(function() {
+
+    Route::prefix('warehouse/receivings')->group(function () {
 
         Route::post('/pending-pos', [POReceivingController::class, 'getPendingPOs']);
 
@@ -2108,12 +2098,12 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
 
         Route::post('/current-user', [POReceivingController::class, 'getCurrentUser']);
 
-        
+
         // Supplier return routes
         Route::post('/supplier-references', [POReceivingController::class, 'getSupplierReferences']);
         Route::post('/receiving-items/{id}', [POReceivingController::class, 'getReceivingItems']);
         Route::post('/all-suppliers', [POReceivingController::class, 'getAllSuppliers']);
-        
+
 
         // Return management routes
 
@@ -2121,13 +2111,13 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
 
         Route::post('/process-return/{id}', [POReceivingController::class, 'processReturn']);
 
-        
+
 
         // Additional routes for table data
 
         Route::post('/purchase-orders', [POReceivingController::class, 'getPurchaseOrders']);
 
-        
+
 
         // GRN details and print routes - Changed to POST for AJAX compatibility
 
@@ -2135,17 +2125,17 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
 
         Route::post('/print-grn/{id}', [POReceivingController::class, 'printGRN']);
 
-        
+
 
         // PO details route - Changed to POST for AJAX compatibility
 
         Route::post('/po-details/{id}', [POReceivingController::class, 'getPODetails']);
 
-        
+
 
         // Debug route
 
-        Route::get('/debug-session', function() {
+        Route::get('/debug-session', function () {
 
             return response()->json([
 
@@ -2164,24 +2154,23 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
                 ] : null
 
             ]);
-
         });
 
-        
+
 
         // Debug route for GRN data
 
         Route::get('/debug-grn-data', [POReceivingController::class, 'debugGRNData']);
 
-        
+
 
         // Debug route for database data
 
-        Route::get('/debug-data', function() {
+        Route::get('/debug-data', function () {
 
             $companyId = session('selected_company_id') ?? 1;
 
-            
+
 
             $purchaseOrders = \App\Models\Wh_PurchaseOrder::where('company_id', $companyId)->count();
 
@@ -2189,7 +2178,7 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
 
             $supplierReturns = \App\Models\SupplierReturn::where('company_id', $companyId)->count();
 
-            
+
 
             // Get detailed receiving data
 
@@ -2199,7 +2188,7 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
 
                 ->get()
 
-                ->map(function($receiving) {
+                ->map(function ($receiving) {
 
                     return [
 
@@ -2226,10 +2215,9 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
                         'created_at' => $receiving->created_at
 
                     ];
-
                 });
 
-            
+
 
             return response()->json([
 
@@ -2244,11 +2232,8 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
                 'receiving_details' => $receivingDetails
 
             ]);
-
         });
-
     });
-
 });
 
 
@@ -2259,7 +2244,7 @@ Route::post('/{id}/edit', [QualityInspectionController::class, 'edit'])->name('e
 
 
 
-Route::prefix('company/warehouse/receivings')->group(function() {
+Route::prefix('company/warehouse/receivings')->group(function () {
     Route::post('/pending-pos', [POReceivingController::class, 'getPendingPOs']);
     Route::post('/po-items/{po}', [POReceivingController::class, 'getPOItems']);
     Route::post('/', [POReceivingController::class, 'store']);
@@ -2302,29 +2287,29 @@ Route::prefix('company/warehouse/requisitions')->name('warehouse.requisitions.')
 });
 
 // Test route for items API
-Route::get('/test-items-api', function() {
+Route::get('/test-items-api', function () {
     try {
         // Set a test company_id in session
         session(['selected_company_id' => 1]);
-        
+
         // Check if CentralStore model exists
         $modelExists = class_exists('\App\Models\CentralStore');
-        
+
         if (!$modelExists) {
             return response()->json([
                 'success' => false,
                 'error' => 'CentralStore model does not exist'
             ]);
         }
-        
+
         // First, let's check if there are any items in the central store
         $totalItems = \App\Models\CentralStore::where('company_id', 1)->count();
         $completedItems = \App\Models\CentralStore::where('company_id', 1)->where('status', 'completed')->count();
         $availableItems = \App\Models\CentralStore::where('company_id', 1)->where('status', 'completed')->where('quantity', '>', 0)->count();
-        
+
         // Get some sample items
         $sampleItems = \App\Models\CentralStore::where('company_id', 1)->limit(3)->get();
-        
+
         return response()->json([
             'success' => true,
             'model_exists' => $modelExists,
@@ -2346,18 +2331,18 @@ Route::get('/test-items-api', function() {
 });
 
 // Test route for project managers API
-Route::get('/test-project-managers-api', function() {
+Route::get('/test-project-managers-api', function () {
     try {
         // Set a test company_id in session
         session(['selected_company_id' => 1]);
-        
+
         // Test the project managers controller
         $controller = new \App\Http\Controllers\WareHouse\RequisitionController();
         $request = new \Illuminate\Http\Request();
-        
+
         $response = $controller->getProjectManagers();
         $data = $response->getData(true);
-        
+
         return response()->json([
             'success' => true,
             'project_managers_count' => count($data['data']),
@@ -2395,14 +2380,14 @@ Route::prefix('company/warehouse/waybills')->name('warehouse.waybills.')->group(
     Route::delete('/{id}', [App\Http\Controllers\WareHouse\WaybillController::class, 'deleteWaybill'])->name('delete');
 });
 
-        // Warehouse Dashboard Routes
-        Route::prefix('company/warehouse/dashboard')->name('warehouse.dashboard.')->group(function () {
-            Route::post('/statistics', [App\Http\Controllers\WareHouse\WarehouseDashboardController::class, 'getStatistics'])->name('statistics');
-            Route::post('/debug', [App\Http\Controllers\WareHouse\WarehouseDashboardController::class, 'debug'])->name('debug');
-            Route::post('/test', [App\Http\Controllers\WareHouse\WarehouseDashboardController::class, 'test'])->name('test');
-        });
+// Warehouse Dashboard Routes
+Route::prefix('company/warehouse/dashboard')->name('warehouse.dashboard.')->group(function () {
+    Route::post('/statistics', [App\Http\Controllers\WareHouse\WarehouseDashboardController::class, 'getStatistics'])->name('statistics');
+    Route::post('/debug', [App\Http\Controllers\WareHouse\WarehouseDashboardController::class, 'debug'])->name('debug');
+    Route::post('/test', [App\Http\Controllers\WareHouse\WarehouseDashboardController::class, 'test'])->name('test');
+});
 
-        // Warehouse Report Routes
+// Warehouse Report Routes
 Route::prefix('company/warehouse/reports')->name('warehouse.reports.')->group(function () {
     Route::post('/inventory-analytics', [App\Http\Controllers\WareHouse\WarehouseReportController::class, 'getInventoryAnalytics'])->name('inventory_analytics');
     Route::post('/chart-data', [App\Http\Controllers\WareHouse\WarehouseReportController::class, 'getChartData'])->name('chart_data');
@@ -2435,16 +2420,16 @@ Route::prefix('company/warehouse/suppliers')->name('warehouse.suppliers.')->grou
 });
 
 // Debug route to check requisitions and team members
-Route::get('/debug-requisitions', function() {
+Route::get('/debug-requisitions', function () {
     try {
         $result = [];
-        
+
         // Check requisitions
         $requisitions = \App\Models\Requisition::with('teamLeader')->get();
         $result['total_requisitions'] = $requisitions->count();
-        
+
         $requisitionsData = [];
-        foreach($requisitions as $req) {
+        foreach ($requisitions as $req) {
             $requisitionsData[] = [
                 'id' => $req->id,
                 'title' => $req->title,
@@ -2454,13 +2439,13 @@ Route::get('/debug-requisitions', function() {
             ];
         }
         $result['requisitions'] = $requisitionsData;
-        
+
         // Check team members
         $teamMembers = \App\Models\TeamMember::all();
         $result['total_team_members'] = $teamMembers->count();
-        
+
         $teamMembersData = [];
-        foreach($teamMembers as $member) {
+        foreach ($teamMembers as $member) {
             $teamMembersData[] = [
                 'id' => $member->id,
                 'full_name' => $member->full_name,
@@ -2469,13 +2454,13 @@ Route::get('/debug-requisitions', function() {
             ];
         }
         $result['team_members'] = $teamMembersData;
-        
+
         // Check team pairings
         $teamPairings = \App\Models\TeamParing::with('teamMembers', 'teamLead')->get();
         $result['total_team_pairings'] = $teamPairings->count();
-        
+
         $teamPairingsData = [];
-        foreach($teamPairings as $pairing) {
+        foreach ($teamPairings as $pairing) {
             $teamPairingsData[] = [
                 'id' => $pairing->id,
                 'team_name' => $pairing->team_name,
@@ -2486,7 +2471,7 @@ Route::get('/debug-requisitions', function() {
             ];
         }
         $result['team_pairings'] = $teamPairingsData;
-        
+
         return response()->json($result);
     } catch (\Exception $e) {
         return response()->json(['error' => $e->getMessage()]);
@@ -2503,7 +2488,3 @@ Route::prefix('company/management')->name('management.')->middleware(['auth.comp
         Route::post('/bulk-approve', [App\Http\Controllers\Management\PurchaseOrderApprovalController::class, 'bulkApprove'])->name('bulk_approve');
     });
 });
-
-
-
-

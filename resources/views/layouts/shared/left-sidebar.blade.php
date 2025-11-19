@@ -333,7 +333,7 @@
                         
                         @if($hasMenuAccess('station_management'))
                         <li>
-                            <a href="{{ route('any', 'company/FuelManagement/allstations') }}">
+                            <a href="{{ route('company.fuel.stations.index') }}">
                                 <i class="ri-building-4-line"></i>
                                 <span>Stations</span>
                             </a>

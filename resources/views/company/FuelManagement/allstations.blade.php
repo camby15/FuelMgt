@@ -423,6 +423,15 @@
             font-weight: 700;
         }
 
+        .station-field-hint {
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(11, 31, 68, 0.55);
+            font-weight: 600;
+            margin-top: 0.2rem;
+        }
+
         .station-input,
         .station-select,
         .station-textarea {
@@ -668,22 +677,19 @@
 @section('content')
     <div class="station-board">
         @php
-            $stationRows = [
-                ['name' => 'Wiaga','product' => 'AGO','code' => 'ST-001','location' => 'Builsa North, Upper East','address' => 'Station Road, Wiaga Township','manager' => 'Abena Kwakye','phone' => '+233 20 111 2233','gps_coordinates' => '10.7827, -0.8622'],
-                ['name' => 'Pwalugu','product' => 'PMS','code' => 'ST-002','location' => 'Talensi, Upper East','address' => 'Bolga–Tamale Hwy, Pwalugu Junction','manager' => 'Isaac Ndebugri','phone' => '+233 24 555 6677','gps_coordinates' => '10.6841, -0.9245'],
-                ['name' => 'Navrongo Main','product' => 'AGO','code' => 'ST-003','location' => 'Kassena-Nankana, Upper East','address' => 'Central Market Ring Road, Navrongo','manager' => 'Helen Bawa','phone' => '+233 50 998 4411','gps_coordinates' => '10.8965, -0.8937'],
-                ['name' => 'Wapuli','product' => 'PMS','code' => 'ST-004','location' => 'Saboba, Northern Region','address' => 'Opp. Wapuli Transport Yard, Tamale-Bimbilla Rd','manager' => 'Samuel Tia','phone' => '+233 27 803 5566','gps_coordinates' => '9.8456, -0.1234'],
-                ['name' => 'Kintampo','product' => 'AGO','code' => 'ST-005','location' => 'Kintampo North, Bono East','address' => 'Techiman-Kintampo Hwy, Kintampo Rest Stop','manager' => 'Anita Jabari','phone' => '+233 26 123 8899','gps_coordinates' => '8.0456, -1.7234'],
-                ['name' => 'Amoako','product' => 'PMS','code' => 'ST-006','location' => 'East Mamprusi, North East','address' => 'Amoako Lorry Park, Nalerigu Rd','manager' => 'Daniel Esubonteng','phone' => '+233 24 330 7711','gps_coordinates' => '10.3456, -0.5234'],
-                ['name' => 'Larabanga','product' => 'AGO','code' => 'ST-007','location' => 'West Gonja, Savannah','address' => 'Larabanga Junction, Mole Park Access Rd','manager' => 'Rahim Sulemana','phone' => '+233 20 700 4410','gps_coordinates' => '9.2234, -2.1234'],
-                ['name' => 'Bugubele','product' => 'PMS','code' => 'ST-008','location' => 'Builsa South, Upper East','address' => 'Bugubele Community Centre Street','manager' => 'Mabel Akosua','phone' => '+233 27 556 9981','gps_coordinates' => '10.6234, -0.7234'],
-                ['name' => 'Navrongo 2','product' => 'AGO','code' => 'ST-009','location' => 'Kassena-Nankana, Upper East','address' => 'Navrongo-Airstrip Road, Estate Area','manager' => 'Isaac Bangnab','phone' => '+233 55 881 7744','gps_coordinates' => '10.8965, -0.8937'],
-                ['name' => 'Paga Annex','product' => 'PMS','code' => 'ST-010','location' => 'Kassena-Nankana West, Upper East','address' => 'Border Market Lane, Paga','manager' => 'Lydia Obeng','phone' => '+233 24 990 6623','gps_coordinates' => '10.9876, -1.0234'],
-                ['name' => 'Bamvin','product' => 'AGO','code' => 'ST-011','location' => 'Sawla-Tuna-Kalba, Savannah','address' => 'Bamvin High Street, Opp. Community Clinic','manager' => 'Jonah Laar','phone' => '+233 20 332 1144','gps_coordinates' => '9.4567, -2.3456'],
-            ];
-
-            $managerNames = array_unique(array_column($stationRows, 'manager'));
+            $stations = $stations ?? collect();
+            $managerNamesList = collect($managerNames ?? [])->filter()->unique()->values();
         @endphp
+
+        @if ($errors->any())
+            <div class="alert alert-danger" role="alert">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <div class="station-board__actions">
             <button class="station-action-btn" type="button" data-open-modal="station-add">
@@ -693,7 +699,7 @@
 
         <div class="station-card">
             <div class="station-card__banner">
-                <span class="badge">Last Sync: {{ now()->format('h:i A') }}</span>
+                <span class="badge">Last Sync: {{ ($lastSyncedAt ?? now())->format('h:i A') }}</span>
             </div>
 
             <div class="station-table-wrapper">
@@ -711,22 +717,38 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($stationRows as $station)
-                                <tr data-product="{{ $station['product'] }}">
+                            @forelse ($stations as $station)
+                                @php
+                                    $stationProductsCollection = collect($station->products ?? [])->filter()->map(function ($product) {
+                                        return strtoupper($product);
+                                    });
+
+                                    if ($stationProductsCollection->isEmpty() && $station->product) {
+                                        $stationProductsCollection = collect([strtoupper($station->product)]);
+                                    }
+
+                                    $stationProductsList = $stationProductsCollection->values();
+                                    $primaryStationProduct = $stationProductsList->first() ?? '';
+                                    $stationProductsText = $stationProductsList->implode(' / ');
+                                @endphp
+                                <tr data-product="{{ $primaryStationProduct }}" data-products="{{ $stationProductsList->implode(',') }}">
                                     <td>
                                         <div class="station-name">
-                                            <strong>{{ $station['name'] }}</strong>
+                                            <strong>{{ $station->name }}</strong>
                                             <span class="station-name__meta">
-                                                {{ $station['code'] }} · {{ $station['product'] }}
+                                                {{ $station->code }} · {{ $stationProductsText ?: '—' }}
                                             </span>
                                         </div>
                                     </td>
-                                    <td>{{ $station['location'] }}</td>
-                                    <td class="station-address">{{ $station['address'] }}</td>
-                                    <td>{{ $station['gps_coordinates'] ?? '—' }}</td>
-                                    <td>{{ $station['manager'] }}</td>
+                                    <td>{{ $station->location }}</td>
+                                    <td class="station-address">{{ $station->address }}</td>
+                                    <td>{{ $station->gps_coordinates ?? '—' }}</td>
+                                    <td>{{ $station->manager_name }}</td>
                                     <td class="station-phone">
-                                        <a href="tel:{{ preg_replace('/\s+/', '', $station['phone']) }}">{{ $station['phone'] }}</a>
+                                        @php
+                                            $phoneRaw = preg_replace('/\s+/', '', $station->manager_phone);
+                                        @endphp
+                                        <a href="tel:{{ $phoneRaw }}">{{ $station->manager_phone }}</a>
                                     </td>
                                     <td>
                                         <div class="station-row-actions">
@@ -734,15 +756,16 @@
                                                 class="station-action-btn is-secondary"
                                                 type="button"
                                                 data-open-modal="station-view"
-                                                data-station-name="{{ e($station['name']) }}"
-                                                data-station-code="{{ e($station['code']) }}"
-                                                data-station-product="{{ e($station['product']) }}"
-                                                data-station-location="{{ e($station['location']) }}"
-                                                data-station-address="{{ e($station['address']) }}"
-                                                data-station-gps-coordinates="{{ e($station['gps_coordinates'] ?? '') }}"
-                                                data-station-manager="{{ e($station['manager']) }}"
-                                                data-station-phone="{{ e($station['phone']) }}"
-                                                data-station-phone-raw="{{ preg_replace('/\s+/', '', $station['phone']) }}"
+                                                data-station-name="{{ e($station->name) }}"
+                                                data-station-code="{{ e($station->code) }}"
+                                                data-station-product="{{ e($primaryStationProduct) }}"
+                                                data-station-products="{{ e($stationProductsText) }}"
+                                                data-station-location="{{ e($station->location) }}"
+                                                data-station-address="{{ e($station->address) }}"
+                                                data-station-gps-coordinates="{{ e($station->gps_coordinates ?? '') }}"
+                                                data-station-manager="{{ e($station->manager_name) }}"
+                                                data-station-phone="{{ e($station->manager_phone) }}"
+                                                data-station-phone-raw="{{ $phoneRaw }}"
                                             >
                                                 View
                                             </button>
@@ -750,17 +773,24 @@
                                                 class="station-action-btn is-danger"
                                                 type="button"
                                                 data-open-modal="station-delete"
-                                                data-station-name="{{ e($station['name']) }}"
-                                                data-station-code="{{ e($station['code']) }}"
-                                                data-station-manager="{{ e($station['manager']) }}"
-                                                data-station-location="{{ e($station['location']) }}"
+                                                data-station-name="{{ e($station->name) }}"
+                                                data-station-code="{{ e($station->code) }}"
+                                                data-station-manager="{{ e($station->manager_name) }}"
+                                                data-station-location="{{ e($station->location) }}"
+                                                data-station-destroy-action="{{ route('company.fuel.stations.destroy', $station) }}"
                                             >
                                                 Delete
                                             </button>
                                         </div>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 1.5rem; color: #0d2c5f; font-weight: 600; letter-spacing: 0.12em;">
+                                        No fuel stations found yet. Add your first station to get started.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -776,57 +806,60 @@
                         ×
                     </button>
                 </div>
-                <form action="" method="POST">
+                <form action="{{ route('company.fuel.stations.store') }}" method="POST">
                     @csrf
                     <div class="station-modal__body">
                         <div class="station-form-grid">
                             <div class="station-form-group">
                                 <label for="station-name">Station Name *</label>
-                                <input type="text" id="station-name" name="name" class="station-input" placeholder="Enter station name" required />
+                                <input type="text" id="station-name" name="name" class="station-input" placeholder="Enter station name" value="{{ old('name') }}" required />
                             </div>
 
                             <div class="station-form-group">
                                 <label for="station-code">Station Code *</label>
-                                <input type="text" id="station-code" name="code" class="station-input" placeholder="ST-XXX" required />
+                                <input type="text" id="station-code" name="code" class="station-input" placeholder="ST-XXX" value="{{ old('code') }}" required />
                             </div>
 
                             <div class="station-form-group">
-                                <label for="station-product">Product Type *</label>
-                                <select id="station-product" name="product" class="station-select" required>
-                                    <option value="">Select product type</option>
-                                    <option value="AGO">AGO (Diesel)</option>
-                                    <option value="PMS">PMS (Petrol)</option>
+                                @php
+                                    $oldProducts = array_map('strtoupper', (array) old('products', []));
+                                @endphp
+                                <label for="station-products">Products Offered *</label>
+                                <select id="station-products" name="products[]" class="station-select" multiple required size="2">
+                                    <option value="AGO" @selected(in_array('AGO', $oldProducts, true))>AGO (Diesel)</option>
+                                    <option value="PMS" @selected(in_array('PMS', $oldProducts, true))>PMS (Petrol)</option>
                                 </select>
+                                <small class="station-field-hint">Hold Cmd (⌘) / Ctrl to select more than one product.</small>
                             </div>
 
                             <div class="station-form-group">
                                 <label for="station-location">Location *</label>
-                                <input type="text" id="station-location" name="location" class="station-input" placeholder="District, Region" required />
+                                <input type="text" id="station-location" name="location" class="station-input" placeholder="District, Region" value="{{ old('location') }}" required />
                             </div>
 
                             <div class="station-form-group">
                                 <label for="station-gps">GPS Coordinates</label>
-                                <input type="text" id="station-gps" name="gps_coordinates" class="station-input" placeholder="e.g., 10.7827, -0.8622" />
+                                <input type="text" id="station-gps" name="gps_coordinates" class="station-input" placeholder="e.g., 10.7827, -0.8622" value="{{ old('gps_coordinates') }}" />
                             </div>
 
                             <div class="station-form-group">
                                 <label for="station-manager">Manager Name *</label>
-                                <select id="station-manager" name="manager" class="station-select" required>
-                                    <option value="">Select manager</option>
-                                    @foreach ($managerNames as $managerName)
-                                        <option value="{{ $managerName }}">{{ $managerName }}</option>
+                                <input type="text" id="station-manager" name="manager" class="station-input" placeholder="Start typing manager name" value="{{ old('manager') }}" list="station-manager-list" required />
+                                <datalist id="station-manager-list">
+                                    @foreach ($managerNamesList as $managerName)
+                                        <option value="{{ $managerName }}"></option>
                                     @endforeach
-                                </select>
+                                </datalist>
                             </div>
 
                             <div class="station-form-group">
                                 <label for="station-phone">Telephone *</label>
-                                <input type="tel" id="station-phone" name="phone" class="station-input" placeholder="+233 XX XXX XXXX" required />
+                                <input type="tel" id="station-phone" name="phone" class="station-input" placeholder="+233 XX XXX XXXX" value="{{ old('phone') }}" required />
                             </div>
 
                             <div class="station-form-group">
                                 <label for="station-address">Full Address *</label>
-                                <textarea id="station-address" name="address" class="station-textarea" placeholder="Enter complete station address" required></textarea>
+                                <textarea id="station-address" name="address" class="station-textarea" placeholder="Enter complete station address" required>{{ old('address') }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -859,8 +892,8 @@
                             <strong data-modal-field="code">—</strong>
                         </div>
                         <div class="station-detail-item">
-                            <span>Product</span>
-                            <strong data-modal-field="product">—</strong>
+                            <span>Products</span>
+                            <strong data-modal-field="products">—</strong>
                         </div>
                         <div class="station-detail-item">
                             <span>Manager</span>
@@ -901,7 +934,7 @@
                         ×
                     </button>
                 </div>
-                <form action="" method="POST">
+                <form action="" method="POST" data-delete-form>
                     @csrf
                     @method('DELETE')
                     <div class="station-modal__body" data-delete-modal>
@@ -931,8 +964,40 @@
 @endsection
 
 @push('javascript')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const successMessage = @json(session('success'));
+            const errorMessage = @json(session('error'));
+
+            const canUseSwal = typeof Swal !== 'undefined';
+
+            if (successMessage) {
+                if (canUseSwal) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: successMessage,
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    console.info('Success:', successMessage);
+                }
+            }
+
+            if (errorMessage) {
+                if (canUseSwal) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: errorMessage,
+                        confirmButtonText: 'Try Again'
+                    });
+                } else {
+                    console.error('Error:', errorMessage);
+                }
+            }
+
             const filterGroup = document.querySelector('[data-filter-group]');
             const tableRows = document.querySelectorAll('[data-station-table] tbody tr');
             const modalBackdrops = document.querySelectorAll('[data-modal]');
@@ -951,7 +1016,12 @@
 
                     const filter = btn.dataset.filter;
                     tableRows.forEach((row) => {
-                        const matches = filter === 'all' || row.dataset.product === filter;
+                        const productsAttr = row.dataset.products || '';
+                        const products = productsAttr ? productsAttr.split(',') : [];
+                        const matches =
+                            filter === 'all' ||
+                            row.dataset.product === filter ||
+                            products.includes(filter);
                         row.style.display = matches ? '' : 'none';
                     });
                 });
@@ -964,7 +1034,28 @@
                 if (!modal) return;
 
                 if (modalName === 'station-add') {
-                    modal.querySelector('form')?.reset();
+                    const form = modal.querySelector('form');
+                    form?.reset();
+
+                    const productsSelect = form?.querySelector('#station-products');
+                    if (productsSelect) {
+                        [...productsSelect.options].forEach((option) => {
+                            option.selected = false;
+                        });
+                    }
+
+                    form?.querySelectorAll('input, textarea, select').forEach((field) => {
+                        if (field.name && dataset[field.name]) {
+                            if (Array.isArray(dataset[field.name]) && field.tagName === 'SELECT' && field.multiple) {
+                                const values = dataset[field.name].map(String);
+                                [...field.options].forEach((option) => {
+                                    option.selected = values.includes(option.value);
+                                });
+                            } else {
+                                field.value = dataset[field.name];
+                            }
+                        }
+                    });
                     return;
                 }
 
@@ -979,7 +1070,7 @@
 
                     setText('name', data.stationName);
                     setText('code', data.stationCode);
-                    setText('product', data.stationProduct);
+                    setText('products', data.stationProducts || data.stationProduct);
                     setText('manager', data.stationManager);
                     setText('location', data.stationLocation);
                     setText('gps_coordinates', data.stationGpsCoordinates);
@@ -1007,6 +1098,11 @@
                     const codeInput = modal.querySelector('[data-modal-field="code-input"]');
                     if (codeInput) {
                         codeInput.value = data.stationCode || '';
+                    }
+
+                    const deleteForm = modal.querySelector('[data-delete-form]');
+                    if (deleteForm && data.stationDestroyAction) {
+                        deleteForm.setAttribute('action', data.stationDestroyAction);
                     }
                 }
             };
