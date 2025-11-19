@@ -642,7 +642,7 @@
                                                             data-key="station_management"
                                                             data-name="Stations"
                                                             data-parent="fuel_management"
-                                                            data-route="{{ route('any', 'company/FuelManagement/allstations') }}" />
+                                                            data-route="{{ route('company.fuel.stations.index') }}" />
                                                         <label class="form-check-label" for="menu_station_management">
                                                             Stations
                                                         </label>
