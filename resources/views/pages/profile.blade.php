@@ -28,10 +28,12 @@
             <div class="col-xl-4 col-lg-5">
                 <div class="card text-center">
                     <div class="card-body">
+                        @php $user = Auth::user(); @endphp
+
                             <div class="position-relative d-inline-block">
                                 <label for="profileImageUpload" class="d-block cursor-pointer">
                                     <img
-                                        src="{{ Auth::user()->profile_photo_path ? asset('storage/' . Auth::user()->profile_photo_path) : '/images/users/avatar-1.jpg' }}"
+                                        src="{{ $user?->profile_photo_path ? asset('storage/' . $user->profile_photo_path) : asset('images/users/avatar-1.jpg') }}"
                                         class="rounded-circle avatar-xl img-thumbnail bg-white p-2"
                                         alt="Profile Image"
                                         id="profileImage"
@@ -49,8 +51,8 @@
                                 <input type="file" name="profile_image" id="profileImageInput" accept="image/*">
                             </form>
 
-                        <h4 class="mb-1 mt-2">{{ Auth::user()->name ?? 'Employee' }}</h4>
-                        <p class="text-muted">{{ Auth::user()->department ?? 'Global Enertech & Solutions Ltd' }}</p>
+                        <h4 class="mb-1 mt-2">{{ $user?->name ?? 'Employee' }}</h4>
+                        <p class="text-muted">{{ $user?->department ?? 'Global Enertech & Solutions Ltd' }}</p>
 
                         <button type="button" class="btn btn-success btn-sm mb-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit</button>
                         <button type="button" class="btn btn-danger btn-sm mb-2" data-bs-toggle="modal" data-bs-target="#messageModal">Message</button>
@@ -58,26 +60,26 @@
                         <div class="text-start mt-3">
                             <h4 class="fs-13 text-uppercase">About Me :</h4>
                             <p class="text-muted mb-3">
-                                {{ Auth::user()->bio ?? 'Empowering sustainable energy solutions through innovation and technology. Committed to excellence in energy technology and services.' }}
+                                {{ $user?->bio ?? 'Empowering sustainable energy solutions through innovation and technology. Committed to excellence in energy technology and services.' }}
                             </p>
                             <p class="text-muted mb-2">
                                 <strong>Full Name :</strong>
-                                <span class="ms-2">{{ Auth::user()->name ?? 'Employee' }}</span>
+                                <span class="ms-2">{{ $user?->name ?? 'Employee' }}</span>
                             </p>
 
                             <p class="text-muted mb-2">
                                 <strong>Mobile :</strong>
-                                <span class="ms-2">{{ Auth::user()->phone ?? 'Not set' }}</span>
+                                <span class="ms-2">{{ $user?->phone ?? 'Not set' }}</span>
                             </p>
 
                             <p class="text-muted mb-2">
                                 <strong>Email :</strong>
-                                <span class="ms-2">{{ Auth::user()->email ?? 'No email' }}</span>
+                                <span class="ms-2">{{ $user?->email ?? 'No email' }}</span>
                             </p>
 
                             <p class="text-muted mb-2">
                                 <strong>Department :</strong>
-                                <span class="ms-2">{{ Auth::user()->department ?? 'Not specified' }}</span>
+                                <span class="ms-2">{{ $user?->department ?? 'Not specified' }}</span>
                             </p>
                         </div>
 

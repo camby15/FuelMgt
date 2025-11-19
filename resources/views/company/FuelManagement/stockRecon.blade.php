@@ -637,6 +637,11 @@
                                 <div class="recon-form__helper">Tank list grouped by product for clarity</div>
                             </div>
                             <div>
+                                <label for="closingStock">Closing Stock (L)</label>
+                                <input type="number" min="0" step="0.01" id="closingStock" name="closingStock" placeholder="0.00" required>
+                                <div class="recon-form__helper">Stock from previous day</div>
+                            </div>
+                            <div>
                                 <label for="openingStock">Opening Stock (L)</label>
                                 <input type="number" min="0" step="0.01" id="openingStock" name="openingStock" placeholder="0.00" required>
                             </div>
@@ -652,10 +657,6 @@
                             <div>
                                 <label for="salesVolume">Sales (L)</label>
                                 <input type="number" min="0" step="0.01" id="salesVolume" name="salesVolume" placeholder="0.00" required>
-                            </div>
-                            <div>
-                                <label for="closingStock">Closing Stock (L)</label>
-                                <input type="number" min="0" step="0.01" id="closingStock" name="closingStock" placeholder="0.00" required>
                             </div>
                             <div>
                                 <label for="dippingReading">Dipping (mm)</label>

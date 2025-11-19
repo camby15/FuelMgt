@@ -25,411 +25,778 @@
 
 @section('css')
     <style>
-        :root {
-            --bank-gradient-start: #031739;
-            --bank-gradient-mid: #083b8a;
-            --bank-gradient-end: #031739;
-            --bank-surface: #f6f8ff;
-            --bank-panel-bg: #ffffff;
-            --bank-text: #0a1d44;
-            --bank-text-light: rgba(232, 241, 255, 0.85);
-            --bank-muted: rgba(9, 31, 74, 0.58);
-            --bank-accent: #ff7a1a;
-            --bank-accent-end: #ffb347;
-            --bank-border-soft: rgba(12, 38, 96, 0.08);
-            --bank-border-strong: rgba(12, 36, 79, 0.18);
-            --bank-shadow-card: 0 26px 44px rgba(3, 26, 67, 0.34);
-            --bank-shadow-panel: 0 18px 42px rgba(7, 32, 86, 0.14);
-            --bank-shadow-button: 0 12px 22px rgba(255, 135, 54, 0.32);
-        }
-
         .bank-deposits-page {
-            background: linear-gradient(180deg, rgba(4, 20, 56, 0.04) 0%, rgba(13, 48, 119, 0.08) 100%);
+            background: #f5f7fb;
             min-height: 100vh;
-            padding: 2.6rem 2.4rem 3rem;
+            padding: 2.5rem 1.6rem 3rem;
             font-family: 'Inter', 'Segoe UI', sans-serif;
-            color: var(--bank-text);
+            color: #122142;
         }
 
-        .bank-card {
-            background: linear-gradient(135deg, var(--bank-gradient-start) 0%, var(--bank-gradient-mid) 100%);
-            padding: 1px;
-            border-radius: 24px;
-            box-shadow: var(--bank-shadow-card);
+        .deposit-card,
+        .deposit-filters,
+        .deposit-table-card {
+            border: none;
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 18px 44px rgba(9, 28, 63, 0.12);
         }
 
-        .bank-card__inner {
-            background: var(--bank-surface);
-            border-radius: 23px;
+        .deposit-card {
+            position: relative;
             overflow: hidden;
+            background: linear-gradient(110deg, #102247 0%, #1f5ad6 48%, #33a6ff 100%);
+        }
+
+        .deposit-card::before {
+            content: '';
+            position: absolute;
+            inset: -80% 40% 30% -40%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.28), transparent 70%);
+            opacity: 0.65;
+            transform: rotate(8deg);
+        }
+
+        .deposit-card .card-body {
+            position: relative;
+            padding: 2.1rem 2.4rem;
+            display: flex;
+            gap: 2.4rem;
+            flex-wrap: wrap;
+            align-items: center;
+            color: #f6f9ff;
+        }
+
+        .deposit-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+        }
+
+        .deposit-subtitle {
+            font-size: 0.88rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(247, 251, 255, 0.76);
+        }
+
+        .deposit-actions .btn,
+        .deposit-form-actions .btn {
+            border-radius: 12px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.65rem 1.4rem;
+        }
+
+        .deposit-actions .btn i,
+        .deposit-form-actions .btn i {
+            font-size: 1rem;
+        }
+
+        .deposit-hero-aside {
             display: flex;
             flex-direction: column;
+            gap: 1rem;
+            min-width: 240px;
         }
 
-        .bank-card__header {
-            background: linear-gradient(94deg, rgba(3, 23, 63, 0.96) 0%, rgba(10, 58, 138, 0.98) 55%, rgba(3, 23, 63, 0.96) 100%);
-            padding: 1.8rem 2.6rem;
+        .deposit-hero-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.16);
+            padding: 0.35rem 0.9rem;
+            font-size: 0.75rem;
+            letter-spacing: 0.18em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .deposit-hero-metric {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            padding: 1rem 1.3rem;
+            border-radius: 16px;
+            background: rgba(15, 30, 66, 0.4);
+            backdrop-filter: blur(6px);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+        }
+
+        .deposit-hero-metric__label {
+            font-size: 0.7rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(246, 249, 255, 0.7);
+        }
+
+        .deposit-hero-metric__value {
+            font-size: 1.55rem;
+            font-weight: 700;
             color: #ffffff;
+        }
+
+        .deposit-hero-metric__meta {
+            font-size: 0.78rem;
+            color: rgba(246, 249, 255, 0.82);
+        }
+
+        .deposit-actions {
+            display: inline-flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .deposit-actions .btn-primary {
+            background: linear-gradient(94deg, #ffee6f 0%, #ffb347 100%);
+            color: #122142;
+            border: none;
+            box-shadow: 0 16px 32px rgba(255, 198, 70, 0.34);
+        }
+
+        .deposit-actions .btn-outline-light {
+            color: #f6f9ff;
+            border-color: rgba(246, 249, 255, 0.35);
+            background: rgba(246, 249, 255, 0.08);
+        }
+
+        .deposit-actions .btn-outline-light:hover {
+            background: rgba(246, 249, 255, 0.18);
+        }
+
+        .deposit-filters .card-body {
+            padding: 1.6rem 2rem;
+        }
+
+        .view-deposit-modal {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #0f1f3f;
+            color: #f8fbff;
+            box-shadow: 0 32px 72px rgba(9, 28, 63, 0.35);
+        }
+
+        .view-deposit-modal__header {
+            padding: 1.9rem 2.1rem 1.4rem;
+            background: linear-gradient(120deg, #0f1f3f 0%, #2057d5 55%, #38b6ff 100%);
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
-            gap: 1.2rem;
-            flex-wrap: wrap;
+            gap: 1.8rem;
         }
 
-        .bank-card__header-main {
-            display: flex;
-            flex-direction: column;
-            gap: 0.65rem;
-        }
-
-        .bank-card__title {
-            margin: 0;
-            font-size: 1.6rem;
-            font-weight: 700;
-            letter-spacing: 1.1px;
+        .view-deposit-modal__chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-radius: 999px;
+            padding: 0.4rem 0.9rem;
+            background: rgba(248, 251, 255, 0.18);
+            font-size: 0.75rem;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
+            font-weight: 600;
         }
 
-        .bank-card__subtitle {
-            margin: 0;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.45px;
-            color: var(--bank-text-light);
+        .view-deposit-modal__body {
+            padding: 1.8rem 2.1rem 1.8rem;
+            background: linear-gradient(180deg, rgba(18, 33, 66, 0.96) 0%, rgba(15, 31, 66, 0.86) 100%);
         }
 
-        .bank-card__actions {
+        .view-deposit-modal__footer {
+            padding: 1.4rem 2.1rem 1.8rem;
+            background: rgba(10, 21, 45, 0.94);
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            justify-content: space-between;
             flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        .bank-btn {
+        .view-deposit-footer-meta {
+            font-size: 0.78rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(248, 251, 255, 0.65);
+        }
+
+        .view-deposit-card {
+            border-radius: 18px;
+            padding: 1.2rem 1.3rem;
+            height: 100%;
+            color: #0e1b35;
+            box-shadow: 0 18px 42px rgba(9, 28, 63, 0.18);
+        }
+
+        .view-deposit-card__label {
+            font-size: 0.72rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+
+        .view-deposit-card__value {
+            font-size: 1.32rem;
+            font-weight: 700;
+        }
+
+        .view-deposit-card__meta {
+            font-size: 0.82rem;
+            color: rgba(14, 27, 53, 0.7);
+        }
+
+        .gradient-blue {
+            background: linear-gradient(135deg, #eff4ff, #c7d5ff);
+        }
+
+        .gradient-cyan {
+            background: linear-gradient(135deg, #e4fbff, #bff2ff);
+        }
+
+        .gradient-purple {
+            background: linear-gradient(135deg, #f0e8ff, #d5c2ff);
+        }
+
+        .gradient-amber {
+            background: linear-gradient(135deg, #fff3de, #ffd39c);
+        }
+
+        .gradient-mint {
+            background: linear-gradient(135deg, #e6fff5, #bdf6de);
+        }
+
+        .view-deposit-note {
+            border-radius: 16px;
+            padding: 1.2rem 1.4rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .view-deposit-note__label {
+            font-size: 0.72rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(248, 251, 255, 0.72);
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+
+        .deposit-label {
+            font-size: 0.72rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(18, 33, 66, 0.68);
+            margin-bottom: 0.4rem;
+        }
+
+        .deposit-input,
+        .deposit-filters select {
+            border-radius: 12px;
+            border: 1px solid rgba(18, 33, 66, 0.16);
+            background: #f8f9fc;
+            padding: 0.6rem 0.9rem;
+            color: #122142;
+            font-size: 0.88rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .deposit-input:focus,
+        .deposit-filters select:focus {
+            border-color: #2f6fe5;
+            box-shadow: 0 0 0 3px rgba(47, 111, 229, 0.18);
+        }
+
+        .deposit-search {
+            position: relative;
+        }
+
+        .deposit-search i {
+            position: absolute;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+            color: #2f6fe5;
+            font-size: 1rem;
+        }
+
+        .deposit-search input {
+            padding-left: 2.6rem;
+        }
+
+        .deposit-table-card .card-body {
+            padding: 1.8rem 2.1rem;
+        }
+
+        .deposit-table-meta {
+            font-size: 0.75rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(18, 33, 66, 0.62);
+        }
+
+        .deposit-table-meta strong {
+            color: #122142;
+        }
+
+        .deposit-page-size select {
+            border-radius: 10px;
+            border: 1px solid rgba(18, 33, 66, 0.16);
+            padding: 0.35rem 0.95rem;
+            font-size: 0.82rem;
+        }
+
+        .deposit-table-shell {
+            overflow-x: auto;
+        }
+
+        .deposit-table-container {
+            border-radius: 18px;
+            border: 1px solid rgba(18, 33, 66, 0.12);
+            background: #ffffff;
+            box-shadow: 0 18px 38px rgba(9, 28, 63, 0.12);
+            overflow: hidden;
+        }
+
+        .deposit-table {
+            width: 100%;
+            min-width: 960px;
+            border-collapse: collapse;
+            font-size: 0.84rem;
+            color: #122142;
+        }
+
+        .deposit-table thead th {
+            background: linear-gradient(92deg, rgba(18, 33, 66, 0.96) 0%, rgba(47, 111, 229, 0.9) 58%, rgba(18, 33, 66, 0.92) 100%);
+            color: #ffffff;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            font-weight: 600;
+            padding: 0.85rem 1rem;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .deposit-table thead th + th {
+            border-left: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .deposit-table tbody tr:nth-child(odd) {
+            background: #ffffff;
+        }
+
+        .deposit-table tbody tr:nth-child(even) {
+            background: #f5f7ff;
+        }
+
+        .deposit-table tbody tr:hover {
+            background: rgba(47, 111, 229, 0.1);
+        }
+
+        .deposit-cell {
+            padding: 0.95rem 1rem;
+            border: 1px solid rgba(18, 33, 66, 0.1);
+            vertical-align: top;
+        }
+
+        .deposit-cell--label {
+            font-weight: 700;
+            letter-spacing: 0.06em;
+        }
+
+        .deposit-cell--muted {
+            color: rgba(18, 33, 66, 0.68);
+        }
+
+        .deposit-cell--amount {
+            text-align: right;
+        }
+
+        .deposit-actions-cell {
+            text-align: center;
+            width: 120px;
+        }
+
+        .deposit-icon-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.45rem;
-            padding: 0.6rem 1.3rem;
+            width: 36px;
+            height: 36px;
             border-radius: 12px;
+            border: 1px solid rgba(47, 111, 229, 0.24);
+            background: rgba(47, 111, 229, 0.08);
+            color: #1f4ea8;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            margin-inline: 0.2rem;
+        }
+
+        .deposit-icon-btn:hover {
+            background: rgba(47, 111, 229, 0.18);
+            color: #122142;
+            transform: translateY(-1px);
+        }
+
+        .deposit-icon-btn--danger {
+            border-color: rgba(220, 38, 38, 0.24);
+            background: rgba(220, 38, 38, 0.08);
+            color: #b91c1c;
+        }
+
+        .deposit-icon-btn--danger:hover {
+            background: rgba(220, 38, 38, 0.18);
+            color: #7f1d1d;
+        }
+
+        .payment-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            border-radius: 999px;
+            background: rgba(47, 111, 229, 0.12);
+            color: #1f4ea8;
+            padding: 0.2rem 0.65rem;
             font-size: 0.78rem;
-            letter-spacing: 0.16em;
+            font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .payment-pill i {
+            font-size: 1rem;
+        }
+
+        .deposit-meta {
+            font-size: 0.78rem;
+            color: rgba(18, 33, 66, 0.6);
+        }
+
+        .deposit-narration {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #122142;
+        }
+
+        .deposit-narration + .deposit-meta {
+            margin-top: 0.25rem;
+        }
+
+        .deposit-empty {
+            padding: 3rem 1.5rem;
+            border: 1px dashed rgba(18, 33, 66, 0.24);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.75);
+        }
+
+        .deposit-actions-cell .btn {
+            border-radius: 10px;
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.35rem 0.65rem;
+        }
+
+        .deposit-metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.4rem;
+            margin-bottom: 2rem;
+        }
+
+        .deposit-metric-card {
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(18, 33, 66, 0.92), rgba(47, 111, 229, 0.82));
+            padding: 1.4px;
+            box-shadow: 0 20px 42px rgba(9, 28, 63, 0.18);
+        }
+
+        .deposit-metric-card__body {
+            border-radius: 17px;
+            background: #ffffff;
+            padding: 1.4rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            height: 100%;
+        }
+
+        .deposit-metric-card__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.8rem;
+        }
+
+        .deposit-metric-card__icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: rgba(47, 111, 229, 0.12);
+            color: #1f4ea8;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .deposit-metric-card__label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(18, 33, 66, 0.68);
             font-weight: 700;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
 
-        .bank-btn--primary {
-            background: linear-gradient(88deg, var(--bank-accent) 0%, var(--bank-accent-end) 100%);
-            color: #0a1d44;
-            box-shadow: var(--bank-shadow-button);
+        .deposit-metric-card__value {
+            font-size: 1.78rem;
+            font-weight: 700;
+            color: #122142;
+            line-height: 1.1;
         }
 
-        .bank-btn--primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 16px 26px rgba(255, 135, 54, 0.4);
+        .deposit-metric-card__meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.78rem;
+            color: rgba(18, 33, 66, 0.65);
         }
 
-        .bank-btn--light {
-            background: transparent;
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.45);
+        .deposit-metric-card__footer {
+            margin-top: auto;
+            font-size: 0.75rem;
+            color: rgba(18, 33, 66, 0.58);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
 
-        .bank-btn--light:hover {
-            transform: translateY(-1px);
-            background: rgba(255, 255, 255, 0.12);
+        .deposit-metric-card__trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            border-radius: 999px;
+            padding: 0.28rem 0.7rem;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
         }
 
-        .bank-panel {
-            margin: 2.4rem 2.4rem 0;
-            background: var(--bank-panel-bg);
-            border-radius: 20px;
-            padding: 1.8rem 2rem;
-            box-shadow: var(--bank-shadow-panel);
-            border: 1px solid var(--bank-border-soft);
+        .deposit-metric-card__trend--up {
+            background: rgba(34, 197, 94, 0.18);
+            color: #166534;
         }
 
-        .bank-panel:first-of-type {
-            margin-top: 2.4rem;
+        .deposit-metric-card__trend--down {
+            background: rgba(239, 68, 68, 0.18);
+            color: #7f1d1d;
         }
 
-        .bank-toolbar {
+        .deposit-insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.6rem;
+            margin-bottom: 2.4rem;
+        }
+
+        .deposit-insight-card {
+            border-radius: 18px;
+            background: #ffffff;
+            border: 1px solid rgba(18, 33, 66, 0.08);
+            box-shadow: 0 18px 36px rgba(9, 28, 63, 0.12);
+            padding: 1.7rem 1.9rem;
+            height: 100%;
+        }
+
+        .deposit-insight-card__title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #122142;
+            margin-bottom: 0.6rem;
+        }
+
+        .deposit-insight-card__subtitle {
+            font-size: 0.82rem;
+            color: rgba(18, 33, 66, 0.65);
+            margin-bottom: 1.2rem;
+        }
+
+        .deposit-timeline {
+            position: relative;
             display: flex;
             flex-direction: column;
             gap: 1.4rem;
         }
 
-        .bank-toolbar__row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.1rem;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .bank-filter-group {
-            display: flex;
-            align-items: center;
-            gap: 0.9rem;
-            flex-wrap: wrap;
-        }
-
-        .bank-filter {
-            display: flex;
-            flex-direction: column;
-            gap: 0.35rem;
-        }
-
-        .bank-filter label {
-            font-size: 0.68rem;
-            text-transform: uppercase;
-            letter-spacing: 0.48px;
-            color: #0a2048;
-            font-weight: 600;
-        }
-
-        .bank-filter input,
-        .bank-filter select,
-        .bank-search input,
-        .bank-page-size select {
-            min-width: 180px;
-            padding: 0.58rem 0.75rem;
-            border-radius: 10px;
-            border: 1px solid var(--bank-border-strong);
-            background: #f5f8ff;
-            font-size: 0.84rem;
-            color: var(--bank-text);
-            transition: border 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .bank-filter input:focus,
-        .bank-filter select:focus,
-        .bank-search input:focus,
-        .bank-page-size select:focus {
-            outline: none;
-            border-color: #2b6def;
-            box-shadow: 0 0 0 3px rgba(43, 109, 239, 0.2);
-        }
-
-        .bank-toolbar__actions {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        .bank-search {
+        .deposit-timeline__item {
             position: relative;
-            width: 100%;
-            max-width: 420px;
-        }
-
-        .bank-search input {
-            width: 100%;
             padding-left: 2.6rem;
         }
 
-        .bank-search i {
+        .deposit-timeline__item::before {
+            content: '';
             position: absolute;
             left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #2b6def;
-            font-size: 1rem;
+            top: 0.8rem;
+            bottom: -1.4rem;
+            width: 2px;
+            background: rgba(18, 33, 66, 0.12);
         }
 
-        .bank-panel--table {
-            margin-top: 2rem;
+        .deposit-timeline__item:last-child::before {
+            display: none;
         }
 
-        .bank-table-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            color: var(--bank-muted);
-            font-size: 0.75rem;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            margin-bottom: 1.2rem;
-        }
-
-        .bank-page-size {
-            display: flex;
-            align-items: center;
-            gap: 0.55rem;
-        }
-
-        .bank-meta-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .bank-page-size span {
-            font-weight: 600;
-            color: #0a2048;
-        }
-
-        .bank-btn--compact {
-            padding: 0.45rem 1rem;
-            font-size: 0.72rem;
-        }
-
-        .bank-table-container {
-            border-radius: 18px;
-            border: 1px solid rgba(16, 44, 98, 0.12);
-            overflow: hidden;
-            background: #ffffff;
-        }
-
-        .bank-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 960px;
-            color: var(--bank-text);
-            font-size: 0.78rem;
-        }
-
-        .bank-table thead th {
-            background: #0b2e6f;
-            color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 0.45px;
-            font-weight: 600;
-            padding: 0.75rem 0.85rem;
-            text-align: left;
-            border-right: 1px solid rgba(255, 255, 255, 0.12);
-            white-space: nowrap;
-        }
-
-        .bank-table thead th:last-child {
-            border-right: none;
-        }
-
-        .bank-table tbody tr:nth-child(odd) {
-            background: #ffffff;
-        }
-
-        .bank-table tbody tr:nth-child(even) {
-            background: #f5f7ff;
-        }
-
-        .bank-table tbody tr:hover {
-            background: rgba(43, 109, 239, 0.1);
-        }
-
-        .bank-table tbody td {
-            padding: 0.72rem 0.8rem;
-            border: 1px solid rgba(16, 44, 98, 0.12);
-            vertical-align: middle;
-        }
-
-        .bank-table tbody td:last-child {
-            width: 80px;
-        }
-
-        .bank-account {
-            display: flex;
-            flex-direction: column;
-            gap: 0.1rem;
-        }
-
-        .bank-account span:first-child {
-            font-weight: 600;
-        }
-
-        .bank-actions {
+        .deposit-timeline__icon {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
             display: inline-flex;
-            gap: 0.4rem;
             align-items: center;
+            justify-content: center;
+            background: rgba(47, 111, 229, 0.12);
+            color: #1f4ea8;
+            font-size: 0.95rem;
         }
 
-        .bank-actions span {
-            font-size: 1.25rem;
+        .deposit-timeline__title {
+            font-weight: 600;
+            color: #122142;
         }
 
-        .bank-empty {
-            padding: 2rem 1rem;
-            text-align: center;
-            color: var(--bank-muted);
-            font-size: 0.9rem;
-            letter-spacing: 0.06em;
+        .deposit-timeline__meta {
+            font-size: 0.75rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: rgba(18, 33, 66, 0.58);
+        }
+
+        .deposit-timeline__description {
+            font-size: 0.84rem;
+            color: rgba(18, 33, 66, 0.7);
+            margin-top: 0.35rem;
+        }
+
+        .deposit-health-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .deposit-health-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            border-radius: 999px;
+            padding: 0.35rem 0.8rem;
+            background: rgba(34, 197, 94, 0.16);
+            color: #166534;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .deposit-health-chip--warning {
+            background: rgba(234, 179, 8, 0.18);
+            color: #b45309;
         }
 
         @media (max-width: 1200px) {
-            .bank-panel {
-                margin: 2rem 1.8rem 0;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .bank-toolbar__row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .bank-toolbar__actions {
-                width: 100%;
-                justify-content: flex-start;
-            }
-
-            .bank-meta-actions {
-                justify-content: flex-start;
+            .deposit-card .card-body,
+            .deposit-table-card .card-body {
+                padding: 1.6rem;
             }
         }
 
         @media (max-width: 768px) {
             .bank-deposits-page {
-                padding: 2rem 1.6rem 2.4rem;
+                padding: 2rem 1rem;
             }
 
-            .bank-card__header {
-                padding: 1.6rem 1.8rem;
+            .deposit-actions .btn,
+            .deposit-form-actions .btn {
+                width: 100%;
             }
 
-            .bank-panel {
-                margin: 1.6rem 1.4rem 0;
-                padding: 1.5rem 1.4rem;
+            .deposit-table thead {
+                display: none;
             }
 
-            .bank-filter input,
-            .bank-filter select {
-                min-width: 140px;
+            .deposit-table tbody {
+                display: block;
             }
 
-            .bank-search {
-                max-width: 100%;
+            .deposit-table tbody tr {
+                display: block;
+                background: #ffffff;
+                border: 1px solid rgba(18, 33, 66, 0.08);
+                border-radius: 14px;
+                padding: 1rem 1.1rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 12px 28px rgba(9, 28, 63, 0.08);
+            }
+
+            .deposit-table tbody td,
+            .deposit-table tbody td.deposit-cell--amount {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 1.1rem;
+                text-align: left !important;
+                padding: 0.65rem 0;
+                border-bottom: 1px solid rgba(18, 33, 66, 0.08);
+            }
+
+            .deposit-table tbody td:last-child {
+                border-bottom: none;
+            }
+
+            .deposit-table tbody td::before {
+                content: attr(data-label);
+                font-size: 0.66rem;
+                text-transform: uppercase;
+                letter-spacing: 0.16em;
+                font-weight: 600;
+                color: rgba(18, 33, 66, 0.58);
+            }
+
+            .deposit-table tbody td > * {
+                flex: 1;
+            }
+
+            .deposit-actions-cell {
+                justify-content: flex-end;
+            }
+
+            .deposit-actions-cell .deposit-icon-btn {
+                margin-left: 0.5rem;
             }
         }
 
         @media (max-width: 576px) {
-            .bank-deposits-page {
-                padding: 1.6rem 1rem 2rem;
+            .deposit-card,
+            .deposit-filters,
+            .deposit-table-card {
+                border-radius: 14px;
             }
 
-            .bank-card {
-                border-radius: 20px;
+            .deposit-table thead th {
+                font-size: 0.66rem;
+                letter-spacing: 0.12em;
             }
 
-            .bank-panel {
-                margin: 1.4rem 1rem 0;
-                padding: 1.4rem 1.1rem;
-            }
-
-            .bank-card__title {
-                font-size: 1.35rem;
-            }
-
-            .bank-btn {
-                width: 100%;
+            .deposit-table tbody td {
+                font-size: 0.82rem;
             }
         }
     </style>
@@ -437,192 +804,275 @@
 
 @section('content')
     <div class="bank-deposits-page">
-        <div class="bank-card">
-            <div class="bank-card__inner">
-                <div class="bank-card__header">
-                    <div class="bank-card__header-main">
-                        <h2 class="bank-card__title">Bank Deposits</h2>
-                        <p class="bank-card__subtitle">Monitor daily cash ups and reconciliation</p>
+        <div class="card deposit-card mb-4">
+            <div class="card-body">
+                <div class="flex-grow-1">
+                    <h2 class="deposit-title mb-0 mt-3">Bank Deposits Control Center</h2>
+                    <p class="deposit-subtitle mb-0">Live visibility across cash lodgments, proof uploads, and SLA performance.</p>
+                </div>
+                <div class="deposit-hero-aside">
+                    <div class="deposit-hero-metric">
+                        <span class="deposit-hero-metric__label">Today's Value</span>
+                        <span class="deposit-hero-metric__value">₵62,410.75</span>
+                        <span class="deposit-hero-metric__meta">Captured across 8 stations</span>
                     </div>
-                    <div class="bank-card__actions">
-                        <button type="button" class="bank-btn bank-btn--primary" data-bs-toggle="modal" data-bs-target="#createDepositModal">
-                            <i class="ri-add-line"></i>
+                    <div class="deposit-actions">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createDepositModal">
+                            <i class="ri-add-line me-1"></i>
                             Add Deposit
+                        </button>
+                        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#dailyBriefModal">
+                            <i class="ri-lightbulb-flash-line me-1"></i>
+                            Daily Brief
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="bank-panel bank-panel--filters">
-                    <div class="bank-toolbar">
-                        <form method="GET" action="{{ url()->current() }}" class="w-100" id="filtersForm">
-                            <div class="bank-toolbar__row">
-                                <div class="bank-filter-group">
-                                    <div class="bank-filter">
-                                        <label for="fromDate">From</label>
-                                        <input type="date" id="fromDate" name="from" value="{{ request('from') }}">
-                                    </div>
-                                    <div class="bank-filter">
-                                        <label for="toDate">To</label>
-                                        <input type="date" id="toDate" name="to" value="{{ request('to') }}">
-                                    </div>
-                                    <div class="bank-filter">
-                                        <label for="siteSelect">Station</label>
-                                        <select id="siteSelect" name="site">
-                                            <option value="">All Stations</option>
-                                            @foreach(($sites ?? []) as $site)
-                                                <option value="{{ $site['value'] ?? $site }}" @selected(request('site') == ($site['value'] ?? $site))>
-                                                    {{ $site['label'] ?? $site }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="bank-toolbar__actions">
-                                    <button type="submit" class="bank-btn bank-btn--primary">Search by Date</button>
-                                    <button type="button" class="bank-btn bank-btn--light" data-bs-toggle="modal" data-bs-target="#exportDepositModal">
-                                        <i class="ri-download-2-line"></i>
-                                        Export
-                                    </button>
-                                </div>
+        <div class="deposit-metric-grid">
+            <div class="deposit-metric-card">
+                <div class="deposit-metric-card__body">
+                    <div class="deposit-metric-card__header">
+                        <span class="deposit-metric-card__label">Deposits Captured</span>
+                        <span class="deposit-metric-card__icon"><i class="ri-bank-line"></i></span>
+                    </div>
+                    <span class="deposit-metric-card__value">24</span>
+                    <div class="deposit-metric-card__meta">
+                        <span class="deposit-metric-card__trend deposit-metric-card__trend--up">
+                            <i class="ri-arrow-up-line"></i>
+                            +3 vs yesterday
+                        </span>
+                        27 scheduled today
+                    </div>
+                    <div class="deposit-metric-card__footer">Last sync 4 mins ago</div>
+                </div>
+            </div>
+            <div class="deposit-metric-card">
+                <div class="deposit-metric-card__body">
+                    <div class="deposit-metric-card__header">
+                        <span class="deposit-metric-card__label">Pending Proof Uploads</span>
+                        <span class="deposit-metric-card__icon"><i class="ri-file-warning-line"></i></span>
+                    </div>
+                    <span class="deposit-metric-card__value text-danger">3</span>
+                    <div class="deposit-metric-card__meta">
+                        <i class="ri-mail-unread-line text-warning"></i>
+                        Navrongo-2, Paga Annex, Wiaga
+                    </div>
+                    <div class="deposit-metric-card__footer">Escalate if > 30 mins</div>
+                </div>
+            </div>
+            <div class="deposit-metric-card">
+                <div class="deposit-metric-card__body">
+                    <div class="deposit-metric-card__header">
+                        <span class="deposit-metric-card__label">Cash vs Transfers</span>
+                        <span class="deposit-metric-card__icon"><i class="ri-exchange-dollar-line"></i></span>
+                    </div>
+                    <span class="deposit-metric-card__value">64% Cash</span>
+                    <div class="deposit-metric-card__meta">
+                        <span class="deposit-metric-card__trend deposit-metric-card__trend--up">
+                            <i class="ri-arrow-up-line"></i>
+                            +6% cash share
+                        </span>
+                        Transfers ₵21,090 today
+                    </div>
+                    <div class="deposit-metric-card__footer">Target mix 55% cash</div>
+                </div>
+            </div>
+            <div class="deposit-metric-card">
+                <div class="deposit-metric-card__body">
+                    <div class="deposit-metric-card__header">
+                        <span class="deposit-metric-card__label">Clearance Time</span>
+                        <span class="deposit-metric-card__icon"><i class="ri-timer-line"></i></span>
+                    </div>
+                    <span class="deposit-metric-card__value">38 mins</span>
+                    <div class="deposit-metric-card__meta">
+                        <span class="deposit-metric-card__trend deposit-metric-card__trend--up">
+                            <i class="ri-speed-line"></i>
+                            SLA met 92%
+                        </span>
+                        Fastest: Bamvim at 19 mins
+                    </div>
+                    <div class="deposit-metric-card__footer">Daily SLA ≤ 45 mins</div>
+                </div>
+            </div>
+        </div>
+        <div class="card deposit-filters mb-4">
+            <div class="card-body">
+                <form method="GET" action="{{ url()->current() }}" id="filtersForm" class="deposit-filters__form">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-sm-6 col-lg-3">
+                            <label for="fromDate" class="deposit-label">From</label>
+                            <input type="date" id="fromDate" name="from" value="{{ request('from') }}" class="form-control deposit-input">
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <label for="toDate" class="deposit-label">To</label>
+                            <input type="date" id="toDate" name="to" value="{{ request('to') }}" class="form-control deposit-input">
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <label for="siteSelect" class="deposit-label">Station</label>
+                            <select id="siteSelect" name="site" class="form-select deposit-input">
+                                <option value="">All Stations</option>
+                                @foreach(($sites ?? []) as $site)
+                                    <option value="{{ $site['value'] ?? $site }}" @selected(request('site') == ($site['value'] ?? $site))>
+                                        {{ $site['label'] ?? $site }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-3 align-items-end mt-0 pt-3">
+                        <div class="col-lg-6">
+                            <label for="depositSearch" class="deposit-label">Search</label>
+                            <div class="deposit-search">
+                                <i class="ri-search-line"></i>
+                                <input type="search" id="depositSearch" name="search" placeholder="Search by station, reference, narration..." value="{{ request('search') }}" class="form-control deposit-input">
                             </div>
-                            <div class="bank-toolbar__row">
-                                <div class="bank-search">
-                                    <i class="ri-search-line"></i>
-                                    <input type="search" name="search" placeholder="Enter text to search..." value="{{ request('search') }}">
-                                </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="deposit-form-actions d-flex flex-wrap justify-content-lg-end gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    Apply Filters
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exportDepositModal">
+                                    <i class="ri-download-2-line"></i>
+                                    Export
+                                </button>
                             </div>
-                        </form>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @php
+            $isPaginator = isset($deposits) && $deposits instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator;
+            $providedDeposits = $isPaginator ? $deposits : collect($deposits ?? []);
+            $hasProvidedDeposits = $providedDeposits->count() > 0;
+
+            if (! $hasProvidedDeposits) {
+                $displayDeposits = collect([
+                    [
+                        'transaction_date' => '31-Oct-2025',
+                        'sales_date' => '30-Oct-2025',
+                        'station' => ['name' => 'NAVRONGO-2'],
+                        'site' => ['name' => 'NAVRONGO-2'],
+                        'account_name' => 'CBG-21573161100001',
+                        'account_number' => 'DAILY SALES',
+                        'amount' => 'GHS21,000.00',
+                        'deposit_by' => 'Samuel Kpentey',
+                        'narration' => 'Daily sales banking for cashiers',
+                        'details' => 'Daily sales banking for cashiers',
+                        'payment_mode' => 'Cash',
+                        'transaction_id' => 'B251031000130',
+                        'transaction_number' => 'B251031000130',
+                        'view_url' => '#',
+                    ],
+                    [
+                        'transaction_date' => '31-Oct-2025',
+                        'sales_date' => '28-Oct-2025',
+                        'station' => ['name' => 'PAGA-ANNEX'],
+                        'site' => ['name' => 'PAGA-ANNEX'],
+                        'account_name' => 'ADB-108101057689201',
+                        'account_number' => 'Daily Sales',
+                        'amount' => 'GHS13,840.50',
+                        'deposit_by' => 'Millicent Bawa',
+                        'narration' => 'Sales close-out approved',
+                        'details' => 'Sales close-out approved',
+                        'payment_mode' => 'Cash',
+                        'transaction_id' => 'PGA-281005',
+                        'transaction_number' => 'PGA-281005',
+                        'view_url' => '#',
+                    ],
+                    [
+                        'transaction_date' => '31-Oct-2025',
+                        'sales_date' => '30-Oct-2025',
+                        'station' => ['name' => 'PWALUGU'],
+                        'site' => ['name' => 'PWALUGU'],
+                        'account_name' => 'ZENITH-6012608470',
+                        'account_number' => 'Sales',
+                        'amount' => 'GHS9,120.00',
+                        'deposit_by' => 'Robert Koomson',
+                        'narration' => 'Zenith bulk sales transfer',
+                        'details' => 'Zenith bulk sales transfer',
+                        'payment_mode' => 'Cash',
+                        'transaction_id' => 'ZNTH-6012608470',
+                        'transaction_number' => 'ZNTH-6012608470',
+                        'view_url' => '#',
+                    ],
+                    [
+                        'transaction_date' => '31-Oct-2025',
+                        'sales_date' => '30-Oct-2025',
+                        'station' => ['name' => 'PWALUGU'],
+                        'site' => ['name' => 'PWALUGU'],
+                        'account_name' => 'MTN-0593245613 - ADAM PARIDAVA',
+                        'account_number' => 'Upper Quarry Paid',
+                        'amount' => 'GHS6,450.75',
+                        'deposit_by' => 'Adam Paridava',
+                        'narration' => 'Upper Quarry mobile money settlement',
+                        'details' => 'Upper Quarry mobile money settlement',
+                        'payment_mode' => 'Mobile Money',
+                        'transaction_id' => '0593245613',
+                        'transaction_number' => '0593245613',
+                        'view_url' => '#',
+                    ],
+                ]);
+            } else {
+                $displayDeposits = $providedDeposits;
+            }
+
+            $totalItems = $isPaginator && $hasProvidedDeposits ? $deposits->total() : $displayDeposits->count();
+            $currentPage = $isPaginator && $hasProvidedDeposits ? $deposits->currentPage() : 1;
+            $lastPage = $isPaginator && $hasProvidedDeposits ? max($deposits->lastPage(), 1) : 1;
+            $perPageDefault = (int) request('per_page', $isPaginator && $hasProvidedDeposits ? $deposits->perPage() : 50);
+            $pageParameter = $isPaginator && $hasProvidedDeposits ? $deposits->getPageName() : 'page';
+            $nextPageUrl = $isPaginator && $hasProvidedDeposits && $deposits->hasMorePages()
+                ? request()->fullUrlWithQuery([$pageParameter => $deposits->currentPage() + 1])
+                : null;
+        @endphp
+
+        <div class="card deposit-table-card">
+            <div class="card-body">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                    <div class="deposit-table-meta">
+                        Page <strong>{{ $currentPage }}</strong> of <strong>{{ $lastPage }}</strong>
+                        <span>( <strong id="bankVisibleCount">{{ number_format($totalItems) }}</strong>
+                        <span id="bankVisibleLabel">{{ \Illuminate\Support\Str::plural('item', $totalItems) }}</span> )</span>
+                    </div>
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <div class="deposit-page-size d-flex align-items-center gap-2">
+                            <span class="deposit-label mb-0 text-nowrap">Page size</span>
+                            <select name="per_page" form="filtersForm" class="form-select form-select-sm">
+                                @foreach([10, 25, 50, 100] as $size)
+                                    <option value="{{ $size }}" @selected($perPageDefault === $size)>{{ $size }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @if($nextPageUrl)
+                            <a href="{{ $nextPageUrl }}" class="btn btn-outline-primary btn-sm">
+                                Next Page
+                                <i class="ri-arrow-right-line ms-1"></i>
+                            </a>
+                        @endif
                     </div>
                 </div>
 
-                @php
-                    $isPaginator = isset($deposits) && $deposits instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator;
-                    $providedDeposits = $isPaginator ? $deposits : collect($deposits ?? []);
-                    $hasProvidedDeposits = $providedDeposits->count() > 0;
-
-                    if (! $hasProvidedDeposits) {
-                        $displayDeposits = collect([
-                            [
-                                'transaction_date' => '31-Oct-2025',
-                                'sales_date' => '30-Oct-2025',
-                                'station' => ['name' => 'NAVRONGO-2'],
-                                'site' => ['name' => 'NAVRONGO-2'],
-                                'account_name' => 'CBG-21573161100001',
-                                'account_number' => 'DAILY SALES',
-                                'amount' => 'GHS21,000.00',
-                                'deposit_by' => 'Samuel Kpentey',
-                                'narration' => 'Daily sales banking for cashiers',
-                                'details' => 'Daily sales banking for cashiers',
-                                'payment_mode' => 'Cash',
-                                'transaction_id' => 'B251031000130',
-                                'transaction_number' => 'B251031000130',
-                                'view_url' => '#',
-                            ],
-                            [
-                                'transaction_date' => '31-Oct-2025',
-                                'sales_date' => '28-Oct-2025',
-                                'station' => ['name' => 'PAGA-ANNEX'],
-                                'site' => ['name' => 'PAGA-ANNEX'],
-                                'account_name' => 'ADB-108101057689201',
-                                'account_number' => 'Daily Sales',
-                                'amount' => 'GHS13,840.50',
-                                'deposit_by' => 'Millicent Bawa',
-                                'narration' => 'Sales close-out approved',
-                                'details' => 'Sales close-out approved',
-                                'payment_mode' => 'Cash',
-                                'transaction_id' => 'PGA-281005',
-                                'transaction_number' => 'PGA-281005',
-                                'view_url' => '#',
-                            ],
-                            [
-                                'transaction_date' => '31-Oct-2025',
-                                'sales_date' => '30-Oct-2025',
-                                'station' => ['name' => 'PWALUGU'],
-                                'site' => ['name' => 'PWALUGU'],
-                                'account_name' => 'ZENITH-6012608470',
-                                'account_number' => 'Sales',
-                                'amount' => 'GHS9,120.00',
-                                'deposit_by' => 'Robert Koomson',
-                                'narration' => 'Zenith bulk sales transfer',
-                                'details' => 'Zenith bulk sales transfer',
-                                'payment_mode' => 'Cash',
-                                'transaction_id' => 'ZNTH-6012608470',
-                                'transaction_number' => 'ZNTH-6012608470',
-                                'view_url' => '#',
-                            ],
-                            [
-                                'transaction_date' => '31-Oct-2025',
-                                'sales_date' => '30-Oct-2025',
-                                'station' => ['name' => 'PWALUGU'],
-                                'site' => ['name' => 'PWALUGU'],
-                                'account_name' => 'MTN-0593245613 - ADAM PARIDAVA',
-                                'account_number' => 'Upper Quarry Paid',
-                                'amount' => 'GHS6,450.75',
-                                'deposit_by' => 'Adam Paridava',
-                                'narration' => 'Upper Quarry mobile money settlement',
-                                'details' => 'Upper Quarry mobile money settlement',
-                                'payment_mode' => 'Mobile Money',
-                                'transaction_id' => '0593245613',
-                                'transaction_number' => '0593245613',
-                                'view_url' => '#',
-                            ],
-                        ]);
-                    } else {
-                        $displayDeposits = $providedDeposits;
-                    }
-
-                    $totalItems = $isPaginator && $hasProvidedDeposits ? $deposits->total() : $displayDeposits->count();
-                    $currentPage = $isPaginator && $hasProvidedDeposits ? $deposits->currentPage() : 1;
-                    $lastPage = $isPaginator && $hasProvidedDeposits ? max($deposits->lastPage(), 1) : 1;
-                    $perPageDefault = (int) request('per_page', $isPaginator && $hasProvidedDeposits ? $deposits->perPage() : 50);
-                    $pageParameter = $isPaginator && $hasProvidedDeposits ? $deposits->getPageName() : 'page';
-                    $nextPageUrl = $isPaginator && $hasProvidedDeposits && $deposits->hasMorePages()
-                        ? request()->fullUrlWithQuery([$pageParameter => $deposits->currentPage() + 1])
-                        : null;
-                @endphp
-
-                <div class="bank-panel bank-panel--table">
-                    <div class="bank-table-shell">
-                        <div class="bank-table-meta">
-                            <div>
-                                Page {{ $currentPage }} of {{ $lastPage }}
-                                <span>( <span id="bankVisibleCount">{{ number_format($totalItems) }}</span> <span id="bankVisibleLabel">{{ \Illuminate\Support\Str::plural('item', $totalItems) }}</span> )</span>
-                            </div>
-                            <div class="bank-meta-actions">
-                                <div class="bank-page-size">
-                                    <span>Page size:</span>
-                                    <select name="per_page" form="filtersForm">
-                                        @foreach([10, 25, 50, 100] as $size)
-                                            <option value="{{ $size }}" @selected($perPageDefault === $size)>{{ $size }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                @if($nextPageUrl)
-                                    <a href="{{ $nextPageUrl }}" class="bank-btn bank-btn--primary bank-btn--compact">
-                                        Next Page
-                                        <i class="ri-arrow-right-line ms-1"></i>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="bank-table-container">
-                            <table class="bank-table">
-                                <thead>
+                <div class="deposit-table-shell">
+                    <div class="deposit-table-container">
+                        <table class="deposit-table">
+                            <thead>
                                 <tr>
-                                    <th>Transaction Date</th>
-                                    <th>Sales Date</th>
+                                    <th>Dates</th>
                                     <th>Station</th>
                                     <th>Account</th>
                                     <th>Amount</th>
-                                    <th>Transaction ID</th>
+                                    <th>Payment</th>
                                     <th>Depositer</th>
                                     <th>Narration</th>
-                                    <th>Payment Mode</th>
-                                    <th>Action</th>
+                                    <th class="text-center">Actions</th>
                                 </tr>
-                                </thead>
-                                <tbody>
+                            </thead>
+                            <tbody>
                                 @forelse($displayDeposits as $deposit)
                                     @php
                                         $transactionDate = data_get($deposit, 'transaction_date', '—');
@@ -633,10 +1083,12 @@
                                         $amount = data_get($deposit, 'amount', '—');
                                         $depositor = data_get($deposit, 'deposit_by') ?? data_get($deposit, 'deposited_by') ?? data_get($deposit, 'depositor', '—');
                                         $narration = data_get($deposit, 'narration') ?? data_get($deposit, 'details', '—');
+                                        $additionalDetails = data_get($deposit, 'details');
                                         $paymentMode = data_get($deposit, 'payment_mode', '—');
                                         $transactionId = data_get($deposit, 'transaction_id') ?? data_get($deposit, 'transaction_ID') ?? data_get($deposit, 'transaction_number', '—');
                                         $viewUrl = data_get($deposit, 'view_url');
                                         $deleteUrl = data_get($deposit, 'delete_url');
+
                                         try {
                                             $transactionDateIso = $transactionDate && $transactionDate !== '—'
                                                 ? \Illuminate\Support\Carbon::parse($transactionDate)->format('Y-m-d')
@@ -665,86 +1117,115 @@
                                                 $transactionId,
                                                 $depositor,
                                                 $narration,
+                                                $additionalDetails,
                                                 $paymentMode,
                                             ])->filter(fn ($value) => filled($value) && $value !== '—')->implode(' ')
                                         );
+
+                                        $paymentModeIconMap = [
+                                            'cash' => 'ri-money-dollar-circle-line',
+                                            'cheque' => 'ri-file-list-3-line',
+                                            'mobile money' => 'ri-smartphone-line',
+                                            'momo' => 'ri-smartphone-line',
+                                            'bank transfer' => 'ri-bank-transfer-line',
+                                            'transfer' => 'ri-bank-transfer-line',
+                                        ];
+                                        $paymentModeKey = \Illuminate\Support\Str::lower($paymentMode ?? '');
+                                        $paymentModeIcon = $paymentModeIconMap[$paymentModeKey] ?? 'ri-wallet-3-line';
                                     @endphp
                                     <tr data-row="deposit"
                                         data-transaction-date="{{ $transactionDateIso }}"
                                         data-sales-date="{{ $salesDateIso }}"
                                         data-station-slug="{{ $stationSlug }}"
                                         data-search="{{ e($searchIndex) }}">
-                                        <td>{{ $transactionDate }}</td>
-                                        <td>{{ $salesDate }}</td>
-                                        <td>{{ $stationName }}</td>
-                                        <td>
-                                            <div class="bank-account">
-                                                <span>{{ $accountName }}</span>
-                                                <span>{{ $accountNumber }}</span>
+                                        <td class="deposit-cell deposit-cell--label" data-label="Dates">
+                                            <div>{{ $transactionDate }}</div>
+                                            <div class="deposit-meta">Sales date · {{ $salesDate }}</div>
+                                        </td>
+                                        <td class="deposit-cell" data-label="Station">
+                                            <div class="fw-semibold text-uppercase">{{ $stationName }}</div>
+                                        </td>
+                                        <td class="deposit-cell" data-label="Account">
+                                            <div class="fw-semibold">{{ $accountName }}</div>
+                                            <div class="deposit-meta">{{ $accountNumber }}</div>
+                                        </td>
+                                        <td class="deposit-cell deposit-cell--amount" data-label="Amount">
+                                            <div class="fw-semibold">{{ $amount }}</div>
+                                            <div class="deposit-meta text-uppercase">Net deposit</div>
+                                        </td>
+                                        <td class="deposit-cell" data-label="Payment">
+                                            <div class="d-flex flex-column gap-1">
+                                                <span class="payment-pill">
+                                                    <i class="{{ $paymentModeIcon }}"></i>
+                                                    {{ $paymentMode }}
+                                                </span>
+                                                <span class="deposit-meta">Ref: {{ $transactionId }}</span>
                                             </div>
                                         </td>
-                                        <td>{{ $amount }}</td>
-                                        <td>{{ $transactionId }}</td>
-                                        <td>{{ $depositor }}</td>
-                                        <td>{{ $narration }}</td>
-                                        <td>{{ $paymentMode }}</td>
-                                        <td>
-                                            <div class="bank-actions">
+                                        <td class="deposit-cell" data-label="Depositer">
+                                            <div class="fw-semibold">{{ $depositor }}</div>
+                                            <div class="deposit-meta">{{ $stationName }}</div>
+                                        </td>
+                                        <td class="deposit-cell" data-label="Narration">
+                                            <div class="deposit-narration">{{ $narration }}</div>
+                                            @if(filled($additionalDetails) && $additionalDetails !== $narration)
+                                                <div class="deposit-meta">{{ $additionalDetails }}</div>
+                                            @endif
+                                        </td>
+                                        <td class="deposit-cell deposit-actions-cell" data-label="Actions">
+                                            <button type="button"
+                                                    class="deposit-icon-btn js-view-deposit"
+                                                    aria-label="View deposit"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#viewDepositModal"
+                                                    data-transaction-date="{{ e($transactionDate) }}"
+                                                    data-sales-date="{{ e($salesDate) }}"
+                                                    data-station="{{ e($stationName) }}"
+                                                    data-account="{{ e($accountName) }}"
+                                                    data-account-number="{{ e($accountNumber) }}"
+                                                    data-amount="{{ e($amount) }}"
+                                                    data-depositor="{{ e($depositor) }}"
+                                                    data-narration="{{ e($narration) }}"
+                                                    data-payment-mode="{{ e($paymentMode) }}"
+                                                    data-transaction-id="{{ e($transactionId) }}"
+                                                    data-additional="{{ e($additionalDetails) }}"
+                                                    data-view-url="{{ $viewUrl }}">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
+                                            @if($deleteUrl)
                                                 <button type="button"
-                                                        class="btn btn-link p-0 me-2 text-decoration-none text-primary js-view-deposit"
-                                                        aria-label="View deposit"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#viewDepositModal"
-                                                        data-transaction-date="{{ e($transactionDate) }}"
-                                                        data-sales-date="{{ e($salesDate) }}"
-                                                        data-station="{{ e($stationName) }}"
-                                                        data-account-name="{{ e($accountName) }}"
-                                                        data-account-number="{{ e($accountNumber) }}"
-                                                        data-amount="{{ e($amount) }}"
-                                                        data-depositor="{{ e($depositor) }}"
-                                                        data-narration="{{ e($narration) }}"
-                                                        data-payment-mode="{{ e($paymentMode) }}"
-                                                        data-transaction-id="{{ e($transactionId) }}"
-                                                        data-view-url="{{ $viewUrl ? e($viewUrl) : '' }}">
-                                                    <span class="ri-eye-line" aria-hidden="true"></span>
-                                                    <span class="visually-hidden">View</span>
-                                                </button>
-                                                <button type="button"
-                                                        class="btn btn-link p-0 text-decoration-none text-danger js-delete-deposit"
+                                                        class="deposit-icon-btn deposit-icon-btn--danger js-delete-deposit"
                                                         aria-label="Delete deposit"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#deleteDepositModal"
-                                                        data-transaction-id="{{ e($transactionId) }}"
+                                                        data-delete-url="{{ $deleteUrl }}"
                                                         data-depositor="{{ e($depositor) }}"
                                                         data-amount="{{ e($amount) }}"
-                                                        data-delete-url="{{ $deleteUrl ? e($deleteUrl) : '' }}">
-                                                    <span class="ri-delete-bin-line" aria-hidden="true"></span>
-                                                    <span class="visually-hidden">Delete</span>
+                                                        data-transaction-id="{{ e($transactionId) }}">
+                                                    <i class="ri-delete-bin-6-line"></i>
                                                 </button>
-                                            </div>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="bank-empty">
-                                            No bank deposits found for the selected filters.
+                                        <td colspan="8" class="deposit-cell">
+                                            <div class="deposit-empty text-center">
+                                                <i class="ri-database-2-line display-6 text-muted mb-3"></i>
+                                                <h6 class="text-uppercase text-muted small fw-semibold">No deposit data</h6>
+                                                <p class="text-muted mb-0">Adjust your filters or add a new bank deposit record.</p>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforelse
-                                <tr class="bank-empty d-none" id="bankTableNoResults">
-                                    <td colspan="10">No bank deposits match the current filters.</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        @if($isPaginator)
-                            <div class="mt-3">
-                                {{ $deposits->withQueryString()->links('vendor.pagination.bootstrap-4') }}
-                            </div>
-                        @endif
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+
+                @if($isPaginator)
+                    <div class="pt-3">
+                        {{ $deposits->withQueryString()->links('vendor.pagination.bootstrap-4') }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -907,71 +1388,72 @@
     <!-- View Deposit Modal -->
     <div class="modal fade" id="viewDepositModal" tabindex="-1" aria-labelledby="viewDepositModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-0 pb-0">
+            <div class="modal-content view-deposit-modal">
+                <div class="view-deposit-modal__header">
                     <div>
-                        <h5 class="modal-title" id="viewDepositModalLabel">Deposit Details</h5>
-                        <p class="text-muted mb-0 small text-uppercase letter-spacing">Review deposit breakdown</p>
+                        <span class="view-deposit-modal__chip">Deposit Summary</span>
+                        <h5 class="modal-title mt-2" id="viewDepositModalLabel">Treasury Review</h5>
+                        <p class="mb-0 small">Cross-check station lodgment, proof status, and SLA compliance</p>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body pt-3">
+                <div class="view-deposit-modal__body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <div class="card shadow-sm border-0 h-100">
-                                <div class="card-body">
-                                    <h6 class="text-uppercase text-muted small fw-semibold mb-2">Dates</h6>
-                                    <p class="mb-1"><span class="fw-semibold">Transaction:</span> <span data-view-field="transaction_date">—</span></p>
-                                    <p class="mb-0"><span class="fw-semibold">Sales:</span> <span data-view-field="sales_date">—</span></p>
-                                </div>
+                            <div class="view-deposit-card gradient-blue">
+                                <div class="view-deposit-card__label">Dates</div>
+                                <div class="view-deposit-card__value" data-view-field="transaction_date">—</div>
+                                <div class="view-deposit-card__meta">Sales Date · <span data-view-field="sales_date">—</span></div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="card shadow-sm border-0 h-100">
-                                <div class="card-body">
-                                    <h6 class="text-uppercase text-muted small fw-semibold mb-2">Station</h6>
-                                    <p class="mb-1"><span data-view-field="station">—</span></p>
-                                    <h6 class="text-uppercase text-muted small fw-semibold mt-3 mb-2">Payment Mode</h6>
-                                    <p class="mb-0"><span data-view-field="payment_mode">—</span></p>
-                                </div>
+                            <div class="view-deposit-card gradient-cyan">
+                                <div class="view-deposit-card__label">Station</div>
+                                <div class="view-deposit-card__value" data-view-field="station">—</div>
+                                <div class="view-deposit-card__meta">Payment Mode · <span data-view-field="payment_mode">—</span></div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="card shadow-sm border-0 h-100">
-                                <div class="card-body">
-                                    <h6 class="text-uppercase text-muted small fw-semibold mb-2">Account</h6>
-                                    <p class="mb-1"><span class="fw-semibold" data-view-field="account_name">—</span></p>
-                                    <p class="mb-0 text-muted"><span data-view-field="account_number">—</span></p>
-                                    <h6 class="text-uppercase text-muted small fw-semibold mt-3 mb-1">Amount</h6>
-                                    <p class="mb-0"><span data-view-field="amount">—</span></p>
-                                </div>
+                            <div class="view-deposit-card gradient-purple">
+                                <div class="view-deposit-card__label">Account</div>
+                                <div class="view-deposit-card__value" data-view-field="account_name">—</div>
+                                <div class="view-deposit-card__meta" data-view-field="account_number">—</div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="card shadow-sm border-0 h-100">
-                                <div class="card-body">
-                                    <h6 class="text-uppercase text-muted small fw-semibold mb-2">Depositer</h6>
-                                    <p class="mb-2"><span data-view-field="depositor">—</span></p>
-                                    <h6 class="text-uppercase text-muted small fw-semibold mb-2">Transaction ID</h6>
-                                    <p class="mb-0"><span data-view-field="transaction_id">—</span></p>
-                                </div>
+                            <div class="view-deposit-card gradient-amber">
+                                <div class="view-deposit-card__label">Amount</div>
+                                <div class="view-deposit-card__value" data-view-field="amount">—</div>
+                                <div class="view-deposit-card__meta">Depositer · <span data-view-field="depositor">—</span></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="view-deposit-card gradient-mint">
+                                <div class="view-deposit-card__label">Transaction ID</div>
+                                <div class="view-deposit-card__value" data-view-field="transaction_id">—</div>
+                                <div class="view-deposit-card__meta">Variance Status · <span data-view-field="variance_meta">On track</span></div>
                             </div>
                         </div>
                         <div class="col-12">
-                            <div class="card shadow-sm border-0">
-                                <div class="card-body">
-                                    <h6 class="text-uppercase text-muted small fw-semibold mb-2">Narration</h6>
-                                    <p class="mb-0" data-view-field="narration">—</p>
-                                </div>
+                            <div class="view-deposit-note">
+                                <div class="view-deposit-note__label">Narration</div>
+                                <p class="mb-0" data-view-field="narration">—</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-0 pt-0 justify-content-between">
-                    <a href="#" target="_blank" class="btn btn-outline-primary d-none" id="viewDepositExternalLink">
-                        Open full record
-                    </a>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                <div class="view-deposit-modal__footer">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Close</button>
+                        <a href="#" class="btn btn-light text-primary" data-view-link="view_url" target="_blank" rel="noopener">
+                            <i class="ri-external-link-line me-1"></i>
+                            Open Proof
+                        </a>
+                    </div>
+                    <div class="view-deposit-footer-meta">
+                        <i class="ri-shield-check-line me-1"></i>
+                        Logged by treasury automation · <span data-view-field="footer_meta">30 Oct 2025 15:42</span>
+                    </div>
                 </div>
             </div>
         </div>
