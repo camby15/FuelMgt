@@ -138,8 +138,170 @@
             border: 1px solid var(--accounts-border-soft);
         }
 
-        .accounts-panel--summary {
-            margin-top: 2.4rem;
+        .accounts-panel--table {
+            margin-top: 2rem;
+        }
+
+        .accounts-table-shell {
+            overflow-x: auto;
+        }
+
+        .accounts-table-container {
+            border-radius: 18px;
+            border: 1px solid rgba(16, 44, 98, 0.12);
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 18px 38px rgba(7, 32, 86, 0.12);
+        }
+
+        .accounts-table {
+            width: 100%;
+            min-width: 940px;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            color: var(--accounts-text);
+        }
+
+        .accounts-table thead th {
+            background: linear-gradient(94deg, rgba(3, 23, 63, 0.96) 0%, rgba(10, 58, 138, 0.98) 55%, rgba(3, 23, 63, 0.94) 100%);
+            color: #ffffff;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            font-weight: 600;
+            padding: 0.85rem 1rem;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .accounts-table thead th + th {
+            border-left: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .accounts-table tbody tr:nth-child(odd) {
+            background: #ffffff;
+        }
+
+        .accounts-table tbody tr:nth-child(even) {
+            background: #f4f7ff;
+        }
+
+        .accounts-table tbody tr:hover {
+            background: rgba(43, 109, 239, 0.12);
+        }
+
+        .accounts-cell {
+            padding: 0.85rem 1rem;
+            border: 1px solid rgba(16, 44, 98, 0.1);
+            vertical-align: middle;
+        }
+
+        .accounts-cell--code {
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #0b1f4f;
+        }
+
+        .accounts-cell--uppercase {
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(9, 33, 78, 0.82);
+        }
+
+        .accounts-cell--muted {
+            color: rgba(9, 33, 78, 0.68);
+        }
+
+        .accounts-code {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .accounts-code:hover {
+            text-decoration: underline;
+        }
+
+        .accounts-action-cell {
+            text-align: center;
+            width: 110px;
+        }
+
+        .accounts-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            border: 1px solid rgba(43, 109, 239, 0.24);
+            background: rgba(43, 109, 239, 0.08);
+            color: #1b4ebb;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+        }
+
+        .accounts-action-btn:hover {
+            background: rgba(43, 109, 239, 0.18);
+            color: #0b2e6f;
+            transform: translateY(-1px);
+        }
+
+        .view-account-modal .modal-content {
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 26px 48px rgba(7, 32, 86, 0.28);
+        }
+
+        .view-account-modal .modal-header {
+            background: linear-gradient(96deg, rgba(3, 23, 63, 0.95) 0%, rgba(10, 58, 138, 0.88) 60%, rgba(3, 23, 63, 0.92) 100%);
+            color: #ffffff;
+            border-bottom: none;
+            padding: 1.6rem 1.8rem;
+        }
+
+        .view-account-modal .modal-title {
+            font-size: 1.1rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .view-account-modal .modal-body {
+            background: #ffffff;
+            padding: 1.8rem;
+        }
+
+        .view-account-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .view-account-summary__item {
+            background: #f5f7ff;
+            border: 1px solid rgba(16, 44, 98, 0.12);
+            border-radius: 14px;
+            padding: 1rem 1.1rem;
+        }
+
+        .view-account-summary__label {
+            font-size: 0.72rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(9, 33, 78, 0.6);
+            margin-bottom: 0.35rem;
+            display: block;
+        }
+
+        .view-account-summary__value {
+            font-weight: 700;
+            color: #0b1f4f;
+            font-size: 0.95rem;
+        }
+
+        .view-account-modal .modal-footer {
+            background: #f5f7fb;
+            border-top: 1px solid rgba(16, 44, 98, 0.08);
+            padding: 1.2rem 1.8rem;
         }
 
         .accounts-summary {
@@ -294,111 +456,6 @@
             background: #2b6def;
             color: #ffffff;
             box-shadow: 0 12px 24px rgba(43, 109, 239, 0.25);
-        }
-
-        .accounts-panel--table {
-            margin-top: 2rem;
-        }
-
-        .accounts-table-shell {
-            overflow-x: auto;
-        }
-
-        .accounts-table-container {
-            border-radius: 18px;
-            border: 1px solid rgba(16, 44, 98, 0.12);
-            overflow: hidden;
-            background: #ffffff;
-        }
-
-        .accounts-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 960px;
-            color: var(--accounts-text);
-            font-size: 0.78rem;
-        }
-
-        .accounts-table th {
-            background: #0b2e6f;
-            color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 0.45px;
-            font-weight: 600;
-            padding: 0.75rem 0.85rem;
-            text-align: left;
-            border-right: 1px solid rgba(255, 255, 255, 0.12);
-            white-space: nowrap;
-        }
-
-        .accounts-table th:last-child {
-            border-right: none;
-        }
-
-        .accounts-table tbody tr:nth-child(odd) {
-            background: #ffffff;
-        }
-
-        .accounts-table tbody tr:nth-child(even) {
-            background: #f5f7ff;
-        }
-
-        .accounts-table tbody tr:hover {
-            background: rgba(43, 109, 239, 0.1);
-        }
-
-        .accounts-cell {
-            padding: 0.78rem 0.85rem;
-            border: 1px solid rgba(16, 44, 98, 0.12);
-            vertical-align: middle;
-        }
-
-        .accounts-cell--highlight {
-            font-weight: 600;
-            color: #0b1f4f;
-        }
-
-        .accounts-cell--muted {
-            color: rgba(9, 33, 78, 0.7);
-        }
-
-        .accounts-row--active .accounts-cell--highlight,
-        .accounts-row--active .accounts-cell--highlight a {
-            background: #1b57b5;
-            color: #ffffff;
-        }
-
-        .accounts-code {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .accounts-code:hover {
-            text-decoration: underline;
-        }
-
-        .accounts-action-cell {
-            text-align: center;
-            width: 90px;
-        }
-
-        .accounts-action-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: rgba(43, 109, 239, 0.16);
-            color: #2b6def;
-            text-decoration: none;
-            transition: background 0.2s ease, color 0.2s ease;
-            font-size: 1.05rem;
-        }
-
-        .accounts-action-btn:hover {
-            background: #2b6def;
-            color: #ffffff;
         }
 
         .add-account-modal {
@@ -723,127 +780,127 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="accounts-row accounts-row--active">
-                                        <td class="accounts-cell accounts-cell--highlight">
+                                    <tr>
+                                        <td class="accounts-cell accounts-cell--code">
                                             <a href="#" class="accounts-code">ADB-108101057689201</a>
                                         </td>
-                                        <td class="accounts-cell accounts-cell--highlight text-uppercase">YASS PETROLEUM COMPANY LIMITED-ADB</td>
+                                        <td class="accounts-cell accounts-cell--uppercase">YASS PETROLEUM COMPANY LIMITED-ADB</td>
                                         <td class="accounts-cell accounts-cell--muted">Bank</td>
-                                        <td class="accounts-cell accounts-cell--highlight text-uppercase">YASS PETROLEUM COMPANY LIMITED-ADB</td>
-                                        <td class="accounts-action-cell">
-                                            <a href="#" class="accounts-action-btn" aria-label="View account">
-                                                <i class="ri-eye-fill"></i>
-                                            </a>
+                                        <td class="accounts-cell accounts-cell--uppercase">Primary settlement account</td>
+                                        <td class="accounts-cell accounts-action-cell">
+                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="adb" aria-label="View account">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
                                         </td>
                                     </tr>
-                                    <tr class="accounts-row">
+                                    <tr>
+                                        <td class="accounts-cell accounts-cell--code">AMOAKO-Customer Payments</td>
                                         <td class="accounts-cell">AMOAKO-Customer Payments</td>
-                                        <td class="accounts-cell">AMOAKO-Customer Payments</td>
-                                        <td class="accounts-cell">Cash</td>
-                                        <td class="accounts-cell">AMOAKO-Customer Payments Account</td>
-                                        <td class="accounts-action-cell">
-                                            <a href="#" class="accounts-action-btn" aria-label="View account">
-                                                <i class="ri-eye-fill"></i>
-                                            </a>
+                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
+                                        <td class="accounts-cell">Customer payments vault</td>
+                                        <td class="accounts-cell accounts-action-cell">
+                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="amoako-payments" aria-label="View account">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
                                         </td>
                                     </tr>
-                                    <tr class="accounts-row">
+                                    <tr>
+                                        <td class="accounts-cell accounts-cell--code">AMOAKO-Fuel Sales</td>
                                         <td class="accounts-cell">AMOAKO-Fuel Sales</td>
-                                        <td class="accounts-cell">AMOAKO-Fuel Sales</td>
-                                        <td class="accounts-cell">Cash</td>
-                                        <td class="accounts-cell">AMOAKO-Fuel Sales Account</td>
-                                        <td class="accounts-action-cell">
-                                            <a href="#" class="accounts-action-btn" aria-label="View account">
-                                                <i class="ri-eye-fill"></i>
-                                            </a>
+                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
+                                        <td class="accounts-cell">Pump collections account</td>
+                                        <td class="accounts-cell accounts-action-cell">
+                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="amoako-fuel" aria-label="View account">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
                                         </td>
                                     </tr>
-                                    <tr class="accounts-row">
+                                    <tr>
+                                        <td class="accounts-cell accounts-cell--code">AMOAKO-Inventory Sales</td>
                                         <td class="accounts-cell">AMOAKO-Inventory Sales</td>
-                                        <td class="accounts-cell">AMOAKO-Inventory Sales</td>
-                                        <td class="accounts-cell">Cash</td>
-                                        <td class="accounts-cell">AMOAKO-Inventory Sales Account</td>
-                                        <td class="accounts-action-cell">
-                                            <a href="#" class="accounts-action-btn" aria-label="View account">
-                                                <i class="ri-eye-fill"></i>
-                                            </a>
+                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
+                                        <td class="accounts-cell">Lubricants &amp; accessories</td>
+                                        <td class="accounts-cell accounts-action-cell">
+                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="amoako-inventory" aria-label="View account">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
                                         </td>
                                     </tr>
-                                    <tr class="accounts-row">
+                                    <tr>
+                                        <td class="accounts-cell accounts-cell--code">BAMVIM-Customer Payments</td>
                                         <td class="accounts-cell">BAMVIM-Customer Payments</td>
-                                        <td class="accounts-cell">BAMVIM-Customer Payments</td>
-                                        <td class="accounts-cell">Cash</td>
-                                        <td class="accounts-cell">BAMVIM-Customer Payments Account</td>
-                                        <td class="accounts-action-cell">
-                                            <a href="#" class="accounts-action-btn" aria-label="View account">
-                                                <i class="ri-eye-fill"></i>
-                                            </a>
+                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
+                                        <td class="accounts-cell">Retail customer receipts</td>
+                                        <td class="accounts-cell accounts-action-cell">
+                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="bamvim-payments" aria-label="View account">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
                                         </td>
                                     </tr>
-                                    <tr class="accounts-row">
+                                    <tr>
+                                        <td class="accounts-cell accounts-cell--code">BAMVIM-Fuel Sales</td>
                                         <td class="accounts-cell">BAMVIM-Fuel Sales</td>
-                                        <td class="accounts-cell">BAMVIM-Fuel Sales</td>
-                                        <td class="accounts-cell">Cash</td>
-                                        <td class="accounts-cell">BAMVIM-Fuel Sales Account</td>
-                                        <td class="accounts-action-cell">
-                                            <a href="#" class="accounts-action-btn" aria-label="View account">
-                                                <i class="ri-eye-fill"></i>
-                                            </a>
+                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
+                                        <td class="accounts-cell">Daily pump reconciliations</td>
+                                        <td class="accounts-cell accounts-action-cell">
+                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="bamvim-fuel" aria-label="View account">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
                                         </td>
                                     </tr>
-                                    <tr class="accounts-row">
+                                    <tr>
+                                        <td class="accounts-cell accounts-cell--code">BAMVIM-Inventory Sales</td>
                                         <td class="accounts-cell">BAMVIM-Inventory Sales</td>
-                                        <td class="accounts-cell">BAMVIM-Inventory Sales</td>
-                                        <td class="accounts-cell">Cash</td>
-                                        <td class="accounts-cell">BAMVIM-Inventory Sales Account</td>
-                                        <td class="accounts-action-cell">
-                                            <a href="#" class="accounts-action-btn" aria-label="View account">
-                                                <i class="ri-eye-fill"></i>
-                                            </a>
+                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
+                                        <td class="accounts-cell">Lubricants &amp; merch</td>
+                                        <td class="accounts-cell accounts-action-cell">
+                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="bamvim-inventory" aria-label="View account">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
                                         </td>
                                     </tr>
-                                    <tr class="accounts-row">
-                                        <td class="accounts-cell">CBG-2157316100001</td>
+                                    <tr>
+                                        <td class="accounts-cell accounts-cell--code">CBG-2157316100001</td>
                                         <td class="accounts-cell">YASS PETROLEUM COMPANY LIMITED-CBG</td>
-                                        <td class="accounts-cell">Bank</td>
-                                        <td class="accounts-cell">YASS PETROLEUM COMPANY LIMITED</td>
-                                        <td class="accounts-action-cell">
-                                            <a href="#" class="accounts-action-btn" aria-label="View account">
-                                                <i class="ri-eye-fill"></i>
-                                            </a>
+                                        <td class="accounts-cell accounts-cell--muted">Bank</td>
+                                        <td class="accounts-cell">Corporate treasury account</td>
+                                        <td class="accounts-cell accounts-action-cell">
+                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="cbg" aria-label="View account">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
                                         </td>
                                     </tr>
-                                    <tr class="accounts-row">
+                                    <tr>
+                                        <td class="accounts-cell accounts-cell--code">KINTAMPO-Customer Payments</td>
                                         <td class="accounts-cell">KINTAMPO-Customer Payments</td>
-                                        <td class="accounts-cell">KINTAMPO-Customer Payments</td>
-                                        <td class="accounts-cell">Cash</td>
-                                        <td class="accounts-cell">KINTAMPO-Customer Payments Account</td>
-                                        <td class="accounts-action-cell">
-                                            <a href="#" class="accounts-action-btn" aria-label="View account">
-                                                <i class="ri-eye-fill"></i>
-                                            </a>
+                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
+                                        <td class="accounts-cell">Station customer receipts</td>
+                                        <td class="accounts-cell accounts-action-cell">
+                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="kintampo-payments" aria-label="View account">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
                                         </td>
                                     </tr>
-                                    <tr class="accounts-row">
+                                    <tr>
+                                        <td class="accounts-cell accounts-cell--code">KINTAMPO-Fuel Sales</td>
                                         <td class="accounts-cell">KINTAMPO-Fuel Sales</td>
-                                        <td class="accounts-cell">KINTAMPO-Fuel Sales</td>
-                                        <td class="accounts-cell">Cash</td>
-                                        <td class="accounts-cell">KINTAMPO-Fuel Sales Account</td>
-                                        <td class="accounts-action-cell">
-                                            <a href="#" class="accounts-action-btn" aria-label="View account">
-                                                <i class="ri-eye-fill"></i>
-                                            </a>
+                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
+                                        <td class="accounts-cell">Fuel sales account</td>
+                                        <td class="accounts-cell accounts-action-cell">
+                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="kintampo-fuel" aria-label="View account">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
                                         </td>
                                     </tr>
-                                    <tr class="accounts-row">
+                                    <tr>
+                                        <td class="accounts-cell accounts-cell--code">KINTAMPO-Inventory Sales</td>
                                         <td class="accounts-cell">KINTAMPO-Inventory Sales</td>
-                                        <td class="accounts-cell">KINTAMPO-Inventory Sales</td>
-                                        <td class="accounts-cell">Cash</td>
-                                        <td class="accounts-cell">KINTAMPO-Inventory Sales Account</td>
-                                        <td class="accounts-action-cell">
-                                            <a href="#" class="accounts-action-btn" aria-label="View account">
-                                                <i class="ri-eye-fill"></i>
-                                            </a>
+                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
+                                        <td class="accounts-cell">Accessories &amp; merch</td>
+                                        <td class="accounts-cell accounts-action-cell">
+                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="kintampo-inventory" aria-label="View account">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -868,7 +925,6 @@
                     <div class="modal-body">
                         <div class="modal-action-buttons d-flex flex-wrap gap-3 justify-content-center mb-4">
                             <button type="button" class="modal-secondary-btn">Edit Account</button>
-                            <button type="button" class="modal-secondary-btn">Edit Station</button>
                             <button type="button" class="modal-danger-btn">Delete</button>
                         </div>
                         <div class="row g-4">
@@ -952,6 +1008,50 @@
                         <button type="submit" class="btn btn-primary">Save Account</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Account Modal -->
+    <div class="modal fade view-account-modal" id="viewAccountModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Account Snapshot</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="view-account-summary">
+                        <div class="view-account-summary__item">
+                            <span class="view-account-summary__label">Account Number</span>
+                            <span class="view-account-summary__value" id="vaAccountNumber">ADB-108101057689201</span>
+                        </div>
+                        <div class="view-account-summary__item">
+                            <span class="view-account-summary__label">Account Name</span>
+                            <span class="view-account-summary__value" id="vaAccountName">YASS PETROLEUM COMPANY LIMITED-ADB</span>
+                        </div>
+                        <div class="view-account-summary__item">
+                            <span class="view-account-summary__label">Account Type</span>
+                            <span class="view-account-summary__value" id="vaAccountType">Bank</span>
+                        </div>
+                        <div class="view-account-summary__item">
+                            <span class="view-account-summary__label">Stations</span>
+                            <span class="view-account-summary__value" id="vaStations">Navrongo Main, Paga Annex, Bamvim</span>
+                        </div>
+                        <div class="view-account-summary__item">
+                            <span class="view-account-summary__label">Last Reconciled</span>
+                            <span class="view-account-summary__value" id="vaReconciled">September 2025</span>
+                        </div>
+                        <div class="view-account-summary__item">
+                            <span class="view-account-summary__label">Notes</span>
+                            <span class="view-account-summary__value" id="vaNotes">Primary settlement account</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Open Full Profile</button>
+                </div>
             </div>
         </div>
     </div>

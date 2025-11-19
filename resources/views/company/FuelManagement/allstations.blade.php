@@ -669,17 +669,17 @@
     <div class="station-board">
         @php
             $stationRows = [
-                ['name' => 'Wiaga','product' => 'AGO','code' => 'ST-001','location' => 'Builsa North, Upper East','address' => 'Station Road, Wiaga Township','manager' => 'Abena Kwakye','phone' => '+233 20 111 2233'],
-                ['name' => 'Pwalugu','product' => 'PMS','code' => 'ST-002','location' => 'Talensi, Upper East','address' => 'Bolga–Tamale Hwy, Pwalugu Junction','manager' => 'Isaac Ndebugri','phone' => '+233 24 555 6677'],
-                ['name' => 'Navrongo Main','product' => 'AGO','code' => 'ST-003','location' => 'Kassena-Nankana, Upper East','address' => 'Central Market Ring Road, Navrongo','manager' => 'Helen Bawa','phone' => '+233 50 998 4411'],
-                ['name' => 'Wapuli','product' => 'PMS','code' => 'ST-004','location' => 'Saboba, Northern Region','address' => 'Opp. Wapuli Transport Yard, Tamale-Bimbilla Rd','manager' => 'Samuel Tia','phone' => '+233 27 803 5566'],
-                ['name' => 'Kintampo','product' => 'AGO','code' => 'ST-005','location' => 'Kintampo North, Bono East','address' => 'Techiman-Kintampo Hwy, Kintampo Rest Stop','manager' => 'Anita Jabari','phone' => '+233 26 123 8899'],
-                ['name' => 'Amoako','product' => 'PMS','code' => 'ST-006','location' => 'East Mamprusi, North East','address' => 'Amoako Lorry Park, Nalerigu Rd','manager' => 'Daniel Esubonteng','phone' => '+233 24 330 7711'],
-                ['name' => 'Larabanga','product' => 'AGO','code' => 'ST-007','location' => 'West Gonja, Savannah','address' => 'Larabanga Junction, Mole Park Access Rd','manager' => 'Rahim Sulemana','phone' => '+233 20 700 4410'],
-                ['name' => 'Bugubele','product' => 'PMS','code' => 'ST-008','location' => 'Builsa South, Upper East','address' => 'Bugubele Community Centre Street','manager' => 'Mabel Akosua','phone' => '+233 27 556 9981'],
-                ['name' => 'Navrongo 2','product' => 'AGO','code' => 'ST-009','location' => 'Kassena-Nankana, Upper East','address' => 'Navrongo-Airstrip Road, Estate Area','manager' => 'Isaac Bangnab','phone' => '+233 55 881 7744'],
-                ['name' => 'Paga Annex','product' => 'PMS','code' => 'ST-010','location' => 'Kassena-Nankana West, Upper East','address' => 'Border Market Lane, Paga','manager' => 'Lydia Obeng','phone' => '+233 24 990 6623'],
-                ['name' => 'Bamvin','product' => 'AGO','code' => 'ST-011','location' => 'Sawla-Tuna-Kalba, Savannah','address' => 'Bamvin High Street, Opp. Community Clinic','manager' => 'Jonah Laar','phone' => '+233 20 332 1144'],
+                ['name' => 'Wiaga','product' => 'AGO','code' => 'ST-001','location' => 'Builsa North, Upper East','address' => 'Station Road, Wiaga Township','manager' => 'Abena Kwakye','phone' => '+233 20 111 2233','gps_coordinates' => '10.7827, -0.8622'],
+                ['name' => 'Pwalugu','product' => 'PMS','code' => 'ST-002','location' => 'Talensi, Upper East','address' => 'Bolga–Tamale Hwy, Pwalugu Junction','manager' => 'Isaac Ndebugri','phone' => '+233 24 555 6677','gps_coordinates' => '10.6841, -0.9245'],
+                ['name' => 'Navrongo Main','product' => 'AGO','code' => 'ST-003','location' => 'Kassena-Nankana, Upper East','address' => 'Central Market Ring Road, Navrongo','manager' => 'Helen Bawa','phone' => '+233 50 998 4411','gps_coordinates' => '10.8965, -0.8937'],
+                ['name' => 'Wapuli','product' => 'PMS','code' => 'ST-004','location' => 'Saboba, Northern Region','address' => 'Opp. Wapuli Transport Yard, Tamale-Bimbilla Rd','manager' => 'Samuel Tia','phone' => '+233 27 803 5566','gps_coordinates' => '9.8456, -0.1234'],
+                ['name' => 'Kintampo','product' => 'AGO','code' => 'ST-005','location' => 'Kintampo North, Bono East','address' => 'Techiman-Kintampo Hwy, Kintampo Rest Stop','manager' => 'Anita Jabari','phone' => '+233 26 123 8899','gps_coordinates' => '8.0456, -1.7234'],
+                ['name' => 'Amoako','product' => 'PMS','code' => 'ST-006','location' => 'East Mamprusi, North East','address' => 'Amoako Lorry Park, Nalerigu Rd','manager' => 'Daniel Esubonteng','phone' => '+233 24 330 7711','gps_coordinates' => '10.3456, -0.5234'],
+                ['name' => 'Larabanga','product' => 'AGO','code' => 'ST-007','location' => 'West Gonja, Savannah','address' => 'Larabanga Junction, Mole Park Access Rd','manager' => 'Rahim Sulemana','phone' => '+233 20 700 4410','gps_coordinates' => '9.2234, -2.1234'],
+                ['name' => 'Bugubele','product' => 'PMS','code' => 'ST-008','location' => 'Builsa South, Upper East','address' => 'Bugubele Community Centre Street','manager' => 'Mabel Akosua','phone' => '+233 27 556 9981','gps_coordinates' => '10.6234, -0.7234'],
+                ['name' => 'Navrongo 2','product' => 'AGO','code' => 'ST-009','location' => 'Kassena-Nankana, Upper East','address' => 'Navrongo-Airstrip Road, Estate Area','manager' => 'Isaac Bangnab','phone' => '+233 55 881 7744','gps_coordinates' => '10.8965, -0.8937'],
+                ['name' => 'Paga Annex','product' => 'PMS','code' => 'ST-010','location' => 'Kassena-Nankana West, Upper East','address' => 'Border Market Lane, Paga','manager' => 'Lydia Obeng','phone' => '+233 24 990 6623','gps_coordinates' => '10.9876, -1.0234'],
+                ['name' => 'Bamvin','product' => 'AGO','code' => 'ST-011','location' => 'Sawla-Tuna-Kalba, Savannah','address' => 'Bamvin High Street, Opp. Community Clinic','manager' => 'Jonah Laar','phone' => '+233 20 332 1144','gps_coordinates' => '9.4567, -2.3456'],
             ];
 
             $managerNames = array_unique(array_column($stationRows, 'manager'));
@@ -704,6 +704,7 @@
                                 <th>Station</th>
                                 <th>Location</th>
                                 <th>Address</th>
+                                <th>GPS Coordinates</th>
                                 <th>Manager</th>
                                 <th>Telephone</th>
                                 <th>Action</th>
@@ -722,6 +723,7 @@
                                     </td>
                                     <td>{{ $station['location'] }}</td>
                                     <td class="station-address">{{ $station['address'] }}</td>
+                                    <td>{{ $station['gps_coordinates'] ?? '—' }}</td>
                                     <td>{{ $station['manager'] }}</td>
                                     <td class="station-phone">
                                         <a href="tel:{{ preg_replace('/\s+/', '', $station['phone']) }}">{{ $station['phone'] }}</a>
@@ -737,6 +739,7 @@
                                                 data-station-product="{{ e($station['product']) }}"
                                                 data-station-location="{{ e($station['location']) }}"
                                                 data-station-address="{{ e($station['address']) }}"
+                                                data-station-gps-coordinates="{{ e($station['gps_coordinates'] ?? '') }}"
                                                 data-station-manager="{{ e($station['manager']) }}"
                                                 data-station-phone="{{ e($station['phone']) }}"
                                                 data-station-phone-raw="{{ preg_replace('/\s+/', '', $station['phone']) }}"
@@ -799,6 +802,11 @@
                             <div class="station-form-group">
                                 <label for="station-location">Location *</label>
                                 <input type="text" id="station-location" name="location" class="station-input" placeholder="District, Region" required />
+                            </div>
+
+                            <div class="station-form-group">
+                                <label for="station-gps">GPS Coordinates</label>
+                                <input type="text" id="station-gps" name="gps_coordinates" class="station-input" placeholder="e.g., 10.7827, -0.8622" />
                             </div>
 
                             <div class="station-form-group">
@@ -867,6 +875,10 @@
                         <div class="station-detail-item">
                             <span>Location</span>
                             <strong data-modal-field="location">—</strong>
+                        </div>
+                        <div class="station-detail-item">
+                            <span>GPS Coordinates</span>
+                            <strong data-modal-field="gps_coordinates">—</strong>
                         </div>
                         <div class="station-detail-item" style="grid-column: span 2;">
                             <span>Address</span>
@@ -970,6 +982,7 @@
                     setText('product', data.stationProduct);
                     setText('manager', data.stationManager);
                     setText('location', data.stationLocation);
+                    setText('gps_coordinates', data.stationGpsCoordinates);
                     setText('address', data.stationAddress);
 
                     const phoneLink = modal.querySelector('[data-modal-field="phone-link"]');

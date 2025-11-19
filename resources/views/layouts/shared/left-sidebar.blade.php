@@ -243,28 +243,8 @@
                                     <li><a href="{{ route('any', 'company/Targets/individual-target') }}">Individual Target</a></li>
                                 </ul>
                             </div>
-                        </li>
-                        <li>
-                            <a data-bs-toggle="collapse" 
-                               href="#finance" 
-                               aria-expanded="false" 
-                               aria-controls="finance">
-                                <i class="ri-money-dollar-circle-line"></i>
-                                <span>Finance</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="finance">
-                                <ul class="side-nav-third-level">
-                                    <li><a href="{{ route('any', 'company/Finance/managecurency') }}">Manage Currency</a></li>
-                                    <li><a href="{{ route('any', 'company/Finance/account-types') }}">Create Account Type</a></li>
-                                    <li><a href="{{ route('any', 'company/Finance/main-accounts') }}">Main Account Management</a></li>
-                                    <li><a href="{{ route('any', 'company/Finance/sub-accounts') }}">Sub Account Management</a></li>
-                                    <li><a href="{{ route('any', 'company/Finance/account-mapping') }}">Account Mapping</a></li>
-                                    <li><a href="{{ route('any', 'company/Finance/account-categories') }}">Account Categories</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
+                        </li> ---->
+                        <!-- <li>
                             <a href="{{ route('any', 'company/MenuManager/menumanager') }}">
                                 <i class="ri-menu-2-fill"></i>
                                 <span>Menu Management</span>
@@ -329,18 +309,18 @@
             </li> 
             @endif
             <!-- Fuel Sales Management System -->
-            @if($hasSubmenuAccess('fuel_management'))
+            @if($hasMenuAccess('site_management'))
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse"
-                   href="#fuelManagement"
+                   href="#siteManagement"
                    aria-expanded="false"
-                   aria-controls="fuelManagement"
+                   aria-controls="siteManagement"
                    class="side-nav-link">
                     <i class="ri-gas-station-line"></i>
-                    <span>Fuel Sales Management</span>
+                    <span>Site & Management</span>
                     <span class="menu-arrow"></span>
                 </a>
-                <div class="collapse" id="fuelManagement">
+                <div class="collapse" id="siteManagement">
                     <ul class="side-nav-second-level">
                         <!--@if($hasMenuAccess('fuel_dashboard'))
                         <li>
@@ -360,17 +340,11 @@
                         </li>
                         @endif
                         
-                        @if($hasMenuAccess('stock_management'))
+                        @if($hasMenuAccess('attendants'))
                         <li>
-                            
-                        </li>
-                        @endif
-                        
-                        @if($hasMenuAccess('sales_management'))
-                        <li>
-                            <a href="{{ route('any', 'company/FuelManagement/sales') }}">
-                                <i class="ri-money-dollar-circle-line"></i>
-                                <span>Sales</span>
+                            <a href="{{ route('any', 'company/FuelManagement/attendants') }}">
+                                <i class="ri-user-line"></i>
+                                <span>Attendant Registry</span>
                             </a>
                         </li>
                         @endif
@@ -379,6 +353,22 @@
                             <a href="{{ route('any', 'company/FuelManagement/stationmanager') }}">
                                 <i class="ri-user-line"></i>
                                 <span>Station Managers</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($hasMenuAccess('station_map'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/station-map') }}">
+                                <i class="ri-map-pin-line"></i>
+                                <span>Map</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($hasMenuAccess('roaster_management'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/roasterManagement') }}">
+                                <i class="ri-calendar-2-line"></i>
+                                <span>Roaster</span>
                             </a>
                         </li>
                         @endif
@@ -421,6 +411,22 @@
                             </a>
                         </li>
                         @endif
+                        @if($hasMenuAccess('sales_management'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/sales') }}">
+                                <i class="ri-money-dollar-circle-line"></i>
+                                <span>Sales</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($hasMenuAccess('salea-report'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/sales-report') }}">
+                                <i class="ri-bar-chart-2-line"></i>
+                                <span>Sales Report</span>
+                            </a>
+                        </li>
+                        @endif
                     </ul>
                 </div>
             </li>
@@ -436,14 +442,6 @@
                 </a>
                 <div class="collapse" id="Accounts">
                     <ul class="side-nav-second-level">
-                        @if($hasMenuAccess('bank_deposit'))
-                        <li>
-                            <a href="{{ route('any', 'company/FuelManagement/bankdeposit') }}">
-                                <i class="ri-money-dollar-circle-line"></i>
-                                <span>Bank Deposit</span>
-                            </a>
-                        </li>
-                        @endif
                         @if($hasMenuAccess('all_account'))
                         <li>
                             <a href="{{ route('any', 'company/FuelManagement/allaccount') }}">
@@ -452,10 +450,42 @@
                             </a>
                         </li>
                         @endif
+                        @if($hasMenuAccess('bank_deposit'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/bankdeposit') }}">
+                                <i class="ri-money-dollar-circle-line"></i>
+                                <span>Bank Deposit</span>
+                            </a>
+                        </li>
+                        @endif
                     </ul>
                 </div>
             </li>
             @endif
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" 
+                   href="#finance" 
+                   aria-expanded="false" 
+                   aria-controls="finance"
+                   class="side-nav-link">
+                    <i class="ri-money-dollar-circle-line"></i>
+                    <span>Finance</span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="finance">
+                    <ul class="side-nav-third-level">
+                        <li><a href="{{ route('any', 'company/Finance/general-Ledger') }}">General Ledger</a></li>
+                        <li><a href="{{ route('any', 'company/Finance/chartAccount') }}">Chart of Accounts</a></li>
+                        <li><a href="{{ route('any', 'company/Finance/accounts-payable') }}">Accounts Payable</a></li>
+                        <li><a href="{{ route('any', 'company/Finance/accounts-receivable') }}">Account Receivable</a></li>
+                        <li><a href="{{ route('any', 'company/Finance/cash-bank') }}">Cash & Bank</a></li>
+                        <li><a href="{{ route('any', 'company/Finance/tax-management') }}">Tax Management</a></li>
+                        <li><a href="{{ route('any', 'company/Finance/payrol-finance') }}">Payroll</a></li>
+                        <li><a href="{{ route('any', 'company/Finance/reports') }}">Analytic Reports</a></li>
+                    </ul>
+                </div>
+            </li>
 
             <!-- @if($hasSubmenuAccess('master_tracker'))
             <li class="side-nav-item">
@@ -509,7 +539,7 @@
             @endif -->
             
             
-            <!-- @if($hasSubmenuAccess('human_resources'))
+            @if($hasSubmenuAccess('human_resources'))
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" 
                    href="#HR" 
@@ -531,7 +561,7 @@
                     </ul>
                 </div>
             </li>
-            @endif -->
+            @endif 
            <!-- @if($hasSubmenuAccess('crm'))
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" 
