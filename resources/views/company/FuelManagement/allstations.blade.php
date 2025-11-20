@@ -678,7 +678,6 @@
     <div class="station-board">
         @php
             $stations = $stations ?? collect();
-            $managerNamesList = collect($managerNames ?? [])->filter()->unique()->values();
         @endphp
 
         @if ($errors->any())
@@ -711,8 +710,6 @@
                                 <th>Location</th>
                                 <th>Address</th>
                                 <th>GPS Coordinates</th>
-                                <th>Manager</th>
-                                <th>Telephone</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -743,13 +740,6 @@
                                     <td>{{ $station->location }}</td>
                                     <td class="station-address">{{ $station->address }}</td>
                                     <td>{{ $station->gps_coordinates ?? '—' }}</td>
-                                    <td>{{ $station->manager_name }}</td>
-                                    <td class="station-phone">
-                                        @php
-                                            $phoneRaw = preg_replace('/\s+/', '', $station->manager_phone);
-                                        @endphp
-                                        <a href="tel:{{ $phoneRaw }}">{{ $station->manager_phone }}</a>
-                                    </td>
                                     <td>
                                         <div class="station-row-actions">
                                             <button
@@ -763,9 +753,9 @@
                                                 data-station-location="{{ e($station->location) }}"
                                                 data-station-address="{{ e($station->address) }}"
                                                 data-station-gps-coordinates="{{ e($station->gps_coordinates ?? '') }}"
-                                                data-station-manager="{{ e($station->manager_name) }}"
-                                                data-station-phone="{{ e($station->manager_phone) }}"
-                                                data-station-phone-raw="{{ $phoneRaw }}"
+                                                data-station-manager-name="{{ e(optional($station->activeManager)->full_name ?? '') }}"
+                                                data-station-manager-email="{{ e(optional($station->activeManager)->email ?? '') }}"
+                                                data-station-manager-phone="{{ e(optional($station->activeManager)->phone ?? '') }}"
                                             >
                                                 View
                                             </button>
@@ -775,7 +765,6 @@
                                                 data-open-modal="station-delete"
                                                 data-station-name="{{ e($station->name) }}"
                                                 data-station-code="{{ e($station->code) }}"
-                                                data-station-manager="{{ e($station->manager_name) }}"
                                                 data-station-location="{{ e($station->location) }}"
                                                 data-station-destroy-action="{{ route('company.fuel.stations.destroy', $station) }}"
                                             >
@@ -786,7 +775,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" style="text-align: center; padding: 1.5rem; color: #0d2c5f; font-weight: 600; letter-spacing: 0.12em;">
+                                    <td colspan="5" style="text-align: center; padding: 1.5rem; color: #0d2c5f; font-weight: 600; letter-spacing: 0.12em;">
                                         No fuel stations found yet. Add your first station to get started.
                                     </td>
                                 </tr>
@@ -843,21 +832,6 @@
                             </div>
 
                             <div class="station-form-group">
-                                <label for="station-manager">Manager Name *</label>
-                                <input type="text" id="station-manager" name="manager" class="station-input" placeholder="Start typing manager name" value="{{ old('manager') }}" list="station-manager-list" required />
-                                <datalist id="station-manager-list">
-                                    @foreach ($managerNamesList as $managerName)
-                                        <option value="{{ $managerName }}"></option>
-                                    @endforeach
-                                </datalist>
-                            </div>
-
-                            <div class="station-form-group">
-                                <label for="station-phone">Telephone *</label>
-                                <input type="tel" id="station-phone" name="phone" class="station-input" placeholder="+233 XX XXX XXXX" value="{{ old('phone') }}" required />
-                            </div>
-
-                            <div class="station-form-group">
                                 <label for="station-address">Full Address *</label>
                                 <textarea id="station-address" name="address" class="station-textarea" placeholder="Enter complete station address" required>{{ old('address') }}</textarea>
                             </div>
@@ -896,14 +870,18 @@
                             <strong data-modal-field="products">—</strong>
                         </div>
                         <div class="station-detail-item">
-                            <span>Manager</span>
+                            <span>Assigned Manager</span>
                             <strong data-modal-field="manager">—</strong>
                         </div>
                         <div class="station-detail-item">
-                            <span>Telephone</span>
+                            <span>Manager Contact</span>
                             <strong>
                                 <a href="#" data-modal-field="phone-link">—</a>
                             </strong>
+                        </div>
+                        <div class="station-detail-item">
+                            <span>Manager Email</span>
+                            <strong data-modal-field="manager_email">—</strong>
                         </div>
                         <div class="station-detail-item">
                             <span>Location</span>
@@ -945,7 +923,6 @@
                                 This action cannot be undone and will also remove associated performance records.
                             </p>
                             <p>
-                                Manager: <strong data-modal-field="manager">—</strong><br>
                                 Location: <strong data-modal-field="location">—</strong><br>
                                 Station Code: <strong data-modal-field="code">—</strong>
                             </p>
@@ -1071,16 +1048,19 @@
                     setText('name', data.stationName);
                     setText('code', data.stationCode);
                     setText('products', data.stationProducts || data.stationProduct);
-                    setText('manager', data.stationManager);
+                    setText('manager', data.stationManagerName);
                     setText('location', data.stationLocation);
                     setText('gps_coordinates', data.stationGpsCoordinates);
                     setText('address', data.stationAddress);
 
                     const phoneLink = modal.querySelector('[data-modal-field="phone-link"]');
                     if (phoneLink) {
-                        phoneLink.textContent = data.stationPhone || '—';
-                        phoneLink.setAttribute('href', data.stationPhoneRaw ? `tel:${data.stationPhoneRaw}` : '#');
+                        phoneLink.textContent = data.stationManagerPhone || '—';
+                        const phoneRaw = (data.stationManagerPhone || '').replace(/\s+/g, '');
+                        phoneLink.setAttribute('href', phoneRaw ? `tel:${phoneRaw}` : '#');
                     }
+
+                    setText('manager_email', data.stationManagerEmail);
                 }
 
                 if (modalName === 'station-delete') {
@@ -1091,7 +1071,6 @@
                     };
 
                     setText('name', data.stationName);
-                    setText('manager', data.stationManager);
                     setText('location', data.stationLocation);
                     setText('code', data.stationCode);
 
