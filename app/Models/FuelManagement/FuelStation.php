@@ -3,7 +3,10 @@
 namespace App\Models\FuelManagement;
 
 use App\Models\CompanyProfile;
+use App\Models\FuelManagement\StationManager;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,8 +24,6 @@ class FuelStation extends Model
         'products',
         'location',
         'gps_coordinates',
-        'manager_name',
-        'manager_phone',
         'address',
         'status',
         'created_by',
@@ -39,6 +40,18 @@ class FuelStation extends Model
     public function company()
     {
         return $this->belongsTo(CompanyProfile::class, 'company_id');
+    }
+
+    public function stationManagers(): HasMany
+    {
+        return $this->hasMany(StationManager::class, 'fuel_station_id');
+    }
+
+    public function activeManager(): HasOne
+    {
+        return $this->hasOne(StationManager::class, 'fuel_station_id')
+            ->where('status', StationManager::STATUS_ACTIVE)
+            ->latestOfMany('assigned_at');
     }
 
     public function creator()

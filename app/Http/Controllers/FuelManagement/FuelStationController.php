@@ -27,18 +27,12 @@ class FuelStationController extends Controller
             }
 
             $stations = FuelStation::forCompany($companyId)
+                ->with(['activeManager'])
                 ->orderBy('name')
                 ->get();
 
-            $managerNames = FuelStation::forCompany($companyId)
-                ->whereNotNull('manager_name')
-                ->distinct()
-                ->orderBy('manager_name')
-                ->pluck('manager_name');
-
             return view('company.FuelManagement.allstations', [
                 'stations' => $stations,
-                'managerNames' => $managerNames,
                 'lastSyncedAt' => now(),
             ]);
         } catch (\Exception $e) {
@@ -77,8 +71,6 @@ class FuelStationController extends Controller
                 'products.*' => ['required', Rule::in(['AGO', 'PMS'])],
                 'location' => 'required|string|max:255',
                 'gps_coordinates' => 'nullable|string|max:100',
-                'manager' => 'required|string|max:255',
-                'phone' => 'required|string|max:30',
                 'address' => 'required|string',
             ]);
 
@@ -113,8 +105,6 @@ class FuelStationController extends Controller
                 'products' => $products,
                 'location' => $validated['location'],
                 'gps_coordinates' => $validated['gps_coordinates'] ?? null,
-                'manager_name' => $validated['manager'],
-                'manager_phone' => $validated['phone'],
                 'address' => $validated['address'],
                 'status' => 'active',
                 'created_by' => $this->getAuthenticatedUserId(),
@@ -193,8 +183,6 @@ class FuelStationController extends Controller
                 'products.*' => ['required', Rule::in(['AGO', 'PMS'])],
                 'location' => 'required|string|max:255',
                 'gps_coordinates' => 'nullable|string|max:100',
-                'manager' => 'required|string|max:255',
-                'phone' => 'required|string|max:30',
                 'address' => 'required|string',
                 'status' => 'nullable|string|max:32',
             ]);
@@ -229,8 +217,6 @@ class FuelStationController extends Controller
                 'products' => $products,
                 'location' => $validated['location'],
                 'gps_coordinates' => $validated['gps_coordinates'] ?? null,
-                'manager_name' => $validated['manager'],
-                'manager_phone' => $validated['phone'],
                 'address' => $validated['address'],
                 'status' => $validated['status'] ?? $station->status,
                 'updated_by' => $this->getAuthenticatedUserId(),

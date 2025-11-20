@@ -317,7 +317,7 @@
                    aria-controls="siteManagement"
                    class="side-nav-link">
                     <i class="ri-gas-station-line"></i>
-                    <span>Site & Management</span>
+                    <span>Station Management</span>
                     <span class="menu-arrow"></span>
                 </a>
                 <div class="collapse" id="siteManagement">
@@ -340,6 +340,14 @@
                         </li>
                         @endif
                         
+                        @if($hasMenuAccess('station_managers'))
+                        <li>
+                            <a href="{{ route('any', 'company/FuelManagement/stationmanager') }}">
+                                <i class="ri-user-line"></i>
+                                <span>Station Managers</span>
+                            </a>
+                        </li>
+                        @endif
                         @if($hasMenuAccess('attendants'))
                         <li>
                             <a href="{{ route('any', 'company/FuelManagement/attendants') }}">
@@ -348,11 +356,12 @@
                             </a>
                         </li>
                         @endif
-                        @if($hasMenuAccess('station_managers'))
+                        
+                        @if($hasMenuAccess('roaster_management'))
                         <li>
-                            <a href="{{ route('any', 'company/FuelManagement/stationmanager') }}">
-                                <i class="ri-user-line"></i>
-                                <span>Station Managers</span>
+                            <a href="{{ route('any', 'company/FuelManagement/roasterManagement') }}">
+                                <i class="ri-calendar-2-line"></i>
+                                <span>Roaster</span>
                             </a>
                         </li>
                         @endif
@@ -364,17 +373,10 @@
                             </a>
                         </li>
                         @endif
-                        @if($hasMenuAccess('roaster_management'))
-                        <li>
-                            <a href="{{ route('any', 'company/FuelManagement/roasterManagement') }}">
-                                <i class="ri-calendar-2-line"></i>
-                                <span>Roaster</span>
-                            </a>
-                        </li>
-                        @endif
                     </ul>
                 </div>
             </li>
+            @endif
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse"
                     href="#stockActivity"
@@ -411,6 +413,21 @@
                             </a>
                         </li>
                         @endif
+                    </ul>
+                </div>
+            </li>
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse"
+                    href="#salesTracking"
+                    aria-expanded="false"
+                    aria-controls="salesTracking"
+                    class="side-nav-link">
+                    <i class="fa fa-chart-bar"></i>
+                    <span>Sales Tracking</span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="salesTracking">
+                    <ul class="side-nav-second-level">
                         @if($hasMenuAccess('sales_management'))
                         <li>
                             <a href="{{ route('any', 'company/FuelManagement/sales') }}">
@@ -461,7 +478,6 @@
                     </ul>
                 </div>
             </li>
-            @endif
 
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" 
