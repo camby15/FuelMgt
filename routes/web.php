@@ -32,6 +32,7 @@ use App\Http\Controllers\CRM\ContractController;
 use App\Models\Contract;
 use App\Http\Controllers\DemoRequestController;
 use App\Http\Controllers\FuelManagement\FuelStationController;
+use App\Http\Controllers\FuelManagement\StationManagerController;
 
 use App\Http\Controllers\LoyaltyProgramController;
 use App\Http\Controllers\CustomerTierController;
@@ -968,6 +969,14 @@ Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.sessi
 Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.session'])->name('company.')->group(function () {
     Route::prefix('fuel-management')->name('fuel.')->group(function () {
         Route::resource('stations', FuelStationController::class)->except(['create', 'edit']);
+        Route::get('station-managers/stations', [StationManagerController::class, 'stations'])
+            ->name('station-managers.stations');
+        Route::resource('station-managers', StationManagerController::class)->except(['create', 'edit']);
+
+        Route::patch('station-managers/{station_manager}/terminate', [StationManagerController::class, 'terminate'])
+            ->name('station-managers.terminate');
+        Route::post('station-managers/{station_manager}/sms', [StationManagerController::class, 'sendSms'])
+            ->name('station-managers.sms');
     });
 });
 
