@@ -33,20 +33,14 @@ use App\Models\Contract;
 use App\Http\Controllers\DemoRequestController;
 use App\Http\Controllers\FuelManagement\FuelStationController;
 use App\Http\Controllers\FuelManagement\StationManagerController;
+use App\Http\Controllers\FuelManagement\FuelAttendantController;
+use App\Http\Controllers\FuelManagement\RosterController;
 
 use App\Http\Controllers\LoyaltyProgramController;
 use App\Http\Controllers\CustomerTierController;
 use App\Http\Controllers\RewardController;
 use App\Http\Controllers\RedemptionController;
 use App\Http\Controllers\ReferralController;
-use App\Http\Controllers\HR\EmployeeController;
-use App\Http\Controllers\HR\LeaveController;
-use App\Http\Controllers\HR\TrainingController;
-use App\Http\Controllers\HR\PerformanceController;
-use App\Http\Controllers\HR\DocumentationController;
-use App\Http\Controllers\HR\JobsController;
-use App\Http\Controllers\HR\AttendanceController;
-use App\Http\Controllers\HR\PayrollController;
 
 use App\Http\Controllers\WareHouse\POController;
 use App\Http\Controllers\WareHouse\POApprovalController;
@@ -134,22 +128,6 @@ Route::post('external/client-form/submit', [ContractFormController::class, 'subm
 Route::get('external/client-signatureForm/{email}/{id}', [ContractFormController::class, 'showSignatureForm'])->name('client.signature.form');
 Route::post('external/client-signature/submit', [ContractFormController::class, 'submitSignatureForm'])->name('client.signature.Form.submit');
 
-// External Job Application Routes
-Route::get('job', [JobsController::class, 'showExternalApplicationForm'])->name('external.job.application.form');
-Route::post('external/job-application/submit', [JobsController::class, 'submitExternalApplication'])->name('external.job.application.submit');
-
-// Job Applications API Routes
-Route::prefix('company/hr/jobs')->name('hr.jobs.')->middleware(['auth.company_or_sub_user', 'company.session'])->group(function () {
-    Route::post('/applications', [JobsController::class, 'getApplications'])->name('applications');
-    Route::post('/applications/{id}', [JobsController::class, 'getApplicationDetails'])->name('application.details');
-    Route::post('/applications/{id}/reject', [JobsController::class, 'rejectApplication'])->name('application.reject');
-
-    // Onboarding Routes
-    Route::post('/onboarding', [JobsController::class, 'getOnboardingData'])->name('onboarding.data');
-    Route::post('/onboarding/create', [JobsController::class, 'createOnboarding'])->name('onboarding.create');
-    Route::post('/onboarding/{id}/update-status', [JobsController::class, 'updateOnboardingStatus'])->name('onboarding.update-status');
-    Route::delete('/onboarding/{id}', [JobsController::class, 'deleteOnboarding'])->name('onboarding.delete');
-});
 
 // Authentication and Registration Routes
 // ------------------------------------
@@ -972,6 +950,15 @@ Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.sessi
         Route::get('station-managers/stations', [StationManagerController::class, 'stations'])
             ->name('station-managers.stations');
         Route::resource('station-managers', StationManagerController::class)->except(['create', 'edit']);
+        Route::resource('attendants', FuelAttendantController::class)->except(['create', 'edit']);
+        Route::resource('rosters', RosterController::class)->except(['create', 'edit']);
+
+        Route::post('rosters/auto-assign', [RosterController::class, 'autoAssign'])
+            ->name('rosters.auto-assign');
+        Route::post('rosters/swap-shift', [RosterController::class, 'swapShift'])
+            ->name('rosters.swap-shift');
+        Route::post('rosters/assign-off-day', [RosterController::class, 'assignOffDay'])
+            ->name('rosters.assign-off-day');
 
         Route::patch('station-managers/{station_manager}/terminate', [StationManagerController::class, 'terminate'])
             ->name('station-managers.terminate');
@@ -1074,172 +1061,22 @@ Route::prefix('company')->group(function () {
     });
 });
 
-Route::prefix('company/hr/employees')->name('hr.employees.')->group(function () {
-
-    // Specific routes must come before parameter routes
-    Route::post('/available-staff-ids', [EmployeeController::class, 'getAvailableStaffIds'])->name('available-staff-ids');
-
-    Route::post('/store', [EmployeeController::class, 'store'])->name('store');
-    Route::get('/all', [EmployeeController::class, 'index'])->name('index');
-    Route::post('/all', [EmployeeController::class, 'getEmployees'])->name('all');
-    Route::get('/create', [EmployeeController::class, 'create'])->name('create');
-
-    // Import helpers MUST come before parameter routes
-    Route::get('/import/template', [EmployeeController::class, 'downloadImportTemplate'])->name('import.template');
-    Route::post('/import', [EmployeeController::class, 'import'])->name('import');
-
-    Route::post('/{employee}', [EmployeeController::class, 'show'])->name('show');
-    Route::get('/{employee}/edit', [EmployeeController::class, 'edit'])->name('edit');
-    Route::put('/{employee}', [EmployeeController::class, 'update'])->name('update');
-    Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->name('destroy');
-    Route::post('/{employee}/send-message', [EmployeeController::class, 'sendMessage'])->name('send-message');
-    Route::get('/export', [EmployeeController::class, 'export'])->name('export');
-
-    // (moved above)
-});
 
 
 
 
-Route::prefix('company/hr/jobs')->name('jobs.')->group(function () {
-    Route::post('/all', [JobsController::class, 'all'])->name('all');
-    Route::post('/status-counts', [JobsController::class, 'getStatusCounts'])->name('statusCounts');
-
-    Route::post('/store', [JobsController::class, 'store'])->name('store');
-    Route::post('/showByToken', [JobsController::class, 'showByToken'])->name('showByToken');
-    Route::post('/update', [JobsController::class, 'update'])->name('update');
-    Route::post('/delete', [JobsController::class, 'delete'])->name('delete');
-});
 
 
 
 
-Route::prefix('company/hr/attendance')->name('attendance.')->group(function () {
-    Route::post('/index', [AttendanceController::class, 'index'])->name('index');
-    Route::post('/stats', [AttendanceController::class, 'getStats'])->name('stats');
-    Route::post('/', [AttendanceController::class, 'store'])->name('store');
-    Route::post('/bulk', [AttendanceController::class, 'bulkUpdate'])->name('bulk');
-    Route::put('/{id}', [AttendanceController::class, 'update'])->name('update');
-    Route::post('/history/{employeeId}', [AttendanceController::class, 'history'])->name('history');
-    Route::post('/employees', [AttendanceController::class, 'getEmployees'])->name('employees');
-    Route::post('/import', [AttendanceController::class, 'import'])->name('import');
-});
 
 
-Route::prefix('company/hr/payroll')->name('payroll.')->group(function () {
-    Route::post('/stats', [PayrollController::class, 'stats'])->name('stats');
-    Route::post('/all', [PayrollController::class, 'index'])->name('index');
-    Route::post('/debug-per-page', [PayrollController::class, 'debugPerPage'])->name('debug-per-page');
-    Route::post('/employees', [PayrollController::class, 'getEmployees'])->name('employees');
-    Route::post('/departments', [PayrollController::class, 'getDepartments'])->name('departments');
-    Route::post('/run', [PayrollController::class, 'runPayroll'])->name('run');
-    Route::post('/', [PayrollController::class, 'store'])->name('store');
-    Route::post('/import', [PayrollController::class, 'import'])->name('payroll.import');
-    Route::post('/{payroll}', [PayrollController::class, 'show'])->name('show');
-    Route::put('/{payroll}', [PayrollController::class, 'update'])->name('update');
-    Route::post('/process', [PayrollController::class, 'process'])->name('process');
 
 
-    Route::delete('/{payroll}', [PayrollController::class, 'destroy'])->name('destroy');
-    Route::post('/export/excel', [PayrollController::class, 'exportExcel'])->name('export.excel');
-    Route::post('/export/pdf', [PayrollController::class, 'exportPdf'])->name('export.pdf');
-    Route::post('/export/csv', [PayrollController::class, 'exportCsv'])->name('export.csv');
-});
 
-// Leave Management Routes
-Route::prefix('company/hr/leaves')->name('leaves.')->group(function () {
-    Route::post('/', [LeaveController::class, 'index'])->name('index');
-    Route::post('/store', [LeaveController::class, 'store'])->name('store');
-    Route::post('/stats', [LeaveController::class, 'getStats'])->name('stats');
-    Route::post('/calendar-events', [LeaveController::class, 'getCalendarEvents'])->name('calendar.events');
-    Route::post('/balance', [LeaveController::class, 'getLeaveBalance'])->name('balance');
-    Route::post('/{id}', [LeaveController::class, 'show'])->name('show');
-    Route::put('/{id}', [LeaveController::class, 'update'])->name('update');
-    Route::delete('/{id}', [LeaveController::class, 'destroy'])->name('destroy');
-    Route::post('/{id}/approve', [LeaveController::class, 'approve'])->name('approve');
-    Route::post('/{id}/reject', [LeaveController::class, 'reject'])->name('reject');
-    Route::post('/{id}/cancel', [LeaveController::class, 'cancel'])->name('cancel');
-});
 
-// Training Management Routes
-Route::prefix('company/hr/training')->name('training.')->group(function () {
-    Route::post('/', [TrainingController::class, 'index'])->name('index');
-    Route::post('/test', [TrainingController::class, 'test'])->name('test');
-    Route::post('/store', [TrainingController::class, 'store'])->name('store');
-    Route::post('/stats', [TrainingController::class, 'getStats'])->name('stats');
-    Route::post('/{id}', [TrainingController::class, 'show'])->name('show');
-    Route::put('/{id}', [TrainingController::class, 'update'])->name('update');
-    Route::delete('/{id}', [TrainingController::class, 'destroy'])->name('destroy');
-});
 
-// Performance Management Routes (temporarily without middleware for testing)
-Route::prefix('company/hr/performance')->name('performance.')->group(function () {
-    Route::post('/', [PerformanceController::class, 'index'])->name('index');
-    Route::post('/store', [PerformanceController::class, 'store'])->name('store');
-    Route::post('/stats', [PerformanceController::class, 'getStats'])->name('stats');
-    Route::get('/search-employees', [PerformanceController::class, 'searchEmployees'])->name('search-employees');
-    Route::post('/{id}', [PerformanceController::class, 'show'])->name('show');
-    Route::put('/{id}', [PerformanceController::class, 'update'])->name('update');
-    Route::delete('/{id}', [PerformanceController::class, 'destroy'])->name('destroy');
-});
 
-// Staff Self-Service Portal Routes
-Route::prefix('company/hr/staff')->name('staff.')->group(function () {
-    Route::get('/', [App\Http\Controllers\HR\StaffController::class, 'index'])->name('index');
-    Route::post('/personal-info', [App\Http\Controllers\HR\StaffController::class, 'updatePersonalInfo'])->name('personal-info.update');
-    Route::post('/profile-picture', [App\Http\Controllers\HR\StaffController::class, 'uploadProfilePicture'])->name('profile-picture.upload');
-    Route::post('/expense-claims', [App\Http\Controllers\HR\StaffController::class, 'getExpenseClaims'])->name('expense-claims');
-    Route::post('/training-data', [App\Http\Controllers\HR\StaffController::class, 'getTrainingData'])->name('training-data');
-    Route::post('/documents', [App\Http\Controllers\HR\StaffController::class, 'getDocuments'])->name('documents');
-});
-
-// Debug route for testing performance API
-Route::get('/debug-performance-api', function () {
-    try {
-        session(['selected_company_id' => 1]);
-
-        $controller = new \App\Http\Controllers\HR\PerformanceController();
-        $request = new \Illuminate\Http\Request();
-
-        $statsResponse = $controller->getStats($request);
-        $statsData = json_decode($statsResponse->getContent(), true);
-
-        $indexResponse = $controller->index($request);
-        $indexData = json_decode($indexResponse->getContent(), true);
-
-        return response()->json([
-            'success' => true,
-            'stats' => $statsData,
-            'index_count' => count($indexData['data'] ?? []),
-            'message' => 'Performance API debug test completed'
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-    }
-});
-
-// Documentation Management Routes
-Route::prefix('company/hr/documentation')->name('documentation.')->group(function () {
-    // Folder routes (must come before generic {id} routes)
-    Route::post('/folders', [DocumentationController::class, 'getFolders'])->name('folders');
-    Route::post('/folders/create', [DocumentationController::class, 'createFolder'])->name('folders.create');
-    Route::put('/folders/{id}', [DocumentationController::class, 'updateFolder'])->name('folders.update');
-    Route::delete('/folders/{id}', [DocumentationController::class, 'deleteFolder'])->name('folders.delete');
-
-    // Document routes
-    Route::post('/', [DocumentationController::class, 'index'])->name('index');
-    Route::post('/store', [DocumentationController::class, 'store'])->name('store');
-    Route::post('/stats', [DocumentationController::class, 'getStats'])->name('stats');
-    Route::post('/{id}', [DocumentationController::class, 'show'])->name('show');
-    Route::put('/{id}', [DocumentationController::class, 'update'])->name('update');
-    Route::delete('/{id}', [DocumentationController::class, 'destroy'])->name('destroy');
-    Route::get('/{id}/download', [DocumentationController::class, 'download'])->name('download');
-    Route::post('/{id}/status', [DocumentationController::class, 'updateStatus'])->name('updateStatus');
-});
 
 // Debug route for testing folders API
 Route::post('/debug-folders', function () {
@@ -1250,8 +1087,6 @@ Route::post('/debug-folders', function () {
     ]);
 });
 
-// Test route for documentation controller
-Route::post('/test-documentation-controller', [App\Http\Controllers\HR\DocumentationController::class, 'getFolders']);
 
 Route::prefix('company/warehouse/purchasing_order')->name('purchasing_order.')->group(function () {
     // Purchase Order Routes
@@ -1778,35 +1613,18 @@ Route::prefix('company')->group(function () {
 
 
 
-Route::prefix('company/hr/employees')->name('hr.employees.')->group(function () {
 
-    // Specific routes must come before parameter routes
-    Route::post('/available-staff-ids', [EmployeeController::class, 'getAvailableStaffIds'])->name('available-staff-ids');
 
-    Route::post('/store', [EmployeeController::class, 'store'])->name('store');
 
-    Route::get('/all', [EmployeeController::class, 'index'])->name('index');
 
-    Route::post('/all', [EmployeeController::class, 'getEmployees'])->name('all');
 
-    Route::get('/create', [EmployeeController::class, 'create'])->name('create');
 
-    // Import helpers MUST be before parameterized routes
-    Route::get('/import/template', [EmployeeController::class, 'downloadImportTemplate'])->name('import.template');
-    Route::post('/import', [EmployeeController::class, 'import'])->name('import');
 
-    Route::post('/{employee}', [EmployeeController::class, 'show'])->name('show');
 
-    Route::get('/{employee}/edit', [EmployeeController::class, 'edit'])->name('edit');
 
-    Route::put('/{employee}', [EmployeeController::class, 'update'])->name('update');
 
-    Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->name('destroy');
 
-    Route::post('/{employee}/send-message', [EmployeeController::class, 'sendMessage'])->name('send-message');
 
-    Route::get('/export', [EmployeeController::class, 'export'])->name('export');
-});
 
 
 
@@ -1817,84 +1635,8 @@ Route::prefix('company/hr/employees')->name('hr.employees.')->group(function () 
 
 
 
-Route::prefix('company/hr/jobs')->name('jobs.')->group(function () {
 
-    Route::post('/all', [JobsController::class, 'all'])->name('all');
 
-    Route::post('/status-counts', [JobsController::class, 'getStatusCounts'])->name('statusCounts');
-
-
-
-    Route::post('/store', [JobsController::class, 'store'])->name('store');
-
-    Route::post('/showByToken', [JobsController::class, 'showByToken'])->name('showByToken');
-
-    Route::post('/update', [JobsController::class, 'update'])->name('update');
-
-    Route::post('/delete', [JobsController::class, 'delete'])->name('delete');
-});
-
-
-
-
-
-
-
-
-
-Route::prefix('company/hr/attendance')->name('attendance.')->group(function () {
-
-    Route::post('/index', [AttendanceController::class, 'index'])->name('index');
-
-    Route::post('/stats', [AttendanceController::class, 'getStats'])->name('stats');
-
-    Route::post('/', [AttendanceController::class, 'store'])->name('store');
-
-    Route::post('/bulk', [AttendanceController::class, 'bulkUpdate'])->name('bulk');
-
-    Route::put('/{id}', [AttendanceController::class, 'update'])->name('update');
-
-    Route::post('/history/{employeeId}', [AttendanceController::class, 'history'])->name('history');
-
-    Route::post('/employees', [AttendanceController::class, 'getEmployees'])->name('employees');
-
-    Route::post('/import', [AttendanceController::class, 'import'])->name('import');
-});
-
-
-
-
-
-Route::prefix('company/hr/payroll')->name('payroll.')->group(function () {
-
-    Route::post('/stats', [PayrollController::class, 'stats'])->name('stats');
-
-    Route::post('/all', [PayrollController::class, 'index'])->name('index');
-
-    Route::post('/employees', [PayrollController::class, 'getEmployees'])->name('employees');
-
-    Route::post('/', [PayrollController::class, 'store'])->name('store');
-
-    Route::post('/import', [PayrollController::class, 'import'])->name('payroll.import');
-
-    Route::post('/{payroll}', [PayrollController::class, 'show'])->name('show');
-
-    Route::put('/{payroll}', [PayrollController::class, 'update'])->name('update');
-
-    Route::post('/process', [PayrollController::class, 'process'])->name('process');
-
-
-
-
-
-    Route::delete('/{payroll}', [PayrollController::class, 'destroy'])->name('destroy');
-
-    Route::post('/export/excel', [PayrollController::class, 'exportExcel'])->name('export.excel');
-
-    Route::post('/export/pdf', [PayrollController::class, 'exportPdf'])->name('export.pdf');
-
-    Route::post('/export/csv', [PayrollController::class, 'exportCsv'])->name('export.csv');
-});
 
 
 
