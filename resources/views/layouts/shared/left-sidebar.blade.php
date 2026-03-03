@@ -350,7 +350,7 @@
                         @endif
                         @if($hasMenuAccess('attendants'))
                         <li>
-                            <a href="{{ route('any', 'company/FuelManagement/attendants') }}">
+                            <a href="{{ route('company.fuel.attendants.index') }}">
                                 <i class="ri-user-line"></i>
                                 <span>Attendant Registry</span>
                             </a>
@@ -359,7 +359,7 @@
                         
                         @if($hasMenuAccess('roaster_management'))
                         <li>
-                            <a href="{{ route('any', 'company/FuelManagement/roasterManagement') }}">
+                            <a href="{{ route('company.fuel.rosters.index') }}">
                                 <i class="ri-calendar-2-line"></i>
                                 <span>Roaster</span>
                             </a>

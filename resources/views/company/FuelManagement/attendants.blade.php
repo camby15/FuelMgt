@@ -825,8 +825,8 @@
         <div class="attendant-insight-grid">
             <div class="attendant-insight-card">
                 <span class="attendant-insight-card__label">Active attendants</span>
-                <span class="attendant-insight-card__value">18</span>
-                <span class="attendant-insight-card__meta">Across Navrongo Main, Wapuli, Bamvin, and five additional stations.</span>
+                <span class="attendant-insight-card__value">{{ $activeAttendantsCount ?? 0 }}</span>
+                <span class="attendant-insight-card__meta">Across {{ $stations->count() }} station{{ $stations->count() !== 1 ? 's' : '' }}.</span>
             </div>
             <div class="attendant-insight-card">
                 <span class="attendant-insight-card__label">Average onboarding time</span>
@@ -835,8 +835,8 @@
             </div>
             <div class="attendant-insight-card">
                 <span class="attendant-insight-card__label">Compliance status</span>
-                <span class="attendant-insight-card__value text-success">96%</span>
-                <span class="attendant-insight-card__meta">Opening balance documentation submitted within 24 hours.</span>
+                <span class="attendant-insight-card__value text-success">{{ $compliancePercentage ?? 0 }}%</span>
+                <span class="attendant-insight-card__meta">Active attendants compliance rate.</span>
             </div>
         </div>
 
@@ -848,7 +848,6 @@
                 [
                     'id' => 'sample-1',
                     'staff_id' => 'FA-001',
-                    'site' => 'Navrongo Main',
                     'first_name' => 'Patricia',
                     'other_names' => 'Mensima',
                     'gender' => 'female',
@@ -863,12 +862,14 @@
                     'created_at' => now()->subDays(8),
                     'status' => 'active',
                     'shift' => 'Morning shift',
+                    'fuel_station_id' => 1,
+                    'station_name' => 'Navrongo Main',
+                    'station_code' => 'NM001',
                     'profile_photo_url' => 'https://i.pravatar.cc/160?img=47',
                 ],
                 [
                     'id' => 'sample-2',
                     'staff_id' => 'FA-017',
-                    'site' => 'Wapuli',
                     'first_name' => 'Issah',
                     'other_names' => 'Yakubu',
                     'gender' => 'male',
@@ -881,49 +882,11 @@
                     'contact_phone' => '+233 26 441 2389',
                     'contact_address' => 'Tamale, Northern Region',
                     'created_at' => now()->subDays(21),
-                    'status' => 'on_leave',
-                    'shift' => 'Evening shift',
-                    'profile_photo_url' => 'https://i.pravatar.cc/160?img=59',
-                ],
-                [
-                    'id' => 'sample-3',
-                    'staff_id' => 'FA-033',
-                    'site' => 'Bamvin',
-                    'first_name' => 'Regina',
-                    'other_names' => 'Fuseini',
-                    'gender' => 'female',
-                    'date_of_birth' => '1995-03-27',
-                    'address' => 'Bamvin Market Square, Savannah Region',
-                    'phone_number_1' => '+233 24 903 4412',
-                    'phone_number_2' => '+233 55 800 8811',
-                    'contact_name' => 'David Fuseini',
-                    'contact_relationship' => 'Partner',
-                    'contact_phone' => '+233 24 932 8820',
-                    'contact_address' => 'Bamvin Junction, Savannah Region',
-                    'created_at' => now()->subDays(2),
                     'status' => 'active',
-                    'shift' => 'Night shift',
-                    'profile_photo_url' => 'https://i.pravatar.cc/160?img=32',
-                ],
-                [
-                    'id' => 'sample-4',
-                    'staff_id' => 'FA-041',
-                    'site' => 'Larabanga',
-                    'first_name' => 'Yaw',
-                    'other_names' => 'Sarfo',
-                    'gender' => 'male',
-                    'date_of_birth' => '1984-07-09',
-                    'address' => 'Larabanga Mosque Road, Savannah Region',
-                    'phone_number_1' => '+233 20 771 1145',
-                    'phone_number_2' => null,
-                    'contact_name' => 'Akosua Sarfo',
-                    'contact_relationship' => 'Spouse',
-                    'contact_phone' => '+233 20 664 5598',
-                    'contact_address' => 'Larabanga, Savannah Region',
-                    'created_at' => now()->subDays(40),
-                    'status' => 'inactive',
-                    'shift' => 'Weekend relief',
-                    'profile_photo_url' => null,
+                    'shift' => 'Morning',
+                    'fuel_station_id' => 2,
+                    'station_name' => 'Wapuli',
+                    'station_code' => 'WP001',
                 ],
             ])->map(fn ($row) => (object) $row);
 
@@ -987,7 +950,9 @@
                                 $fullName = trim(($firstName ?: '') . ' ' . ($otherNames ?: ''));
                                 $initials = mb_strtoupper(trim(mb_substr($firstName, 0, 1) . mb_substr($otherNames, 0, 1)));
                                 $staffId = $attendant->staff_id ?? '—';
-                                $site = $attendant->site ?? '—';
+                                $site = $attendant->station_name ?? '—';
+                                $siteCode = $attendant->station_code ?? '';
+                                $fuelStationId = $attendant->fuel_station_id;
                                 $phonePrimary = $attendant->phone_number_1 ?? $attendant->phone ?? '—';
                                 $createdAt = $attendant->created_at ?? null;
                                 $createdAtDisplay = $createdAt instanceof \Carbon\Carbon ? $createdAt->format('d M Y') : ($createdAt ?: '—');
@@ -1014,28 +979,31 @@
                                 $shift = $attendant->shift ?? '—';
                                 $profilePhotoUrl = $attendant->profile_photo_url ?? $attendant->profile_photo ?? null;
                                 $detailPayload = [
-                                    'id' => $attendant->id ?? null,
-                                    'staff_id' => $staffId,
-                                    'site' => $site,
-                                    'full_name' => $fullName !== '' ? $fullName : $staffId,
-                                    'initials' => $initials !== '' ? $initials : 'NA',
-                                    'gender' => $attendant->gender ?? '—',
-                                    'date_of_birth' => $dateOfBirthRaw,
-                                    'date_of_birth_display' => $dateOfBirthDisplay,
-                                    'address' => $attendant->address ?? '—',
-                                    'phone_primary' => $phonePrimary,
-                                    'phone_secondary' => $attendant->phone_number_2 ?? '—',
-                                    'contact_name' => $attendant->contact_name ?? '—',
-                                    'contact_relationship' => $attendant->contact_relationship ?? '—',
-                                    'contact_phone' => $attendant->contact_phone ?? '—',
-                                    'contact_address' => $attendant->contact_address ?? '—',
-                                    'created_at_display' => $createdAtDisplay,
-                                    'profile_photo_url' => $profilePhotoUrl,
-                                    'status' => $statusLabel,
-                                    'status_state' => $statusRaw,
-                                    'shift' => $shift,
+                                    'id' => (string) ($attendant->id ?? ''),
+                                    'fuel_station_id' => (string) $fuelStationId,
+                                    'staff_id' => (string) $staffId,
+                                    'site' => (string) $site,
+                                    'site_code' => (string) $siteCode,
+                                    'full_name' => (string) ($fullName !== '' ? $fullName : $staffId),
+                                    'initials' => (string) ($initials !== '' ? $initials : 'NA'),
+                                    'gender' => (string) ($attendant->gender ?? '—'),
+                                    'date_of_birth' => (string) $dateOfBirthRaw,
+                                    'date_of_birth_display' => (string) $dateOfBirthDisplay,
+                                    'address' => (string) ($attendant->address ?? '—'),
+                                    'phone_primary' => (string) $phonePrimary,
+                                    'phone_secondary' => (string) ($attendant->phone_number_2 ?? '—'),
+                                    'contact_name' => (string) ($attendant->contact_name ?? '—'),
+                                    'contact_relationship' => (string) ($attendant->contact_relationship ?? '—'),
+                                    'contact_phone' => (string) ($attendant->contact_phone ?? '—'),
+                                    'contact_address' => (string) ($attendant->contact_address ?? '—'),
+                                    'created_at_display' => (string) $createdAtDisplay,
+                                    'profile_photo_url' => (string) $profilePhotoUrl,
+                                    'status' => (string) $statusLabel,
+                                    'status_state' => (string) $statusRaw,
+                                    'shift' => (string) $shift,
+                                    'edit_url' => "/company/fuel-management/attendants/$attendant->id",
                                 ];
-                                $deleteUrl = $attendant->delete_url ?? '';
+                                $deleteUrl = "/company/fuel-management/attendants/$attendant->id";
                                 $payloadJson = e(json_encode($detailPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
                                 $displayName = $fullName !== '' ? $fullName : $staffId;
                                 $avatarInitials = $initials !== '' ? $initials : 'NA';
@@ -1082,6 +1050,14 @@
                                             <span class="visually-hidden">View</span>
                                         </button>
                                         <button type="button"
+                                            class="attendant-action-btn attendant-edit-btn"
+                                            data-edit-attendant="{{ $payloadJson }}" 
+                                            data-edit-url="/company/fuel-management/attendants/{{ $attendant->id }}"
+                                            aria-label="Edit attendant">
+                                            <i class="ri-edit-line"></i>
+                                            <span class="visually-hidden">Edit</span>
+                                        </button>
+                                        <button type="button"
                                             class="attendant-action-btn attendant-action-btn--delete attendant-delete-btn"
                                             data-delete-url="{{ $deleteUrl }}"
                                             data-attendant-name="{{ $displayName }}" aria-label="Delete attendant">
@@ -1116,7 +1092,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="attendant-modal__body">
-                    <form action="#" method="POST" enctype="multipart/form-data" id="fuelAttendantForm">
+                    <form action="{{ route('company.fuel.attendants.store') }}" method="POST" enctype="multipart/form-data" id="fuelAttendantForm">
                         @csrf
 
                         <table class="attendant-form-table">
@@ -1124,18 +1100,11 @@
                                 <tr>
                                     <td class="attendant-label">Site:<span>*</span></td>
                                     <td class="attendant-input-wrapper">
-                                        <select class="attendant-select" name="site" required>
+                                        <select class="attendant-select" name="fuel_station_id" required>
                                             <option value="">Select a site</option>
-                                            <option value="Amoako">Amoako</option>
-                                            <option value="Navrongo Main">Navrongo Main</option>
-                                            <option value="Wapuli">Wapuli</option>
-                                            <option value="Bamvin">Bamvin</option>
-                                            <option value="Paga Anex">Paga Anex</option>
-                                            <option value="Larabanga">Larabanga</option>
-                                            <option value="Navrongo-2">Navrongo-2</option>
-                                            <option value="Bububele">Bububele</option>
-                                            <option value="Wiaga">Wiaga</option>
-                                            <option value="Kintampo">Kintampo</option>
+                                            @foreach(($stations ?? collect()) as $station)
+                                                <option value="{{ $station->id }}">{{ $station->name }} ({{ $station->code }})</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                     <td class="attendant-label">Staff ID:<span>*</span></td>
@@ -1231,6 +1200,137 @@
         </div>
     </div>
 
+    <div class="modal fade attendant-modal" id="editAttendantModal" tabindex="-1" aria-labelledby="editAttendantModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="attendant-modal__header d-flex align-items-center justify-content-between">
+                    <h5 class="modal-title" id="editAttendantModalLabel">Edit Fuel Attendant</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="attendant-modal__body">
+                    <form action="{{ route('company.fuel.attendants.update', ':id') }}" method="POST" enctype="multipart/form-data" id="editAttendantForm">
+                        @csrf
+                        @method('PUT')
+
+                        <table class="attendant-form-table">
+                            <tbody>
+                                <tr>
+                                    <td class="attendant-label">Site:<span>*</span></td>
+                                    <td class="attendant-input-wrapper">
+                                        <select class="attendant-select" name="fuel_station_id" id="edit_fuel_station_id" required>
+                                            <option value="">Select a site</option>
+                                            @foreach($stations as $station)
+                                                <option value="{{ $station->id }}">{{ $station->name }} ({{ $station->code }})</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td class="attendant-label">Staff ID:<span>*</span></td>
+                                    <td class="attendant-input-wrapper">
+                                        <input type="text" name="staff_id" id="edit_staff_id" class="attendant-input" placeholder="e.g. PA0027" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="attendant-label">First Name:<span>*</span></td>
+                                    <td class="attendant-input-wrapper">
+                                        <input type="text" name="first_name" id="edit_first_name" class="attendant-input" required>
+                                    </td>
+                                    <td class="attendant-label">Other Names:<span>*</span></td>
+                                    <td class="attendant-input-wrapper">
+                                        <input type="text" name="other_names" id="edit_other_names" class="attendant-input" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="attendant-label">Gender:<span>*</span></td>
+                                    <td class="attendant-input-wrapper">
+                                        <select class="attendant-select" name="gender" id="edit_gender" required>
+                                            <option value="">Select gender</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </td>
+                                    <td class="attendant-label">Date of Birth:</td>
+                                    <td class="attendant-input-wrapper">
+                                        <input type="date" name="date_of_birth" id="edit_date_of_birth" class="attendant-input">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="attendant-label">Address:<span>*</span></td>
+                                    <td class="attendant-input-wrapper" colspan="3">
+                                        <textarea name="address" id="edit_address" class="attendant-textarea" required></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="attendant-label">Phone Number1:<span>*</span></td>
+                                    <td class="attendant-input-wrapper">
+                                        <input type="tel" name="phone_number_1" id="edit_phone_number_1" class="attendant-input" required>
+                                    </td>
+                                    <td class="attendant-label">Phone Number2:</td>
+                                    <td class="attendant-input-wrapper">
+                                        <input type="tel" name="phone_number_2" id="edit_phone_number_2" class="attendant-input">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="attendant-label">Contact Name:</td>
+                                    <td class="attendant-input-wrapper">
+                                        <input type="text" name="contact_name" id="edit_contact_name" class="attendant-input">
+                                    </td>
+                                    <td class="attendant-label">Contact Relationship:</td>
+                                    <td class="attendant-input-wrapper">
+                                        <input type="text" name="contact_relationship" id="edit_contact_relationship" class="attendant-input">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="attendant-label">Contact Address:</td>
+                                    <td class="attendant-input-wrapper">
+                                        <textarea name="contact_address" id="edit_contact_address" class="attendant-textarea"></textarea>
+                                    </td>
+                                    <td class="attendant-label">Phone Number:</td>
+                                    <td class="attendant-input-wrapper">
+                                        <input type="tel" name="contact_phone" id="edit_contact_phone" class="attendant-input">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="attendant-label">Status:</td>
+                                    <td class="attendant-input-wrapper">
+                                        <select class="attendant-select" name="status" id="edit_status">
+                                            <option value="active">Active</option>
+                                            <option value="inactive">Inactive</option>
+                                            <option value="on_leave">On Leave</option>
+                                        </select>
+                                    </td>
+                                    <td class="attendant-label">Shift:</td>
+                                    <td class="attendant-input-wrapper">
+                                        <input type="text" name="shift" id="edit_shift" class="attendant-input" placeholder="e.g. Morning, Evening">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="attendant-sections">
+                            <div class="attendant-section">
+                                <div class="attendant-section__title">Profile Picture (Leave empty to keep current)</div>
+                                <div class="attendant-upload-wrapper">
+                                    <div class="attendant-upload-thumbnail" id="editAttendantThumbnail">
+                                        <i class="ri-user-line"></i>
+                                        <span>Upload New Image</span>
+                                    </div>
+                                    <input type="file" name="profile_photo" id="editProfilePhotoInput" accept="image/*" class="d-none">
+                                    <small class="d-block mt-2 text-muted">Max 2MB • JPG, PNG • Leave empty to keep current photo</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="attendant-form-actions">
+                            <button type="submit" class="attendant-btn attendant-btn--primary">Update Attendant</button>
+                            <button type="reset" class="attendant-btn attendant-btn--secondary">Reset</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="attendantDetailModal" tabindex="-1" aria-labelledby="attendantDetailModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -1313,7 +1413,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form method="POST" action="#" id="deleteAttendantForm" class="d-inline">
+                    <form method="POST" action="{{ route('company.fuel.attendants.destroy', ['attendant' => ':id']) }}" id="deleteAttendantForm" class="d-inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">Delete</button>
@@ -1333,10 +1433,23 @@
             const fileInput = document.getElementById('profilePhotoInput');
             const defaultThumbnailMarkup = thumbnail ? thumbnail.innerHTML : '';
 
+            // Edit modal elements
+            const editModal = document.getElementById('editAttendantModal');
+            const editForm = document.getElementById('editAttendantForm');
+            const editThumbnail = document.getElementById('editAttendantThumbnail');
+            const editFileInput = document.getElementById('editProfilePhotoInput');
+            const editDefaultThumbnailMarkup = editThumbnail ? editThumbnail.innerHTML : '';
+
             const resetThumbnail = () => {
                 if (!thumbnail) return;
                 thumbnail.innerHTML = defaultThumbnailMarkup;
                 thumbnail.classList.remove('attendant-thumbnail--filled');
+            };
+
+            const resetEditThumbnail = () => {
+                if (!editThumbnail) return;
+                editThumbnail.innerHTML = editDefaultThumbnailMarkup;
+                editThumbnail.classList.remove('attendant-thumbnail--filled');
             };
 
             if (thumbnail && fileInput) {
@@ -1361,6 +1474,29 @@
                 });
             }
 
+            // Edit modal file upload
+            if (editThumbnail && editFileInput) {
+                editThumbnail.addEventListener('click', () => editFileInput.click());
+
+                editFileInput.addEventListener('change', event => {
+                    const [file] = event.target.files || [];
+                    if (!file) {
+                        resetEditThumbnail();
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        editThumbnail.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        editThumbnail.appendChild(img);
+                        editThumbnail.classList.add('attendant-thumbnail--filled');
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
             if (attendantModal && attendantForm) {
                 attendantModal.addEventListener('hidden.bs.modal', () => {
                     attendantForm.reset();
@@ -1372,6 +1508,7 @@
             }
 
             const detailModalElement = document.getElementById('attendantDetailModal');
+            const editModalElement = document.getElementById('editAttendantModal');
             const deleteModalElement = document.getElementById('deleteAttendantModal');
 
             const getModalController = element => {
@@ -1478,6 +1615,77 @@
                 });
             });
 
+            // Debug: Check if view buttons exist
+            console.log('View buttons found:', document.querySelectorAll('.attendant-view-btn').length);
+            console.log('Detail modal element:', detailModalElement);
+            console.log('Bootstrap available:', typeof window.bootstrap !== 'undefined');
+
+            const populateEditModal = data => {
+                const editForm = document.getElementById('editAttendantForm');
+                if (!editForm) return;
+
+                // Update form action with attendant ID
+                const updateUrl = data.edit_url || '#';
+                editForm.setAttribute('action', updateUrl);
+
+                // Populate form fields
+                const fields = {
+                    fuel_station_id: data.fuel_station_id || data.site_id || '',
+                    staff_id: data.staff_id || '',
+                    first_name: data.first_name || '',
+                    other_names: data.other_names || '',
+                    gender: data.gender || '',
+                    date_of_birth: data.date_of_birth || '',
+                    address: data.address || '',
+                    phone_number_1: data.phone_primary || data.phone_number_1 || '',
+                    phone_number_2: data.phone_secondary || data.phone_number_2 || '',
+                    contact_name: data.contact_name || '',
+                    contact_relationship: data.contact_relationship || '',
+                    contact_phone: data.contact_phone || '',
+                    contact_address: data.contact_address || '',
+                    status: data.status_state || data.status || 'active',
+                    shift: data.shift || ''
+                };
+
+                // Set form field values
+                Object.keys(fields).forEach(fieldName => {
+                    const element = document.getElementById(`edit_${fieldName}`);
+                    if (element) {
+                        element.value = fields[fieldName];
+                    }
+                });
+
+                // Handle profile photo display
+                const thumbnail = document.getElementById('editAttendantThumbnail');
+                if (thumbnail && data.profile_photo_url) {
+                    thumbnail.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = data.profile_photo_url;
+                    img.alt = data.full_name || 'Profile photo';
+                    thumbnail.appendChild(img);
+                    thumbnail.classList.add('attendant-thumbnail--filled');
+                }
+
+                const editModalInstance = getModalController(editModalElement);
+                editModalInstance?.show?.();
+            };
+
+            document.querySelectorAll('.attendant-edit-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const payload = button.getAttribute('data-edit-attendant');
+                    const editUrl = button.getAttribute('data-edit-url');
+                    if (!payload) return;
+
+                    try {
+                        const parsed = JSON.parse(payload);
+                        parsed.edit_url = editUrl;
+                        populateEditModal(parsed);
+                    } catch (error) {
+                        console.error('Unable to parse attendant edit payload', error);
+                    }
+                });
+            });
+
             const deleteForm = document.getElementById('deleteAttendantForm');
             const deleteNameField = document.getElementById('deleteAttendantName');
 
@@ -1498,6 +1706,41 @@
                     openDeleteModal(attendantName, deleteUrl);
                 });
             });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const successMessage = @json(session('success'));
+            const errorMessage = @json(session('error'));
+
+            const canUseSwal = typeof Swal !== 'undefined';
+
+            if (successMessage) {
+                if (canUseSwal) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: successMessage,
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    console.info('Success:', successMessage);
+                }
+            }
+
+            if (errorMessage) {
+                if (canUseSwal) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: errorMessage,
+                        confirmButtonText: 'Try Again'
+                    });
+                } else {
+                    console.error('Error:', errorMessage);
+                }
+            }
         });
     </script>
 @endpush

@@ -66,6 +66,6 @@ class FuelStation extends Model
 
     public function scopeForCompany(Builder $query, ?int $companyId): Builder
     {
-        return $companyId ? $query->where('company_id', $companyId) : $query;
+        return $companyId ? $query->where('fuel_stations.company_id', $companyId) : $query;
     }
 }

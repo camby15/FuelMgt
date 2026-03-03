@@ -617,15 +617,15 @@
                     <span class="roster-stat-card__label">Attendants scheduled</span>
                     <span class="roster-stat-card__value">
                         <span class="roster-stat-card__icon"><i class="ri-team-line"></i></span>
-                        32
+                        {{ $scheduledAttendants ?? 0 }}
                     </span>
-                    <span class="small">Across eight active stations</span>
+                    <span class="small">Across {{ ($stations ?? collect())->count() }} station{{ ($stations ?? collect())->count() !== 1 ? 's' : '' }}</span>
                 </div>
                 <div class="roster-stat-card">
                     <span class="roster-stat-card__label">Coverage score</span>
                     <span class="roster-stat-card__value text-success">
                         <span class="roster-stat-card__icon"><i class="ri-shield-star-line"></i></span>
-                        98%
+                        {{ $coverageScore ?? 0 }}%
                     </span>
                     <span class="small">Morning & evening filled</span>
                 </div>
@@ -644,20 +644,25 @@
             <div class="roster-control-panel">
                 <div class="roster-control-panel__title">Station scope</div>
                 <div class="roster-field">
-                    <label class="roster-label" for="rosterStation">Station <small>Auto detected</small></label>
+                    <label class="roster-label" for="rosterStation">Station <small>Select to filter attendants</small></label>
                     <div class="position-relative">
-                        <input type="text" class="roster-input pe-5" id="rosterStation"
-                            value="{{ $managerStation ?? 'Navrongo Main' }}" readonly>
+                        <select class="roster-select pe-5" id="rosterStation" name="station_id">
+                            <option value="">All Stations</option>
+                            @foreach (($stations ?? collect()) as $station)
+                                <option value="{{ $station->id }}" {{ $stationId == $station->id ? 'selected' : '' }}>
+                                    {{ $station->name }} ({{ $station->code }})
+                                </option>
+                            @endforeach
+                        </select>
                         <span class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted">
-                            <i class="ri-shield-user-line"></i>
+                            <i class="ri-building-line"></i>
                         </span>
                     </div>
-                    <small class="text-muted d-block mt-2">This station is pulled from the manager profile at login. Update
-                        access rights to change the assignment.</small>
+                    <small class="text-muted d-block mt-2">Select a station to view and manage attendants for that location only.</small>
                 </div>
                 <div class="roster-field">
                     <label class="roster-label" for="rosterWeek">Week of rotation <small>ISO week</small></label>
-                    <input type="week" class="roster-input" id="rosterWeek">
+                    <input type="week" class="roster-input" id="rosterWeek" value="{{ $weekStartDate ?? now()->startOfWeek()->format('Y-m-d') }}">
                 </div>
                 <div class="roster-field">
                     <span class="roster-label">Publish settings</span>
@@ -757,83 +762,94 @@
                     </thead>
                     <tbody>
                         @php
-                            $sampleRoster = [
-                                [
-                                    'initials' => 'PM',
-                                    'name' => 'Patricia Mensima',
-                                    'assignments' => ['morning', 'morning', 'evening', 'evening', 'off', 'morning', 'evening'],
-                                ],
-                                [
-                                    'initials' => 'IY',
-                                    'name' => 'Issah Yakubu',
-                                    'assignments' => ['evening', 'off', 'evening', 'morning', 'morning', 'evening', 'morning'],
-                                ],
-                                [
-                                    'initials' => 'RF',
-                                    'name' => 'Regina Fuseini',
-                                    'assignments' => ['morning', 'morning', 'off', 'evening', 'evening', 'morning', 'evening'],
-                                ],
-                                [
-                                    'initials' => 'YS',
-                                    'name' => 'Yaw Sarfo',
-                                    'assignments' => ['off', 'evening', 'morning', 'morning', 'evening', 'evening', 'morning'],
-                                ],
-                            ];
-
                             $dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+                            // Build roster data from controller
+                            $rosterData = [];
+                            foreach (($attendants ?? collect()) as $attendant) {
+                                $initials = strtoupper(substr($attendant->first_name ?? '', 0, 1) . substr($attendant->other_names ?? '', 0, 1));
+                                $name = trim(($attendant->first_name ?? '') . ' ' . ($attendant->other_names ?? ''));
+
+                                // Get assignments for this attendant for the week
+                                $assignments = [];
+                                $attendantRosters = ($rostersByAttendant ?? collect())->get($attendant->id, collect());
+
+                                for ($day = 1; $day <= 7; $day++) {
+                                    $roster = $attendantRosters->firstWhere('day_of_week', $day);
+                                    $assignments[] = $roster->shift_type ?? 'off';
+                                }
+
+                                $rosterData[] = [
+                                    'initials' => $initials ?: 'NA',
+                                    'name' => $name ?: 'Unknown',
+                                    'assignments' => $assignments,
+                                    'attendant' => $attendant,
+                                ];
+                            }
                         @endphp
 
-                        @foreach ($sampleRoster as $row)
+                        @if (empty($rosterData))
                             <tr>
-                                <td data-heading="Attendant">
-                                    <div class="d-flex align-items-center">
-                                        <span class="roster-attendant-avatar">{{ $row['initials'] }}</span>
-                                        <div>
-                                            <div>{{ $row['name'] }}</div>
-                                            <span class="text-muted small">Station lead · 2 yrs tenure</span>
-                                        </div>
+                                <td colspan="7">
+                                    <div class="text-center text-muted py-4">
+                                        <i class="ri-calendar-line d-block fs-3 mb-2"></i>
+                                        No roster data available. Use the "Auto assign" button to create a schedule.
                                     </div>
                                 </td>
-                                @foreach ($row['assignments'] as $index => $assignment)
-                                    @php
-                                        $chipClasses = [
-                                            'morning' => 'roster-shift-chip roster-shift-chip--morning',
-                                            'evening' => 'roster-shift-chip roster-shift-chip--evening',
-                                            'off' => 'roster-shift-chip roster-shift-chip--off',
-                                        ];
-                                        $chipIcons = [
-                                            'morning' => 'ri-sun-foggy-line',
-                                            'evening' => 'ri-moon-clear-line',
-                                            'off' => 'ri-hotel-bed-line',
-                                        ];
-                                        $chipLabels = [
-                                            'morning' => 'Morning',
-                                            'evening' => 'Evening',
-                                            'off' => 'Off day',
-                                        ];
-                                        $chipClass = $chipClasses[$assignment] ?? $chipClasses['morning'];
-                                    @endphp
-                                    <td data-heading="{{ $dayLabels[$index] }}">
-                                        <div class="d-flex flex-column align-items-center gap-2">
-                                            <span class="{{ $chipClass }}">
-                                                <i class="{{ $chipIcons[$assignment] ?? 'ri-sun-foggy-line' }}"></i>
-                                                {{ $chipLabels[$assignment] ?? 'Morning' }}
-                                            </span>
-                                            <div class="roster-assignment-actions">
-                                                <button type="button" class="roster-assignment-btn" aria-label="Swap shift"
-                                                    data-bs-toggle="modal" data-bs-target="#swapShiftModal">
-                                                    <i class="ri-swap-line"></i>
-                                                </button>
-                                                <button type="button" class="roster-assignment-btn" aria-label="Mark off day"
-                                                    data-bs-toggle="modal" data-bs-target="#assignOffDayModal">
-                                                    <i class="ri-hotel-bed-line"></i>
-                                                </button>
+                            </tr>
+                        @else
+                            @foreach ($rosterData as $row)
+                                <tr>
+                                    <td data-heading="Attendant">
+                                        <div class="d-flex align-items-center">
+                                            <span class="roster-attendant-avatar">{{ $row['initials'] }}</span>
+                                            <div>
+                                                <div>{{ $row['name'] }}</div>
+                                                <span class="text-muted small">{{ $row['attendant']->station->name ?? 'Unknown Station' }} · Active</span>
                                             </div>
                                         </div>
                                     </td>
-                                @endforeach
-                            </tr>
-                        @endforeach
+                                    @foreach ($row['assignments'] as $index => $assignment)
+                                        @php
+                                            $chipClasses = [
+                                                'morning' => 'roster-shift-chip roster-shift-chip--morning',
+                                                'evening' => 'roster-shift-chip roster-shift-chip--evening',
+                                                'off' => 'roster-shift-chip roster-shift-chip--off',
+                                            ];
+                                            $chipIcons = [
+                                                'morning' => 'ri-sun-foggy-line',
+                                                'evening' => 'ri-moon-clear-line',
+                                                'off' => 'ri-hotel-bed-line',
+                                            ];
+                                            $chipLabels = [
+                                                'morning' => 'Morning',
+                                                'evening' => 'Evening',
+                                                'off' => 'Off day',
+                                            ];
+                                            $chipClass = $chipClasses[$assignment] ?? $chipClasses['morning'];
+                                        @endphp
+                                        <td data-heading="{{ $dayLabels[$index] }}">
+                                            <div class="d-flex flex-column align-items-center gap-2">
+                                                <span class="{{ $chipClass }}">
+                                                    <i class="{{ $chipIcons[$assignment] ?? 'ri-sun-foggy-line' }}"></i>
+                                                    {{ $chipLabels[$assignment] ?? 'Morning' }}
+                                                </span>
+                                                <div class="roster-assignment-actions">
+                                                    <button type="button" class="roster-assignment-btn" aria-label="Swap shift"
+                                                        data-bs-toggle="modal" data-bs-target="#swapShiftModal">
+                                                        <i class="ri-swap-line"></i>
+                                                    </button>
+                                                    <button type="button" class="roster-assignment-btn" aria-label="Mark off day"
+                                                        data-bs-toggle="modal" data-bs-target="#assignOffDayModal">
+                                                        <i class="ri-hotel-bed-line"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -963,4 +979,91 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const successMessage = @json(session('success'));
+            const errorMessage = @json(session('error'));
+
+            const canUseSwal = typeof Swal !== 'undefined';
+
+            if (successMessage) {
+                if (canUseSwal) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: successMessage,
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    console.info('Success:', successMessage);
+                }
+            }
+
+            if (errorMessage) {
+                if (canUseSwal) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: errorMessage,
+                        confirmButtonText: 'Try Again'
+                    });
+                } else {
+                    console.error('Error:', errorMessage);
+                }
+            }
+
+            // Handle station selection change
+            const stationSelect = document.getElementById('rosterStation');
+            if (stationSelect) {
+                stationSelect.addEventListener('change', function() {
+                    const url = new URL(window.location.href);
+                    if (this.value) {
+                        url.searchParams.set('station_id', this.value);
+                    } else {
+                        url.searchParams.delete('station_id');
+                    }
+                    window.location.href = url.toString();
+                });
+            }
+
+            // Handle week navigation
+            const weekInput = document.getElementById('rosterWeek');
+            const prevWeekBtn = document.querySelector('.roster-week-btn[aria-label="Previous week"]');
+            const nextWeekBtn = document.querySelector('.roster-week-btn[aria-label="Next week"]');
+
+            if (weekInput) {
+                weekInput.addEventListener('change', function() {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('week_start_date', this.value);
+                    window.location.href = url.toString();
+                });
+            }
+
+            if (prevWeekBtn) {
+                prevWeekBtn.addEventListener('click', function() {
+                    const currentWeek = weekInput.value || '{{ $weekStartDate ?? now()->startOfWeek()->format('Y-m-d') }}';
+                    const date = new Date(currentWeek);
+                    date.setDate(date.getDate() - 7);
+                    const newWeek = date.toISOString().split('T')[0];
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('week_start_date', newWeek);
+                    window.location.href = url.toString();
+                });
+            }
+
+            if (nextWeekBtn) {
+                nextWeekBtn.addEventListener('click', function() {
+                    const currentWeek = weekInput.value || '{{ $weekStartDate ?? now()->startOfWeek()->format('Y-m-d') }}';
+                    const date = new Date(currentWeek);
+                    date.setDate(date.getDate() + 7);
+                    const newWeek = date.toISOString().split('T')[0];
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('week_start_date', newWeek);
+                    window.location.href = url.toString();
+                });
+            }
+        });
+    </script>
 @endsection

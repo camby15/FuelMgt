@@ -103,6 +103,49 @@ class RoutingController extends Controller
             ]);
         }
 
+        // Special handling for fuel attendants
+        if ($first === 'company' && $second === 'FuelManagement' && $third === 'attendants') {
+            $companyId = session('selected_company_id');
+            $stations = \App\Models\FuelManagement\FuelStation::forCompany($companyId)
+                ->select('id', 'name', 'code', 'location')
+                ->orderBy('name')
+                ->get();
+            return view('company.FuelManagement.attendants', [
+                'mode' => $mode,
+                'demo' => $demo,
+                'stations' => $stations,
+                'attendants' => collect(),
+                'company' => null,
+                'companyId' => $companyId,
+                'lastSyncedAt' => now(),
+            ]);
+        }
+
+        // Special handling for roster management
+        if ($first === 'company' && $second === 'FuelManagement' && $third === 'roasterManagement') {
+            $companyId = session('selected_company_id');
+            $stations = \App\Models\FuelManagement\FuelStation::forCompany($companyId)
+                ->select('id', 'name', 'code', 'location')
+                ->orderBy('name')
+                ->get();
+            return view('company.FuelManagement.roasterManagement', [
+                'mode' => $mode,
+                'demo' => $demo,
+                'stations' => $stations,
+                'attendants' => collect(),
+                'rosters' => collect(),
+                'rostersByAttendant' => collect(),
+                'weekStartDate' => now()->startOfWeek()->format('Y-m-d'),
+                'stationId' => null,
+                'managerStation' => null,
+                'totalAttendants' => 0,
+                'scheduledAttendants' => 0,
+                'coverageScore' => 0,
+                'company' => null,
+                'companyId' => $companyId,
+            ]);
+        }
+
         return view($first . '.' . $second . '.' . $third, [
             'mode' => $mode,
             'demo' => $demo,
