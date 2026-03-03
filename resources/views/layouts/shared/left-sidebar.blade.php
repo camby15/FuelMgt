@@ -555,29 +555,6 @@
             @endif -->
             
             
-            @if($hasSubmenuAccess('human_resources'))
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" 
-                   href="#HR" 
-                   aria-expanded="false" 
-                   aria-controls="HR" 
-                   class="side-nav-link">
-                    <i class="ri-group-2-line"></i>
-                    <span>Human Resources</span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="HR">
-                    <ul class="side-nav-second-level">
-                        @if($hasMenuAccess('hr_desk'))
-                        <li><a href="{{ route('any', 'company/HumanResource/hr') }}">HR Desk</a></li>
-                        @endif
-                        @if($hasMenuAccess('staff_desk'))
-                        <li><a href="{{ route('any', 'company/HumanResource/staff') }}">Staff Desk</a></li>
-                        @endif
-                    </ul>
-                </div>
-            </li>
-            @endif 
            <!-- @if($hasSubmenuAccess('crm'))
             <li class="side-nav-item">
                 <a data-bs-toggle="collapse" 
