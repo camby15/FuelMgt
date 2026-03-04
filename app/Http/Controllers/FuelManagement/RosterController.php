@@ -57,10 +57,16 @@ class RosterController extends Controller
             // Get station from request or use all stations for company
             $stationId = $request->input('station_id');
 
-            // Get attendants for the company
-            $attendants = FuelAttendant::with(['station'])
+            // Get attendants for the company (filtered by station if selected)
+            $attendantsQuery = FuelAttendant::with(['station'])
                 ->forCompany($companyId)
-                ->where('status', 'active')
+                ->where('status', 'active');
+
+            if ($stationId) {
+                $attendantsQuery->where('fuel_station_id', $stationId);
+            }
+
+            $attendants = $attendantsQuery
                 ->orderBy('first_name')
                 ->orderBy('other_names')
                 ->get();

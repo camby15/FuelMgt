@@ -146,6 +146,25 @@ class RoutingController extends Controller
             ]);
         }
 
+        // Special handling for stock management
+        if ($first === 'company' && $second === 'FuelManagement' && $third === 'stock') {
+            $companyId = session('selected_company_id');
+            $stations = \App\Models\FuelManagement\FuelStation::forCompany($companyId)
+                ->select('id', 'name', 'code', 'location')
+                ->orderBy('name')
+                ->get();
+            return view('company.FuelManagement.stock', [
+                'mode' => $mode,
+                'demo' => $demo,
+                'stations' => $stations,
+                'stocks' => collect(),
+                'stationId' => null,
+                'agoBalance' => 0,
+                'pmsBalance' => 0,
+                'companyId' => $companyId,
+            ]);
+        }
+
         return view($first . '.' . $second . '.' . $third, [
             'mode' => $mode,
             'demo' => $demo,
