@@ -35,6 +35,7 @@ use App\Http\Controllers\FuelManagement\FuelStationController;
 use App\Http\Controllers\FuelManagement\StationManagerController;
 use App\Http\Controllers\FuelManagement\FuelAttendantController;
 use App\Http\Controllers\FuelManagement\RosterController;
+use App\Http\Controllers\FuelManagement\StockManagement\StockController;
 
 use App\Http\Controllers\LoyaltyProgramController;
 use App\Http\Controllers\CustomerTierController;
@@ -952,6 +953,7 @@ Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.sessi
         Route::resource('station-managers', StationManagerController::class)->except(['create', 'edit']);
         Route::resource('attendants', FuelAttendantController::class)->except(['create', 'edit']);
         Route::resource('rosters', RosterController::class)->except(['create', 'edit']);
+        Route::resource('stocks', StockController::class)->except(['create', 'edit']);
 
         Route::post('rosters/auto-assign', [RosterController::class, 'autoAssign'])
             ->name('rosters.auto-assign');

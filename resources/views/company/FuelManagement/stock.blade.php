@@ -473,7 +473,7 @@
                                 <i class="ri-oil-line"></i>
                             </div>
                         </div>
-                        <div class="stock-summary__value" data-role="stock-balance-AGO">0.00 L</div>
+                        <div class="stock-summary__value" data-role="stock-balance-AGO">{{ number_format($agoBalance ?? 0, 2) }} L</div>
                         <div class="stock-summary__footer">Latest deliveries update running balance instantly</div>
                     </div>
                     <div class="stock-summary__item" data-product="PMS">
@@ -483,37 +483,38 @@
                                 <i class="ri-gas-station-line"></i>
                             </div>
                         </div>
-                        <div class="stock-summary__value" data-role="stock-balance-PMS">0.00 L</div>
+                        <div class="stock-summary__value" data-role="stock-balance-PMS">{{ number_format($pmsBalance ?? 0, 2) }} L</div>
                         <div class="stock-summary__footer">Monitor pump-ready volumes across stations</div>
                     </div>
                 </div>
 
                 <div class="stock-form">
-                    <form id="stockIntakeForm">
+                    <form id="stockIntakeForm" action="{{ route('company.fuel.stocks.store') }}" method="POST">
+                        @csrf
                         <div class="stock-form__grid">
                             <div>
                                 <label for="deliveryDate">Product Discharged Date</label>
-                                <input type="date" id="deliveryDate" name="deliveryDate" required>
+                                <input type="date" id="deliveryDate" name="delivery_date" required>
                             </div>
                             <div>
                                 <label for="brvNumber">BRV Number</label>
-                                <input type="text" id="brvNumber" name="brvNumber" placeholder="Enter BRV" required>
+                                <input type="text" id="brvNumber" name="brv_number" placeholder="Enter BRV" required>
                             </div>
                             <div>
                                 <label for="driverName">Driver Name</label>
-                                <input type="text" id="driverName" name="driverName" placeholder="Driver Name" required>
+                                <input type="text" id="driverName" name="driver_name" placeholder="Driver Name" required>
                             </div>
                             <div>
                                 <label for="driverPhone">Driver Phone</label>
-                                <input type="tel" id="driverPhone" name="driverPhone" placeholder="e.g. +233 20 000 0000" required>
+                                <input type="tel" id="driverPhone" name="driver_phone" placeholder="e.g. +233 20 000 0000" required>
                             </div>
                             <div>
                                 <label for="invoiceNumber">Invoice Number</label>
-                                <input type="text" id="invoiceNumber" name="invoiceNumber" placeholder="e.g. INV-00123A" required>
+                                <input type="text" id="invoiceNumber" name="invoice_number" placeholder="e.g. INV-00123A" required>
                             </div>
                             <div>
                                 <label for="productType">Product Type</label>
-                                <select id="productType" name="productType" required>
+                                <select id="productType" name="product_type" required>
                                     <option value="" disabled selected>Select product</option>
                                     <option value="AGO">AGO</option>
                                     <option value="PMS">PMS</option>
@@ -525,35 +526,23 @@
                             </div>
                             <div>
                                 <label for="quantity">Received Quantity (Litres)</label>
-                                <input type="number" id="quantity" name="quantity" min="0" step="0.01" placeholder="0.00" required>
+                                <input type="number" id="quantity" name="received_quantity" min="0" step="0.01" placeholder="0.00" required>
                             </div>
                             <div>
                                 <label for="station">Receiving Station</label>
-                                <select id="station" name="station" required data-manager-station="{{ Auth::user()->station ?? '' }}">
-                                    
+                                <select id="station" name="station_id" required>
+                                    <option value="" disabled selected>Select station</option>
+                                    @foreach (($stations ?? collect()) as $station)
+                                        <option value="{{ $station->id }}"
+                                                data-manager="{{ $station->activeManager ? $station->activeManager->full_name : '' }}">
+                                            {{ $station->name }} ({{ $station->code }})
+                                        </option>
+                                    @endforeach
                                 </select>
-                                <script>
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        const stationSelect = document.getElementById('station');
-                                        const managerStation = stationSelect.dataset.managerStation;
-                                        
-                                        if (managerStation) {
-                                            // Find and select the manager's station
-                                            for (let option of stationSelect.options) {
-                                                if (option.value === managerStation) {
-                                                    option.selected = true;
-                                                    // Make the field read-only after selection
-                                                    stationSelect.disabled = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    });
-                                </script>
                             </div>
                             <div>
                                 <label for="inspectedBy">Inspected By (Station Manager)</label>
-                                <input type="text" id="inspectedBy" name="inspectedBy" placeholder="Station Manager" required>
+                                <input type="text" id="inspectedBy" name="inspected_by" placeholder="Station Manager" required>
                             </div>
                         </div>
                         <div class="stock-form__actions">
@@ -596,9 +585,32 @@
                                 </tr>
                             </thead>
                             <tbody data-role="stock-tbody">
-                                <tr class="stock-empty">
-                                    <td colspan="11">No stock receipts recorded yet.</td>
-                                </tr>
+                                @if (empty($stocks) || $stocks->isEmpty())
+                                    <tr class="stock-empty">
+                                        <td colspan="11">No stock receipts recorded yet.</td>
+                                    </tr>
+                                @else
+                                    @foreach ($stocks as $index => $stock)
+                                        <tr>
+                                            <td>{{ $index + 1 }}</td>
+                                            <td>{{ $stock->delivery_date ? $stock->delivery_date->format('Y-m-d') : '-' }}</td>
+                                            <td>{{ $stock->brv_number }}</td>
+                                            <td>{{ $stock->driver_name }}</td>
+                                            <td>{{ $stock->invoice_number }}</td>
+                                            <td>
+                                                <span class="badge {{ $stock->product_type === 'AGO' ? 'bg-primary' : 'bg-danger' }}">
+                                                    {{ $stock->product_type }}
+                                                </span>
+                                            </td>
+                                            <td>{{ number_format($stock->dispatched_quantity, 2) }}</td>
+                                            <td>{{ number_format($stock->received_quantity, 2) }}</td>
+                                            <td>{{ $stock->station ? $stock->station->name : '-' }}</td>
+                                            <td>{{ $stock->driver_phone }}</td>
+                                            <td>{{ $stock->inspected_by }}</td>
+                                            <td>{{ number_format($stock->running_balance, 2) }}</td>
+                                        </tr>
+                                    @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -636,18 +648,27 @@
 
 @push('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-YcsIPmK9jGTf3I9P4MBDl2SmS0FZtBx8y8mk4luzFuJdvByCnWJIRedKgNqUK3MUY14CzO2D93BYJk50xKp3+w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-@endpush
-
-@push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const stationSelect = document.getElementById('station');
+            const inspectedByInput = document.getElementById('inspectedBy');
+
+            if (stationSelect && inspectedByInput) {
+                stationSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const managerName = selectedOption.getAttribute('data-manager') || '';
+                    inspectedByInput.value = managerName;
+                });
+
+                if (stationSelect.value) {
+                    const selectedOption = stationSelect.options[stationSelect.selectedIndex];
+                    const managerName = selectedOption.getAttribute('data-manager') || '';
+                    inspectedByInput.value = managerName;
+                }
+            }
+
             const stockForm = document.getElementById('stockIntakeForm');
             const tableBody = document.querySelector('[data-role="stock-tbody"]');
-            const deliveryDateInput = document.getElementById('deliveryDate');
-            const balanceDisplays = {
-                AGO: document.querySelector('[data-role="stock-balance-AGO"]'),
-                PMS: document.querySelector('[data-role="stock-balance-PMS"]'),
-            };
             const printPreviewModalEl = document.getElementById('printPreviewModal');
             const printPreviewFrame = document.getElementById('printPreviewFrame');
             const printPreviewLoading = document.getElementById('printPreviewLoading');
@@ -656,51 +677,6 @@
             const exportStockPdfBtn = document.getElementById('exportStockPdfBtn');
             const stockTableWrapper = document.getElementById('stockTableWrapper');
 
-            const balances = {
-                AGO: 0,
-                PMS: 0,
-            };
-
-            const sampleLedgerRecords = [
-                {
-                    deliveryDate: '2025-03-01',
-                    brvNumber: 'BRV-1201',
-                    driverName: 'Yaw Adusei',
-                    driverPhone: '+233 24 700 1122',
-                    invoiceNumber: 'INV-23001',
-                    productType: 'AGO',
-                    dispatchedQuantity: 12500,
-                    quantity: 12380,
-                    station: 'Navrongo-2 Station',
-                    inspectedBy: 'Helen Bawa',
-                },
-                {
-                    deliveryDate: '2025-03-02',
-                    brvNumber: 'BRV-1208',
-                    driverName: 'Aminatu Fuseini',
-                    driverPhone: '+233 26 445 7788',
-                    invoiceNumber: 'INV-23006',
-                    productType: 'AGO',
-                    dispatchedQuantity: 9800,
-                    quantity: 9645,
-                    station: 'Wapuli Station',
-                    inspectedBy: 'Rahim Sulemana',
-                },
-                {
-                    deliveryDate: '2025-03-03',
-                    brvNumber: 'BRV-2214',
-                    driverName: 'Priscilla Anane',
-                    driverPhone: '+233 20 803 4410',
-                    invoiceNumber: 'INV-23011',
-                    productType: 'PMS',
-                    dispatchedQuantity: 11200,
-                    quantity: 11090,
-                    station: 'Bamvin Station',
-                    inspectedBy: 'Jonah Laar',
-                },
-            ];
-
-            let counter = 0;
             let printPreviewModal = null;
             let currentPreviewUrl = null;
 
@@ -715,264 +691,89 @@
 
                     if (printPreviewFrame) {
                         printPreviewFrame.src = 'about:blank';
-                        printPreviewFrame.classList.add('d-none');
-                    }
-
-                    if (printPreviewLoading) {
-                        printPreviewLoading.classList.remove('d-none');
-                    }
-
-                    if (printPreviewConfirmBtn) {
-                        printPreviewConfirmBtn.disabled = true;
                     }
                 });
             }
-
-            function formatNumber(value) {
-                return Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            }
-
-            function refreshSummaries() {
-                Object.entries(balanceDisplays).forEach(([product, el]) => {
-                    if (el) {
-                        el.textContent = `${formatNumber(balances[product])} L`;
-                    }
-                });
-            }
-
-            function ensureDateDefault() {
-                if (!deliveryDateInput.value) {
-                    const today = new Date().toISOString().split('T')[0];
-                    deliveryDateInput.value = today;
-                }
-            }
-
-            function clearEmptyState() {
-                const emptyRow = tableBody.querySelector('.stock-empty');
-                if (emptyRow) {
-                    emptyRow.remove();
-                }
-            }
-
-            function formatDisplayDate(value) {
-                if (!value) {
-                    return '—';
-                }
-
-                const parts = value.split('-');
-                if (parts.length === 3) {
-                    return `${parts[2]}-${parts[1]}-${parts[0]}`;
-                }
-
-                return value;
-            }
-
-            function addRecord(record) {
-                const productType = (record.productType || '').trim();
-                const receivedQuantity = Number(record.quantity || 0);
-
-                if (!productType || receivedQuantity <= 0) {
-                    return false;
-                }
-
-                if (typeof balances[productType] !== 'number') {
-                    balances[productType] = 0;
-                }
-
-                counter += 1;
-                balances[productType] += receivedQuantity;
-                refreshSummaries();
-                clearEmptyState();
-
-                const dispatchedQuantity = Number(record.dispatchedQuantity || record.quantity || 0);
-                const formattedDate = formatDisplayDate(record.deliveryDate);
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${counter}</td>
-                    <td>${formattedDate}</td>
-                    <td>${record.brvNumber || '—'}</td>
-                    <td>${record.driverName || '—'}</td>
-                    <td>${record.invoiceNumber || '—'}</td>
-                    <td>${productType}</td>
-                    <td>${formatNumber(dispatchedQuantity)}</td>
-                    <td>${formatNumber(receivedQuantity)}</td>
-                    <td>${record.station || '—'}</td>
-                    <td>${record.driverPhone || '—'}</td>
-                    <td>${record.inspectedBy || '—'}</td>
-                    <td>${formatNumber(balances[productType])}</td>
-                `;
-
-                tableBody.appendChild(row);
-                return true;
-            }
-
-            stockForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-
-                const formData = new FormData(stockForm);
-                const record = {
-                    deliveryDate: formData.get('deliveryDate'),
-                    brvNumber: formData.get('brvNumber').trim(),
-                    driverName: formData.get('driverName').trim(),
-                    driverPhone: formData.get('driverPhone').trim(),
-                    invoiceNumber: formData.get('invoiceNumber').trim(),
-                    productType: formData.get('productType'),
-                    dispatchedQuantity: parseFloat(formData.get('dispatched_quantity')) || 0,
-                    quantity: parseFloat(formData.get('quantity')) || 0,
-                    station: formData.get('station'),
-                    inspectedBy: formData.get('inspectedBy').trim(),
-                };
-                const added = addRecord(record);
-
-                if (!added) {
-                    alert('Please provide a valid product type and quantity greater than zero.');
-                    return;
-                }
-
-                stockForm.reset();
-                ensureDateDefault();
-            });
-
-            stockForm.addEventListener('reset', function() {
-                setTimeout(ensureDateDefault, 0);
-            });
-
-            ensureDateDefault();
-            refreshSummaries();
-
-            sampleLedgerRecords.forEach(addRecord);
 
             if (printStockLedgerBtn) {
-                printStockLedgerBtn.addEventListener('click', () => {
-                    if (!stockTableWrapper) {
-                        return;
-                    }
+                printStockLedgerBtn.addEventListener('click', function() {
+                    if (!stockTableWrapper) return;
 
-                    if (!printPreviewModal) {
-                        const printWindow = window.open('', '_blank', 'width=1200,height=900');
-                        if (!printWindow) {
-                            return;
-                        }
-
-                        printWindow.document.write(`
-                            <html>
-                            <head>
-                                <title>Stock Receipts Ledger</title>
-                                <style>
-                                    body { font-family: Arial, sans-serif; padding: 20px; }
-                                    table { width: 100%; border-collapse: collapse; font-size: 12px; }
-                                    th, td { border: 1px solid #333; padding: 6px; text-align: left; }
-                                    th { background: #0b2e6f; color: #fff; }
-                                </style>
-                            </head>
-                            <body>
-                                <h2>Stock Receipts Ledger</h2>
-                                ${stockTableWrapper.innerHTML}
-                            </body>
-                            </html>
-                        `);
-                        printWindow.document.close();
-                        printWindow.focus();
-                        printWindow.print();
-                        return;
-                    }
-
-                    printPreviewModal.show();
-
-                    if (printPreviewFrame) {
-                        printPreviewFrame.classList.add('d-none');
-                    }
-
-                    if (printPreviewLoading) {
-                        printPreviewLoading.classList.remove('d-none');
-                    }
-
-                    if (printPreviewConfirmBtn) {
-                        printPreviewConfirmBtn.disabled = true;
-                    }
-
-                    const options = {
-                        margin: 0.5,
-                        filename: `stock-ledger-${new Date().toISOString().slice(0, 10)}.pdf`,
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2 },
-                        jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' },
-                    };
-
-                    html2pdf()
-                        .set(options)
-                        .from(stockTableWrapper)
-                        .toPdf()
-                        .get('pdf')
-                        .then(pdf => {
-                            if (currentPreviewUrl) {
-                                URL.revokeObjectURL(currentPreviewUrl);
-                            }
-
-                            const blob = pdf.output('blob');
-                            currentPreviewUrl = URL.createObjectURL(blob);
-
-                            if (printPreviewFrame) {
-                                const onLoad = () => {
-                                    if (printPreviewLoading) {
-                                        printPreviewLoading.classList.add('d-none');
-                                    }
-
-                                    printPreviewFrame.classList.remove('d-none');
-
-                                    if (printPreviewConfirmBtn) {
-                                        printPreviewConfirmBtn.disabled = false;
-                                    }
-
-                                    printPreviewFrame.removeEventListener('load', onLoad);
-                                };
-
-                                printPreviewFrame.addEventListener('load', onLoad);
-                                printPreviewFrame.src = currentPreviewUrl;
-                            } else if (printPreviewLoading) {
-                                printPreviewLoading.classList.add('d-none');
-                            }
-                        })
-                        .catch(() => {
-                            if (printPreviewModal) {
-                                printPreviewModal.hide();
-                            }
-                            alert('Unable to generate the PDF preview. Please try again.');
-                        });
-                });
-            }
-
-            if (printPreviewConfirmBtn && printPreviewFrame) {
-                printPreviewConfirmBtn.addEventListener('click', () => {
-                    if (printPreviewConfirmBtn.disabled) {
-                        return;
-                    }
-
-                    const frameWindow = printPreviewFrame.contentWindow;
-                    if (frameWindow) {
-                        frameWindow.focus();
-                        frameWindow.print();
-                    }
+                    const content = stockTableWrapper.innerHTML;
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Stock Ledger</title>
+                            <style>
+                                body { font-family: Arial, sans-serif; padding: 20px; }
+                                table { width: 100%; border-collapse: collapse; }
+                                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                                th { background-color: #f2f2f2; }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>Stock Ledger</h1>
+                            ${content}
+                        </body>
+                        </html>
+                    `);
+                    printWindow.document.close();
+                    printWindow.print();
                 });
             }
 
             if (exportStockPdfBtn) {
-                exportStockPdfBtn.addEventListener('click', () => {
-                    if (!stockTableWrapper) {
-                        return;
-                    }
+                exportStockPdfBtn.addEventListener('click', function() {
+                    if (!stockTableWrapper) return;
 
-                    const options = {
-                        margin: 0.5,
-                        filename: `stock-ledger-${new Date().toISOString().slice(0, 10)}.pdf`,
+                    const element = stockTableWrapper;
+                    const opt = {
+                        margin: 1,
+                        filename: 'stock-ledger.pdf',
                         image: { type: 'jpeg', quality: 0.98 },
                         html2canvas: { scale: 2 },
-                        jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' },
+                        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
                     };
 
-                    html2pdf().set(options).from(stockTableWrapper).save();
+                    html2pdf().set(opt).from(element).save();
                 });
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const successMessage = @json(session('success'));
+            const errorMessage = @json(session('error'));
+
+            const canUseSwal = typeof Swal !== 'undefined';
+
+            if (successMessage) {
+                if (canUseSwal) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: successMessage,
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    console.info('Success:', successMessage);
+                }
+            }
+
+            if (errorMessage) {
+                if (canUseSwal) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: errorMessage,
+                        confirmButtonText: 'Try Again'
+                    });
+                } else {
+                    console.error('Error:', errorMessage);
+                }
             }
         });
     </script>
