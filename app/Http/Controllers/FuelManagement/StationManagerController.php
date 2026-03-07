@@ -133,16 +133,28 @@ class StationManagerController extends Controller
                 'assign_date' => ['required', 'date'],
                 'address' => ['required', 'string'],
                 'location' => ['nullable', 'string', 'max:255'],
-                'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+                'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             ]);
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            DB::beginTransaction();
-
             $validated = $validator->validated();
+
+            if (!empty($validated['station_id'])) {
+                $stationAlreadyHasManager = StationManager::forCompany($companyId)
+                    ->where('fuel_station_id', $validated['station_id'])
+                    ->where('status', StationManager::STATUS_ACTIVE)
+                    ->exists();
+                if ($stationAlreadyHasManager) {
+                    return redirect()->back()->withErrors([
+                        'station_id' => 'This station already has a manager. Each station can only have one manager.',
+                    ])->withInput();
+                }
+            }
+
+            DB::beginTransaction();
 
             $station = null;
             if (!empty($validated['station_id'])) {
@@ -269,9 +281,22 @@ class StationManagerController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            DB::beginTransaction();
-
             $validated = $validator->validated();
+
+            if (!empty($validated['station_id'])) {
+                $stationAlreadyHasManager = StationManager::forCompany($companyId)
+                    ->where('fuel_station_id', $validated['station_id'])
+                    ->where('status', StationManager::STATUS_ACTIVE)
+                    ->where('id', '!=', $stationManager->id)
+                    ->exists();
+                if ($stationAlreadyHasManager) {
+                    return redirect()->back()->withErrors([
+                        'station_id' => 'This station already has a manager. Each station can only have one manager.',
+                    ])->withInput();
+                }
+            }
+
+            DB::beginTransaction();
 
             $station = null;
             if (!empty($validated['station_id'])) {

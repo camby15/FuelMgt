@@ -42,8 +42,11 @@ class CompanySession
             } elseif (Auth::check()) {
                 $user = Auth::user();
                 if ($user->companyProfile) {
+                    $companyId = $user->companyProfile->id;
+                    Log::info('CompanySession: Set company_id from default auth user company profile', ['company_id' => $companyId]);
+                } else {
                     $companyId = $user->id;
-                    Log::info('CompanySession: Set company_id from default auth user', ['company_id' => $companyId]);
+                    Log::info('CompanySession: Set company_id from default auth user id (no profile)', ['company_id' => $companyId]);
                 }
             }
             

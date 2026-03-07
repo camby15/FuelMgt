@@ -342,7 +342,7 @@
                         
                         @if($hasMenuAccess('station_managers'))
                         <li>
-                            <a href="{{ route('any', 'company/FuelManagement/stationmanager') }}">
+                            <a href="{{ route('company.fuel.station-managers.index') }}">
                                 <i class="ri-user-line"></i>
                                 <span>Station Managers</span>
                             </a>
@@ -391,7 +391,7 @@
                     <ul class="side-nav-second-level">
                         @if($hasMenuAccess('stock_received'))
                         <li>
-                            <a href="{{ route('any', 'company/FuelManagement/stock') }}">
+                            <a href="{{ route('company.fuel.stocks.index') }}">
                                 <i class="ri-stack-line"></i>
                                 <span>Stock Received</span>
                             </a>
@@ -399,7 +399,7 @@
                         @endif
                         @if($hasMenuAccess('stock_dispatched'))
                         <li>
-                            <a href="{{ route('any', 'company/FuelManagement/DispatchStock') }}">
+                            <a href="{{ route('company.fuel.dispatches.index') }}">
                                 <i class="ri-truck-line"></i>
                                 <span>Stock Dispatched</span>
                             </a>
@@ -407,7 +407,7 @@
                         @endif
                         @if($hasMenuAccess('stock_recon'))
                         <li>
-                            <a href="{{ route('any', 'company/FuelManagement/stockRecon') }}">
+                            <a href="{{ route('company.fuel.reconciliations.index') }}">
                                 <i class="ri-exchange-line"></i>
                                 <span>Stock Reconciliation</span>
                             </a>

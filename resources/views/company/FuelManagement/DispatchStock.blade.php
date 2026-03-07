@@ -662,74 +662,77 @@
                 </div>
 
                 <div class="dispatch-form">
-                    <form id="dispatchForm" enctype="multipart/form-data">
+                    <form id="dispatchForm" action="{{ route('company.fuel.dispatches.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
                         <div class="dispatch-form__grid">
                             <div>
                                 <label for="dispatchDate">Dispatch Date</label>
-                                <input type="date" id="dispatchDate" name="dispatchDate" required>
+                                <input type="date" id="dispatchDate" name="dispatch_date" value="{{ old('dispatch_date', date('Y-m-d')) }}" required>
                             </div>
                             <div>
                                 <label for="productType">Product Type</label>
-                                <select id="productType" name="productType" required>
+                                <select id="productType" name="product_type" required>
                                     <option value="" disabled selected>Select product</option>
-                                    <option value="AGO">AGO (Diesel)</option>
-                                    <option value="PMS">PMS (Super)</option>
+                                    <option value="AGO" @selected(old('product_type') === 'AGO')>AGO (Diesel)</option>
+                                    <option value="PMS" @selected(old('product_type') === 'PMS')>PMS (Super)</option>
                                 </select>
                             </div>
                             <div>
-                                <label for="depot">Loading Depot</label> 
-                                <input type="text" id="depot" name="depot" placeholder="e.g. TOR" required>
+                                <label for="depot">Loading Depot</label>
+                                <input type="text" id="depot" name="depot" placeholder="e.g. TOR" value="{{ old('depot') }}" required>
                             </div>
                             <div>
-                                <label for="loadedFrom">BDC</label> 
-                                <input type="text" id="loadedFrom" name="loadedFrom" placeholder="e.g. Wi Energy Limited" required>
+                                <label for="loadedFrom">BDC</label>
+                                <input type="text" id="loadedFrom" name="bdc" placeholder="e.g. Wi Energy Limited" value="{{ old('bdc') }}" required>
                             </div>
                             <div>
                                 <label for="quantityDispatched">Quantity Dispatched (Litres)</label>
-                                <input type="number" min="0" step="0.01" id="quantityDispatched" name="quantityDispatched" placeholder="0.00" required>
+                                <input type="number" min="0" step="0.01" id="quantityDispatched" name="quantity_dispatched" placeholder="0.00" value="{{ old('quantity_dispatched') }}" required>
                             </div>
                             <div>
-                                <label for="brvNumber">BRV </label>
-                                <input type="text" id="brvNumber" name="brvNumber" placeholder="e.g. GR-1234-24" required>
+                                <label for="brvNumber">BRV</label>
+                                <input type="text" id="brvNumber" name="brv_number" placeholder="e.g. GR-1234-24" value="{{ old('brv_number') }}" required>
                             </div>
                             <div>
                                 <label for="driverName">Driver Name</label>
-                                <input type="text" id="driverName" name="driverName" placeholder="Driver full name" required>
+                                <input type="text" id="driverName" name="driver_name" placeholder="Driver full name" value="{{ old('driver_name') }}" required>
                             </div>
                             <div>
                                 <label for="driverPhone">Driver Contact</label>
-                                <input type="tel" id="driverPhone" name="driverPhone" placeholder="e.g. +233 20 000 0000">
+                                <input type="tel" id="driverPhone" name="driver_phone" placeholder="e.g. +233 20 000 0000" value="{{ old('driver_phone') }}">
                             </div>
                             <div>
                                 <label for="receivingStation">Receiving Station</label>
-                                <select id="receivingStation" name="receivingStation" required>
+                                <select id="receivingStation" name="station_id" required>
                                     <option value="" disabled selected>Select station</option>
-                                    <option value="Navrongo Main">Navrongo Main</option>
-                                    <option value="Wapuli">Wapuli</option>
-                                    <option value="Bamvin">Bamvin</option>
-                                    <option value="Paga Anex">Paga Anex</option>
-                                    <option value="Larabanga">Larabanga</option>
-                                    <option value="Amoako">Amoako</option>
-                                    <option value="Navrongo-2">Navrongo-2</option>
-                                    <option value="Bububele">Bububele</option>
-                                    <option value="Wiaga">Wiaga</option>
-                                    <option value="Kintampo">Kintampo</option>
+                                    @foreach ($stations ?? [] as $station)
+                                        <option value="{{ $station->id }}" @selected(old('station_id') == $station->id)>{{ $station->name }} @if($station->code)({{ $station->code }})@endif</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div>
                                 <label for="inspectedBy">Inspected By (Liaison Officer)</label>
-                                <input type="text" id="inspectedBy" name="inspectedBy" placeholder="Officer on duty" required>
+                                <input type="text" id="inspectedBy" name="inspected_by" placeholder="Officer on duty" value="{{ old('inspected_by') }}" required>
                             </div>
                             <div>
                                 <label for="invoiceNumber">Invoice Number</label>
-                                <input type="text" id="invoiceNumber" name="invoiceNumber" placeholder="e.g. INV-000123" required>
+                                <input type="text" id="invoiceNumber" name="invoice_number" placeholder="e.g. INV-000123" value="{{ old('invoice_number') }}" required>
                             </div>
                             <div class="dispatch-form__file-control">
                                 <label for="waybillUpload">Waybill Upload</label>
-                                <input type="file" id="waybillUpload" name="waybillUpload" accept=".pdf,.jpg,.jpeg,.png,.heic,.heif">
+                                <input type="file" id="waybillUpload" name="waybill" accept=".pdf,.jpg,.jpeg,.png">
                                 <div class="dispatch-form__file-meta" data-role="waybill-meta">Accepted formats: PDF, JPG, PNG</div>
                             </div>
                         </div>
+                        @if($errors->any())
+                            <div class="alert alert-danger mb-3" role="alert">
+                                <ul class="mb-0 list-unstyled">
+                                    @foreach($errors->all() as $err)
+                                        <li>{{ $err }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <div class="dispatch-form__actions">
                             <button type="reset" class="dispatch-btn dispatch-btn--ghost">Clear</button>
                             <button type="submit" class="dispatch-btn dispatch-btn--primary">Record Dispatch</button>
@@ -771,107 +774,52 @@
                                 </tr>
                             </thead>
                             <tbody data-role="dispatch-tbody">
-                                <tr data-seed-record
-                                    data-sequence="1"
-                                    data-dispatch-date="2024-09-12"
-                                    data-formatted-date="12-09-2024"
-                                    data-product-type="AGO"
-                                    data-depot="Tema Loading Gantry"
-                                    data-bdc="Vivo Energy BDC"
-                                    data-quantity="18500"
-                                    data-brv-number="GT-2489-24"
-                                    data-driver-name="Kwame Amanfo"
-                                    data-driver-phone="+233 24 555 0199"
-                                    data-receiving-station="Navrongo Main"
-                                    data-inspected-by="Adjoa Owusu"
-                                    data-invoice-number="INV-DS-0001"
-                                    data-waybill-url="https://example.com/waybills/INV-DS-0001.pdf"
-                                >
-                                    <td>1</td>
-                                    <td>12-09-2024</td>
-                                    <td>AGO</td>
-                                    <td>Tema Loading Gantry</td>
-                                    <td>Vivo Energy BDC</td>
-                                    <td>18,500.00</td>
-                                    <td>GT-2489-24</td>
-                                    <td>Kwame Amanfo</td>
-                                    <td>+233 24 555 0199</td>
-                                    <td>Navrongo Main</td>
-                                    <td>Adjoa Owusu</td>
-                                    <td>INV-DS-0001</td>
-                                    <td>
-                                        <button type="button" class="dispatch-action-btn" data-role="view-dispatch" data-waybill-url="https://example.com/waybills/INV-DS-0001.pdf">
-                                            <i class="ri-eye-line"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr data-seed-record
-                                    data-sequence="2"
-                                    data-dispatch-date="2024-09-14"
-                                    data-formatted-date="14-09-2024"
-                                    data-product-type="PMS"
-                                    data-depot="Buipe Depot"
-                                    data-bdc="Star Oil BDC"
-                                    data-quantity="21250"
-                                    data-brv-number="NR-5512-23"
-                                    data-driver-name="Mariam Sule"
-                                    data-driver-phone="+233 20 883 4410"
-                                    data-receiving-station="Larabanga"
-                                    data-inspected-by="Richard Bawa"
-                                    data-invoice-number="INV-DS-0002"
-                                    data-waybill-url="https://example.com/waybills/INV-DS-0002.pdf"
-                                >
-                                    <td>2</td>
-                                    <td>14-09-2024</td>
-                                    <td>PMS</td>
-                                    <td>Buipe Depot</td>
-                                    <td>Star Oil BDC</td>
-                                    <td>21,250.00</td>
-                                    <td>NR-5512-23</td>
-                                    <td>Mariam Sule</td>
-                                    <td>+233 20 883 4410</td>
-                                    <td>Larabanga</td>
-                                    <td>Richard Bawa</td>
-                                    <td>INV-DS-0002</td>
-                                    <td>
-                                        <button type="button" class="dispatch-action-btn" data-role="view-dispatch" data-waybill-url="https://example.com/waybills/INV-DS-0002.pdf">
-                                            <i class="ri-eye-line"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr data-seed-record
-                                    data-sequence="3"
-                                    data-dispatch-date="2024-09-18"
-                                    data-formatted-date="18-09-2024"
-                                    data-product-type="AGO"
-                                    data-depot="TOR - Tema"
-                                    data-bdc="Goil BDC"
-                                    data-quantity="16780"
-                                    data-brv-number="GR-9134-24"
-                                    data-driver-name="Efua Quaye"
-                                    data-driver-phone="+233 55 771 2299"
-                                    data-receiving-station="Bububele"
-                                    data-inspected-by="Daniel Addae"
-                                    data-invoice-number="INV-DS-0003"
-                                >
-                                    <td>3</td>
-                                    <td>18-09-2024</td>
-                                    <td>AGO</td>
-                                    <td>TOR - Tema</td>
-                                    <td>Goil BDC</td>
-                                    <td>16,780.00</td>
-                                    <td>GR-9134-24</td>
-                                    <td>Efua Quaye</td>
-                                    <td>+233 55 771 2299</td>
-                                    <td>Bububele</td>
-                                    <td>Daniel Addae</td>
-                                    <td>INV-DS-0003</td>
-                                    <td>
-                                        <button type="button" class="dispatch-action-btn" data-role="view-dispatch">
-                                            <i class="ri-eye-line"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+                                @forelse($dispatches ?? [] as $index => $dispatch)
+                                    @php
+                                        $waybillUrl = $dispatch->waybill_path ? route('company.fuel.dispatches.waybill', $dispatch) : '';
+                                        $formattedDate = $dispatch->dispatch_date ? $dispatch->dispatch_date->format('d-m-Y') : '—';
+                                        $dispatchDateRaw = $dispatch->dispatch_date ? $dispatch->dispatch_date->format('Y-m-d') : '';
+                                    @endphp
+                                    <tr data-role="dispatch-row"
+                                        data-dispatch-date="{{ $dispatchDateRaw }}"
+                                        data-formatted-date="{{ $formattedDate }}"
+                                        data-product-type="{{ $dispatch->product_type }}"
+                                        data-depot="{{ e($dispatch->depot) }}"
+                                        data-bdc="{{ e($dispatch->bdc) }}"
+                                        data-quantity="{{ $dispatch->quantity_dispatched }}"
+                                        data-brv-number="{{ e($dispatch->brv_number) }}"
+                                        data-driver-name="{{ e($dispatch->driver_name) }}"
+                                        data-driver-phone="{{ e($dispatch->driver_phone ?? '') }}"
+                                        data-receiving-station="{{ e($dispatch->station ? $dispatch->station->name : '') }}"
+                                        data-inspected-by="{{ e($dispatch->inspected_by) }}"
+                                        data-invoice-number="{{ e($dispatch->invoice_number) }}"
+                                        data-waybill-url="{{ $waybillUrl }}"
+                                    >
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $formattedDate }}</td>
+                                        <td>{{ $dispatch->product_type }}</td>
+                                        <td>{{ $dispatch->depot }}</td>
+                                        <td>{{ $dispatch->bdc }}</td>
+                                        <td>{{ number_format($dispatch->quantity_dispatched, 2) }}</td>
+                                        <td>{{ $dispatch->brv_number }}</td>
+                                        <td>{{ $dispatch->driver_name }}</td>
+                                        <td>{{ $dispatch->driver_phone ?? '—' }}</td>
+                                        <td>{{ $dispatch->station ? $dispatch->station->name : '—' }}</td>
+                                        <td>{{ $dispatch->inspected_by }}</td>
+                                        <td>{{ $dispatch->invoice_number }}</td>
+                                        <td>
+                                            @if($waybillUrl)
+                                                <a href="{{ $waybillUrl }}" target="_blank" rel="noopener" class="dispatch-action-btn" title="Open waybill"><i class="ri-eye-line"></i></a>
+                                            @else
+                                                <button type="button" class="dispatch-action-btn" data-role="view-dispatch" title="View details"><i class="ri-eye-line"></i></button>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr class="dispatch-empty">
+                                        <td colspan="13">No dispatch records captured yet.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -989,11 +937,12 @@
     </div>
 @endsection
 
-@push('scripts')
+@push('javascript')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-YcsIPmK9jGTf3I9P4MBDl2SmS0FZtBx8y8mk4luzFuJdvByCnWJIRedKgNqUK3MUY14CzO2D93BYJk50xKp3+w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @endpush
 
-@push('scripts')
+@push('javascript')
     <script>
         function initDispatchModule() {
             const dispatchForm = document.getElementById('dispatchForm');
@@ -1025,8 +974,8 @@
                 ? {
                       dispatchDate: detailsModal.querySelector('[data-field="dispatchDate"]'),
                       productType: detailsModal.querySelector('[data-field="productType"]'),
-                      loadingFacility: detailsModal.querySelector('[data-field="loadingFacility"]'),
-                      loadedFrom: detailsModal.querySelector('[data-field="loadedFrom"]'),
+                      depot: detailsModal.querySelector('[data-field="depot"]'),
+                      bdc: detailsModal.querySelector('[data-field="bdc"]'),
                       quantity: detailsModal.querySelector('[data-field="quantity"]'),
                       brvNumber: detailsModal.querySelector('[data-field="brvNumber"]'),
                       driverName: detailsModal.querySelector('[data-field="driverName"]'),
@@ -1207,8 +1156,8 @@
                 const assignments = {
                     dispatchDate: record.formattedDate,
                     productType: record.productType,
-                    loadingFacility: record.loadingFacility,
-                    loadedFrom: record.loadedFrom,
+                    depot: record.depot || record.loadingFacility,
+                    bdc: record.bdc || record.loadedFrom,
                     quantity: formatNumber(record.quantity),
                     brvNumber: record.brvNumber,
                     driverName: record.driverName,
@@ -1244,6 +1193,68 @@
                 detailsModal.classList.remove('is-visible');
             }
 
+            function showDispatchDetailsFromRow(row) {
+                if (!detailsModal || !row) return;
+                const d = row.dataset;
+                const assignments = {
+                    dispatchDate: d.formattedDate || '—',
+                    productType: d.productType || '—',
+                    depot: d.depot || '—',
+                    bdc: d.bdc || '—',
+                    quantity: formatNumber(Number(d.quantity) || 0),
+                    brvNumber: d.brvNumber || '—',
+                    driverName: d.driverName || '—',
+                    driverPhone: d.driverPhone || '—',
+                    receivingStation: d.receivingStation || '—',
+                    inspectedBy: d.inspectedBy || '—',
+                    invoiceNumber: d.invoiceNumber || '—',
+                };
+                Object.entries(assignments).forEach(function (entry) {
+                    const key = entry[0], value = entry[1];
+                    if (detailsFields[key]) detailsFields[key].textContent = value;
+                });
+                if (detailsWaybillLink) {
+                    if (d.waybillUrl) {
+                        detailsWaybillLink.href = d.waybillUrl;
+                        detailsWaybillLink.hidden = false;
+                    } else {
+                        detailsWaybillLink.href = '#';
+                        detailsWaybillLink.hidden = true;
+                    }
+                }
+                detailsModal.setAttribute('aria-hidden', 'false');
+                detailsModal.classList.add('is-visible');
+            }
+
+            function buildDispatchRecordsFromTable() {
+                dispatchRecords.length = 0;
+                dispatchCounter = 0;
+                const rows = dispatchTableBody ? dispatchTableBody.querySelectorAll('tr[data-role="dispatch-row"]') : [];
+                rows.forEach(function (row, idx) {
+                    const d = row.dataset;
+                    dispatchCounter += 1;
+                    dispatchRecords.push({
+                        id: 'row-' + idx,
+                        sequence: dispatchCounter,
+                        dispatchDate: d.dispatchDate || '',
+                        formattedDate: d.formattedDate || '—',
+                        productType: d.productType || '—',
+                        loadingFacility: d.depot || '—',
+                        loadedFrom: d.bdc || '—',
+                        depot: d.depot || '—',
+                        bdc: d.bdc || '—',
+                        quantity: Number(d.quantity) || 0,
+                        brvNumber: d.brvNumber || '—',
+                        driverName: d.driverName || '—',
+                        driverPhone: d.driverPhone || '—',
+                        receivingStation: d.receivingStation || '—',
+                        inspectedBy: d.inspectedBy || '—',
+                        invoiceNumber: d.invoiceNumber || '—',
+                        waybillUrl: d.waybillUrl || null,
+                    });
+                });
+            }
+
             function formatMonthLabel(monthValue) {
                 if (!monthValue) {
                     return 'No month selected';
@@ -1256,7 +1267,11 @@
 
             function generateReconciliation(monthValue) {
                 if (!monthValue) {
-                    alert('Please select a month to generate the reconciliation report.');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'info', title: 'Select month', text: 'Please select a month to generate the reconciliation report.', confirmButtonText: 'OK' });
+                    } else {
+                        alert('Please select a month to generate the reconciliation report.');
+                    }
                     return;
                 }
 
@@ -1312,46 +1327,6 @@
                 reconciliationTableBody.appendChild(rowsFragment);
             }
 
-            dispatchForm.addEventListener('submit', function (event) {
-                event.preventDefault();
-
-                const formData = new FormData(dispatchForm);
-                const quantity = parseFloat(formData.get('quantityDispatched'));
-
-                if (!formData.get('productType') || Number.isNaN(quantity) || quantity <= 0) {
-                    alert('Please provide a valid product type with a quantity greater than zero.');
-                    return;
-                }
-
-                const dispatchDate = formData.get('dispatchDate');
-                const formattedDate = dispatchDate ? dispatchDate.split('-').reverse().join('-') : '—';
-
-                const waybillFile = waybillInput?.files[0] || null;
-                const waybillUrl = waybillFile ? URL.createObjectURL(waybillFile) : null;
-
-                const recordData = {
-                    dispatchDate,
-                    productType: formData.get('productType'),
-                    loadingFacility: (formData.get('LoadingFacility') || '').trim(),
-                    loadedFrom: (formData.get('loadedFrom') || '').trim(),
-                    quantity,
-                    brvNumber: (formData.get('brvNumber') || '').trim(),
-                    driverName: (formData.get('driverName') || '').trim(),
-                    driverPhone: (formData.get('driverPhone') || '').trim(),
-                    receivingStation: formData.get('receivingStation'),
-                    inspectedBy: (formData.get('inspectedBy') || '').trim(),
-                    invoiceNumber: (formData.get('invoiceNumber') || '').trim(),
-                    waybillUrl,
-                    isObjectUrl: Boolean(waybillFile),
-                };
-
-                addDispatchRecord(recordData);
-
-                dispatchForm.reset();
-                ensureDateDefault();
-                updateWaybillMeta();
-            });
-
             dispatchForm.addEventListener('reset', function () {
                 setTimeout(() => {
                     ensureDateDefault();
@@ -1367,12 +1342,20 @@
 
             exportDispatchPdfBtn?.addEventListener('click', function () {
                 if (!dispatchRecords.length) {
-                    alert('Please record at least one dispatch before exporting.');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'info', title: 'No data', text: 'Please record at least one dispatch before exporting.', confirmButtonText: 'OK' });
+                    } else {
+                        alert('Please record at least one dispatch before exporting.');
+                    }
                     return;
                 }
 
                 if (typeof html2pdf === 'undefined') {
-                    alert('PDF library not loaded. Please check your network connection and try again.');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'error', title: 'Export failed', text: 'PDF library not loaded. Please check your network connection and try again.', confirmButtonText: 'OK' });
+                    } else {
+                        alert('PDF library not loaded. Please check your network connection and try again.');
+                    }
                     return;
                 }
 
@@ -1384,12 +1367,20 @@
                     jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' },
                 };
 
-                html2pdf().set(options).from(dispatchTableWrapper).save();
+                html2pdf().set(options).from(dispatchTableWrapper).save().then(function () {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'success', title: 'Done', text: 'Dispatch ledger PDF downloaded.', timer: 2000, showConfirmButton: false });
+                    }
+                });
             });
 
             printDispatchLedgerBtn?.addEventListener('click', function () {
                 if (!dispatchRecords.length) {
-                    alert('There are no dispatch records to print.');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'info', title: 'No data', text: 'There are no dispatch records to print.', confirmButtonText: 'OK' });
+                    } else {
+                        alert('There are no dispatch records to print.');
+                    }
                     return;
                 }
 
@@ -1424,12 +1415,20 @@
 
             exportReconciliationPdfBtn?.addEventListener('click', function () {
                 if (!lastReconciliationRecords.length) {
-                    alert('Generate the monthly reconciliation before exporting.');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'info', title: 'Generate first', text: 'Generate the monthly reconciliation before exporting.', confirmButtonText: 'OK' });
+                    } else {
+                        alert('Generate the monthly reconciliation before exporting.');
+                    }
                     return;
                 }
 
                 if (typeof html2pdf === 'undefined') {
-                    alert('PDF library not loaded. Please check your network connection and try again.');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'error', title: 'Export failed', text: 'PDF library not loaded. Please check your network connection and try again.', confirmButtonText: 'OK' });
+                    } else {
+                        alert('PDF library not loaded. Please check your network connection and try again.');
+                    }
                     return;
                 }
 
@@ -1441,12 +1440,20 @@
                     jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' },
                 };
 
-                html2pdf().set(options).from(reconciliationTableWrapper).save();
+                html2pdf().set(options).from(reconciliationTableWrapper).save().then(function () {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'success', title: 'Done', text: 'Reconciliation PDF downloaded.', timer: 2000, showConfirmButton: false });
+                    }
+                });
             });
 
             printReconciliationBtn?.addEventListener('click', function () {
                 if (!lastReconciliationRecords.length) {
-                    alert('Generate the monthly reconciliation before printing.');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'info', title: 'Generate first', text: 'Generate the monthly reconciliation before printing.', confirmButtonText: 'OK' });
+                    } else {
+                        alert('Generate the monthly reconciliation before printing.');
+                    }
                     return;
                 }
 
@@ -1491,13 +1498,12 @@
 
             dispatchTableBody.addEventListener('click', function (event) {
                 const target = event.target.closest('[data-role="view-dispatch"]');
-                if (!target) {
-                    return;
-                }
-
-                const recordId = target.dataset.recordId;
-                if (recordId) {
-                    showDispatchDetails(recordId);
+                if (!target) return;
+                const row = target.closest('tr');
+                if (row && row.dataset.role === 'dispatch-row') {
+                    showDispatchDetailsFromRow(row);
+                } else if (target.dataset.recordId) {
+                    showDispatchDetails(target.dataset.recordId);
                 }
             });
 
@@ -1518,7 +1524,25 @@
             });
 
             ensureDateDefault();
-            resetLedgerEmptyState();
+            buildDispatchRecordsFromTable();
+
+            var successMessage = @json(session('success'));
+            var errorMessage = @json(session('error'));
+            var canUseSwal = typeof Swal !== 'undefined';
+            if (successMessage) {
+                if (canUseSwal) {
+                    Swal.fire({ icon: 'success', title: 'Success!', text: successMessage, confirmButtonText: 'OK' });
+                } else {
+                    console.info('Success:', successMessage);
+                }
+            }
+            if (errorMessage) {
+                if (canUseSwal) {
+                    Swal.fire({ icon: 'error', title: 'Oops...', text: errorMessage, confirmButtonText: 'Try Again' });
+                } else {
+                    console.error('Error:', errorMessage);
+                }
+            }
         }
 
         if (document.readyState === 'loading') {

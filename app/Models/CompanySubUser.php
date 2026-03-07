@@ -33,7 +33,8 @@ class CompanySubUser extends Authenticatable
         'profile_image',
         'last_login_at',
         'email_verified_at',
-        'profile_id'
+        'profile_id',
+        'fuel_station_id',
     ];
 
     /**
@@ -55,7 +56,16 @@ class CompanySubUser extends Authenticatable
         'email_verified_at' => 'datetime',
         'last_login_at' => 'datetime',
         'pin_code' => 'hashed',
+        'fuel_station_id' => 'integer',
     ];
+
+    /**
+     * Get the fuel station assigned to this sub user (e.g. for station managers).
+     */
+    public function fuelStation()
+    {
+        return $this->belongsTo(\App\Models\FuelManagement\FuelStation::class, 'fuel_station_id');
+    }
 
     /**
      * Get the company that owns the sub user.
