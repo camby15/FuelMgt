@@ -146,23 +146,24 @@ class RoutingController extends Controller
             ]);
         }
 
-        // Special handling for stock management
+        // Redirect to proper stock controller
         if ($first === 'company' && $second === 'FuelManagement' && $third === 'stock') {
-            $companyId = session('selected_company_id');
-            $stations = \App\Models\FuelManagement\FuelStation::forCompany($companyId)
-                ->select('id', 'name', 'code', 'location')
-                ->orderBy('name')
-                ->get();
-            return view('company.FuelManagement.stock', [
-                'mode' => $mode,
-                'demo' => $demo,
-                'stations' => $stations,
-                'stocks' => collect(),
-                'stationId' => null,
-                'agoBalance' => 0,
-                'pmsBalance' => 0,
-                'companyId' => $companyId,
-            ]);
+            return redirect()->route('company.fuel.stocks.index');
+        }
+
+        // Redirect to proper station managers controller
+        if ($first === 'company' && $second === 'FuelManagement' && $third === 'stationmanager') {
+            return redirect()->route('company.fuel.station-managers.index');
+        }
+
+        // Redirect to proper dispatches controller
+        if ($first === 'company' && $second === 'FuelManagement' && $third === 'DispatchStock') {
+            return redirect()->route('company.fuel.dispatches.index');
+        }
+
+        // Redirect to proper reconciliation controller
+        if ($first === 'company' && $second === 'FuelManagement' && $third === 'stockRecon') {
+            return redirect()->route('company.fuel.reconciliations.index');
         }
 
         return view($first . '.' . $second . '.' . $third, [

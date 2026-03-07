@@ -668,7 +668,7 @@
                                                             data-key="station_managers"
                                                             data-name="Station Manager"
                                                             data-parent="fuel_management"
-                                                            data-route="{{ route('any', 'company/FuelManagement/stationmanager') }}" />
+                                                            data-route="{{ route('company.fuel.station-managers.index') }}" />
                                                         <label class="form-check-label" for="menu_station_managers">
                                                             Station Manager
                                                         </label>
@@ -702,7 +702,7 @@
                                                             data-key="stock_received"
                                                             data-name="Stock Received"
                                                             data-parent="stock_activity"
-                                                            data-route="{{ route('any', 'company/FuelManagement/stock') }}" />
+                                                            data-route="{{ route('company.fuel.stocks.index') }}" />
                                                         <label class="form-check-label" for="menu_stock_received">
                                                             Stock Received
                                                         </label>
@@ -715,7 +715,7 @@
                                                             data-key="stock_dispatched"
                                                             data-name="Stock Dispatched"
                                                             data-parent="stock_activity"
-                                                            data-route="{{ route('any', 'company/FuelManagement/DispatchStock') }}" />
+                                                            data-route="{{ route('company.fuel.dispatches.index') }}" />
                                                         <label class="form-check-label" for="menu_stock_dispatched">
                                                             Stock Dispatched
                                                         </label>
@@ -728,7 +728,7 @@
                                                             data-key="stock_recon"
                                                             data-name="Stock Reconciliation"
                                                             data-parent="stock_activity"
-                                                            data-route="{{ route('any', 'company/FuelManagement/stockRecon') }}" />
+                                                            data-route="{{ route('company.fuel.reconciliations.index') }}" />
                                                         <label class="form-check-label" for="menu_stock_recon">
                                                             Stock Reconciliation
                                                         </label>

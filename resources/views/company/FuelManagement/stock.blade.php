@@ -273,6 +273,12 @@
             box-shadow: 0 0 0 3px rgba(43, 109, 239, 0.2);
         }
 
+        .stock-form__station-readonly {
+            background: rgba(9, 28, 64, 0.06);
+            cursor: not-allowed;
+            font-weight: 600;
+        }
+
         .stock-form__actions {
             margin-top: 1.6rem;
             display: flex;
@@ -440,15 +446,17 @@
         <div class="stock-card">
             <div class="stock-card__inner">
                 @php
-                    $assignedStationName = $stationName
+                    $subUser = Auth::guard('company_sub_user')->user();
+                    $assignedStationName = $managerStationName
+                        ?? $stationName
                         ?? optional(Auth::user())->station
-                        ?? optional(Auth::guard('company_sub_user')->user())->station
+                        ?? ($subUser && $subUser->fuelStation ? $subUser->fuelStation->name : null)
                         ?? optional(Auth::guard('sub_user')->user())->station;
                 @endphp
                 <div class="stock-card__header">
                     <div class="stock-card__header-main">
                         <h2 class="stock-card__title">Recieving Stock</h2>
-                        <p class="stock-card__subtitle">Track receipts and available stock across all stations</p>
+                        <p class="stock-card__subtitle">{{ !empty($isManagerRestricted) ? 'Track receipts and available stock for your station' : 'Track receipts and available stock across all stations' }}</p>
                     </div>
                     <div class="stock-card__header-actions">
                         @if ($assignedStationName)
@@ -530,19 +538,31 @@
                             </div>
                             <div>
                                 <label for="station">Receiving Station</label>
-                                <select id="station" name="station_id" required>
-                                    <option value="" disabled selected>Select station</option>
-                                    @foreach (($stations ?? collect()) as $station)
-                                        <option value="{{ $station->id }}"
-                                                data-manager="{{ $station->activeManager ? $station->activeManager->full_name : '' }}">
-                                            {{ $station->name }} ({{ $station->code }})
-                                        </option>
-                                    @endforeach
-                                </select>
+                                @if (!empty($isManagerRestricted) && !empty($managerStationId))
+                                    <input type="text" id="stationDisplay" class="stock-form__station-readonly" value="{{ $managerStationName ?? 'Your station' }} ({{ $stations->first()->code ?? '' }})" readonly>
+                                    <input type="hidden" name="station_id" value="{{ $managerStationId }}">
+                                @else
+                                    <select id="station" name="station_id" required>
+                                        <option value="" disabled selected>Select station</option>
+                                        @foreach (($stations ?? collect()) as $station)
+                                            <option value="{{ $station->id }}"
+                                                    data-manager="{{ $station->activeManager ? $station->activeManager->full_name : '' }}">
+                                                {{ $station->name }} ({{ $station->code }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                @endif
                             </div>
                             <div>
                                 <label for="inspectedBy">Inspected By (Station Manager)</label>
-                                <input type="text" id="inspectedBy" name="inspected_by" placeholder="Station Manager" required>
+                                @php
+                                    $defaultInspectedBy = '';
+                                    if (!empty($isManagerRestricted) && ($stations ?? collect())->isNotEmpty()) {
+                                        $firstStation = $stations->first();
+                                        $defaultInspectedBy = $firstStation && $firstStation->activeManager ? $firstStation->activeManager->full_name : '';
+                                    }
+                                @endphp
+                                <input type="text" id="inspectedBy" name="inspected_by" placeholder="Station Manager" value="{{ $defaultInspectedBy }}" required>
                             </div>
                         </div>
                         <div class="stock-form__actions">
@@ -559,6 +579,10 @@
                             <button type="button" class="stock-btn stock-btn--ghost stock-btn--sm" id="printStockLedgerBtn">
                                 <span class="me-1">Print</span>
                                 <i class="ri-printer-line"></i>
+                            </button>
+                            <button type="button" class="stock-btn stock-btn--ghost stock-btn--sm" id="exportStockExcelBtn">
+                                <span class="me-1">Export Excel</span>
+                                <i class="ri-file-excel-2-line"></i>
                             </button>
                             <button type="button" class="stock-btn stock-btn--primary stock-btn--sm" id="exportStockPdfBtn">
                                 <span class="me-1">Export PDF</span>
@@ -585,11 +609,7 @@
                                 </tr>
                             </thead>
                             <tbody data-role="stock-tbody">
-                                @if (empty($stocks) || $stocks->isEmpty())
-                                    <tr class="stock-empty">
-                                        <td colspan="11">No stock receipts recorded yet.</td>
-                                    </tr>
-                                @else
+                                @if(isset($stocks) && count($stocks) > 0)
                                     @foreach ($stocks as $index => $stock)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
@@ -610,6 +630,10 @@
                                             <td>{{ number_format($stock->running_balance, 2) }}</td>
                                         </tr>
                                     @endforeach
+                                @else
+                                    <tr class="stock-empty">
+                                        <td colspan="11">No stock receipts recorded yet.</td>
+                                    </tr>
                                 @endif
                             </tbody>
                         </table>
@@ -646,8 +670,8 @@
     </div>
 @endsection
 
-@push('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-YcsIPmK9jGTf3I9P4MBDl2SmS0FZtBx8y8mk4luzFuJdvByCnWJIRedKgNqUK3MUY14CzO2D93BYJk50xKp3+w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+@push('javascript')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const stationSelect = document.getElementById('station');
@@ -667,114 +691,146 @@
                 }
             }
 
-            const stockForm = document.getElementById('stockIntakeForm');
-            const tableBody = document.querySelector('[data-role="stock-tbody"]');
             const printPreviewModalEl = document.getElementById('printPreviewModal');
             const printPreviewFrame = document.getElementById('printPreviewFrame');
-            const printPreviewLoading = document.getElementById('printPreviewLoading');
-            const printPreviewConfirmBtn = document.getElementById('printPreviewConfirmBtn');
             const printStockLedgerBtn = document.getElementById('printStockLedgerBtn');
             const exportStockPdfBtn = document.getElementById('exportStockPdfBtn');
+            const exportStockExcelBtn = document.getElementById('exportStockExcelBtn');
             const stockTableWrapper = document.getElementById('stockTableWrapper');
+            const stockTable = document.getElementById('stockTable');
 
             let printPreviewModal = null;
             let currentPreviewUrl = null;
 
             if (printPreviewModalEl && window.bootstrap && window.bootstrap.Modal) {
                 printPreviewModal = new window.bootstrap.Modal(printPreviewModalEl);
-
                 printPreviewModalEl.addEventListener('hidden.bs.modal', () => {
-                    if (currentPreviewUrl) {
-                        URL.revokeObjectURL(currentPreviewUrl);
-                        currentPreviewUrl = null;
-                    }
-
-                    if (printPreviewFrame) {
-                        printPreviewFrame.src = 'about:blank';
-                    }
+                    if (currentPreviewUrl) { URL.revokeObjectURL(currentPreviewUrl); currentPreviewUrl = null; }
+                    if (printPreviewFrame) printPreviewFrame.src = 'about:blank';
                 });
             }
 
-            if (printStockLedgerBtn) {
+            if (printStockLedgerBtn && stockTableWrapper) {
                 printStockLedgerBtn.addEventListener('click', function() {
-                    if (!stockTableWrapper) return;
-
                     const content = stockTableWrapper.innerHTML;
                     const printWindow = window.open('', '_blank');
-                    printWindow.document.write(`
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <title>Stock Ledger</title>
-                            <style>
-                                body { font-family: Arial, sans-serif; padding: 20px; }
-                                table { width: 100%; border-collapse: collapse; }
-                                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                                th { background-color: #f2f2f2; }
-                            </style>
-                        </head>
-                        <body>
-                            <h1>Stock Ledger</h1>
-                            ${content}
-                        </body>
-                        </html>
-                    `);
+                    printWindow.document.write('<!DOCTYPE html><html><head><title>Stock Ledger</title><style>body{font-family:Arial,sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f2f2f2}</style></head><body><h1>Stock Ledger</h1>' + content + '</body></html>');
                     printWindow.document.close();
                     printWindow.print();
                 });
             }
 
-            if (exportStockPdfBtn) {
-                exportStockPdfBtn.addEventListener('click', function() {
-                    if (!stockTableWrapper) return;
+            function escapeCsvCell(str) {
+                if (str == null) return '';
+                str = String(str).trim();
+                if (/[",\n\r]/.test(str)) return '"' + str.replace(/"/g, '""') + '"';
+                return str;
+            }
 
-                    const element = stockTableWrapper;
-                    const opt = {
-                        margin: 1,
-                        filename: 'stock-ledger.pdf',
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2 },
-                        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-                    };
-
-                    html2pdf().set(opt).from(element).save();
+            if (exportStockExcelBtn && stockTable) {
+                exportStockExcelBtn.addEventListener('click', function() {
+                    var rows = [];
+                    var thead = stockTable.querySelector('thead tr');
+                    var tbody = stockTable.querySelector('tbody');
+                    if (thead) {
+                        var headerCells = thead.querySelectorAll('th');
+                        var headerRow = [].map.call(headerCells, function(th) { return escapeCsvCell(th.textContent); }).join(',');
+                        rows.push(headerRow);
+                    }
+                    if (tbody) {
+                        var dataRows = tbody.querySelectorAll('tr:not(.stock-empty)');
+                        dataRows.forEach(function(tr) {
+                            var cells = tr.querySelectorAll('td');
+                            if (cells.length) {
+                                var row = [].map.call(cells, function(td) {
+                                    var text = td.textContent || '';
+                                    var badge = td.querySelector('.badge');
+                                    if (badge) text = badge.textContent || text;
+                                    return escapeCsvCell(text);
+                                }).join(',');
+                                rows.push(row);
+                            }
+                        });
+                    }
+                    if (rows.length === 0) {
+                        if (typeof Swal !== 'undefined') Swal.fire({ icon: 'info', title: 'No data', text: 'No stock receipts to export.' });
+                        else alert('No stock receipts to export.');
+                        return;
+                    }
+                    var csv = '\uFEFF' + rows.join('\r\n');
+                    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    var link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'stock-receipts-ledger-' + new Date().toISOString().slice(0, 10) + '.csv';
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                    if (typeof Swal !== 'undefined') Swal.fire({ icon: 'success', title: 'Done', text: 'Excel file downloaded.', timer: 2000, showConfirmButton: false });
                 });
             }
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const successMessage = @json(session('success'));
-            const errorMessage = @json(session('error'));
 
-            const canUseSwal = typeof Swal !== 'undefined';
-
-            if (successMessage) {
-                if (canUseSwal) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: successMessage,
-                        confirmButtonText: 'OK'
-                    });
-                } else {
-                    console.info('Success:', successMessage);
-                }
+            function loadPdfLibrary(callback) {
+                if (typeof html2pdf !== 'undefined') { callback(); return; }
+                if (window._stockPdfLoading) { window._stockPdfLoading.push(callback); return; }
+                window._stockPdfLoading = [callback];
+                var s = document.createElement('script');
+                s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                s.crossOrigin = 'anonymous';
+                s.onload = function() { (window._stockPdfLoading || []).forEach(function(cb) { cb(); }); window._stockPdfLoading = null; };
+                s.onerror = function() {
+                    window._stockPdfLoading = null;
+                    if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Export failed', text: 'Could not load PDF library. Try Export Excel instead.' });
+                    else alert('Could not load PDF library. Try Export Excel instead.');
+                };
+                document.head.appendChild(s);
             }
 
-            if (errorMessage) {
-                if (canUseSwal) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: errorMessage,
-                        confirmButtonText: 'Try Again'
+            if (exportStockPdfBtn && stockTableWrapper) {
+                exportStockPdfBtn.addEventListener('click', function() {
+                    var btn = this;
+                    var originalHtml = btn.innerHTML;
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="me-1">Loading...</span><i class="ri-loader-4-line ri-spin"></i>';
+
+                    loadPdfLibrary(function() {
+                        btn.innerHTML = '<span class="me-1">Exporting...</span><i class="ri-loader-4-line ri-spin"></i>';
+                        var opt = {
+                            margin: [0.5, 0.5, 0.5, 0.5],
+                            filename: 'stock-receipts-ledger-' + new Date().toISOString().slice(0, 10) + '.pdf',
+                            image: { type: 'jpeg', quality: 0.98 },
+                            html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: stockTableWrapper.scrollWidth, windowHeight: stockTableWrapper.scrollHeight },
+                            jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' },
+                            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                        };
+                        var clone = stockTableWrapper.cloneNode(true);
+                        clone.style.overflow = 'visible';
+                        clone.style.width = stockTableWrapper.offsetWidth + 'px';
+                        clone.style.position = 'absolute';
+                        clone.style.left = '-9999px';
+                        clone.style.top = '0';
+                        document.body.appendChild(clone);
+                        html2pdf().set(opt).from(clone).save()
+                            .then(function() {
+                                if (clone.parentNode) document.body.removeChild(clone);
+                                btn.disabled = false;
+                                btn.innerHTML = originalHtml;
+                                if (typeof Swal !== 'undefined') Swal.fire({ icon: 'success', title: 'Done', text: 'PDF downloaded successfully.', timer: 2000, showConfirmButton: false });
+                            })
+                            .catch(function(err) {
+                                if (clone.parentNode) document.body.removeChild(clone);
+                                btn.disabled = false;
+                                btn.innerHTML = originalHtml;
+                                if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Export failed', text: (err && err.message) || 'Could not generate PDF. Try Export Excel.' });
+                                else alert('Could not generate PDF. Try Export Excel.');
+                            });
                     });
-                } else {
-                    console.error('Error:', errorMessage);
-                }
+                });
             }
+
+            var successMessage = @json(session('success'));
+            var errorMessage = @json(session('error'));
+            var canUseSwal = typeof Swal !== 'undefined';
+            if (successMessage) { if (canUseSwal) Swal.fire({ icon: 'success', title: 'Success!', text: successMessage, confirmButtonText: 'OK' }); else console.info('Success:', successMessage); }
+            if (errorMessage) { if (canUseSwal) Swal.fire({ icon: 'error', title: 'Oops...', text: errorMessage, confirmButtonText: 'Try Again' }); else console.error('Error:', errorMessage); }
         });
     </script>
 @endpush

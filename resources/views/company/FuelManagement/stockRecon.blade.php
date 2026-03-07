@@ -575,7 +575,20 @@
                     </div>
                     <div class="recon-card__station">
                         <span class="recon-card__station-label">Station</span>
-                        <span class="recon-card__station-name">{{ $stationName ?? 'Your Station' }}</span>
+                                @if(!empty($isManagerRestricted) && !empty($stationId))
+                                    <span class="recon-card__station-name">{{ $stationName ?? 'Your Station' }}</span>
+                                @else
+                                    <form method="GET" action="{{ route('company.fuel.reconciliations.index') }}" class="recon-card__station-form">
+                                        <select name="station_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                                            <option value="">{{ __('All Stations') }}</option>
+                                            @foreach(($stations ?? collect()) as $station)
+                                                <option value="{{ $station->id }}" @selected(($stationId ?? null) == $station->id)>
+                                                    {{ $station->name }} ({{ $station->code }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </form>
+                                @endif
                     </div>
                 </div>
 
@@ -586,7 +599,9 @@
                         </div>
                         <div class="recon-summary__content">
                             <div class="recon-summary__label">Opening Stock</div>
-                            <div class="recon-summary__value" data-role="summary-opening-value">0.00 L</div>
+                            <div class="recon-summary__value" data-role="summary-opening-value">
+                                {{ number_format($summaryOpening ?? 0, 2) }} L
+                            </div>
                             <div class="recon-summary__meta">Beginning balance for the selected date</div>
                         </div>
                     </div>
@@ -596,7 +611,9 @@
                         </div>
                         <div class="recon-summary__content">
                             <div class="recon-summary__label">Sales</div>
-                            <div class="recon-summary__value" data-role="summary-sales-value">0.00 L</div>
+                            <div class="recon-summary__value" data-role="summary-sales-value">
+                                {{ number_format($summarySales ?? 0, 2) }} L
+                            </div>
                             <div class="recon-summary__meta">Total pump sales captured</div>
                         </div>
                     </div>
@@ -606,7 +623,9 @@
                         </div>
                         <div class="recon-summary__content">
                             <div class="recon-summary__label">Variance</div>
-                            <div class="recon-summary__value" data-role="summary-variance-value">0.00 L</div>
+                            <div class="recon-summary__value" data-role="summary-variance-value">
+                                {{ number_format($summaryVariance ?? 0, 2) }} L
+                            </div>
                             <div class="recon-summary__meta">Difference between expected and dipped</div>
                         </div>
                     </div>
@@ -618,17 +637,17 @@
                         <p class="recon-section__caption">Fill in the tank movement details for the day</p>
                     </div>
 
-                    <form id="stockReconciliationForm" method="POST" action="#" autocomplete="off">
+                    <form id="stockReconciliationForm" method="POST" action="{{ route('company.fuel.reconciliations.store') }}" autocomplete="off">
                         @csrf
                         <div class="recon-form__grid">
                             <div>
                                 <label for="reconDate">Date</label>
-                                <input type="date" id="reconDate" name="reconDate" required>
+                                <input type="date" id="reconDate" name="recon_date" required>
                             </div>
                             <div>
                                 <label for="tankSelection">Tank</label>
-                                <select id="tankSelection" name="tankSelection" required>
-                                    <option value="" disabled selected>Select tank</option>
+                                <select id="tankSelection" name="tank" required>
+                                    <option value="" disabled @if(!old('tank')) selected @endif>Select tank</option>
                                     <option value="PMS Tank 1">PMS - Tank 1</option>
                                     <option value="PMS Tank 2">PMS - Tank 2</option>
                                     <option value="AGO Tank 1">AGO - Tank 1</option>
@@ -638,29 +657,29 @@
                             </div>
                             <div>
                                 <label for="closingStock">Closing Stock (L)</label>
-                                <input type="number" min="0" step="0.01" id="closingStock" name="closingStock" placeholder="0.00" required>
+                                <input type="number" min="0" step="0.01" id="closingStock" name="closing_stock" placeholder="0.00" required>
                                 <div class="recon-form__helper">Stock from previous day</div>
                             </div>
                             <div>
                                 <label for="openingStock">Opening Stock (L)</label>
-                                <input type="number" min="0" step="0.01" id="openingStock" name="openingStock" placeholder="0.00" required>
+                                <input type="number" min="0" step="0.01" id="openingStock" name="opening_stock" placeholder="0.00" required>
                             </div>
                             <div>
                                 <label for="addStock">Add Stock (L)</label>
-                                <input type="number" min="0" step="0.01" id="addStock" name="addStock" placeholder="0.00" required>
+                                <input type="number" min="0" step="0.01" id="addStock" name="add_stock" placeholder="0.00" required>
                             </div>
                             <div>
                                 <label for="totalStock">Total Stock (L)</label>
-                                <input id="totalStock" name="totalStock">
+                                <input id="totalStock" name="total_stock" readonly>
                                 <div class="recon-form__helper">Auto-calculated: Opening Stock + Add Stock</div>
                             </div>
                             <div>
                                 <label for="salesVolume">Sales (L)</label>
-                                <input type="number" min="0" step="0.01" id="salesVolume" name="salesVolume" placeholder="0.00" required>
+                                <input type="number" min="0" step="0.01" id="salesVolume" name="sales_volume" placeholder="0.00" required>
                             </div>
                             <div>
                                 <label for="dippingReading">Dipping (mm)</label>
-                                <input type="number" min="0" step="0.01" id="dippingReading" name="dippingReading" placeholder="0.00" required>
+                                <input type="number" min="0" step="0.01" id="dippingReading" name="dipping_reading" placeholder="0.00" required>
                             </div>
                             <div>
                                 <label for="variance">Variance (L)</label>
@@ -671,7 +690,7 @@
 
                         <div>
                             <label for="reconNotes">Notes / Observation</label>
-                            <textarea id="reconNotes" name="reconNotes" placeholder="Optional remarks for audit trail"></textarea>
+                            <textarea id="reconNotes" name="notes" placeholder="Optional remarks for audit trail"></textarea>
                         </div>
 
                         <div class="recon-form__actions">
@@ -743,22 +762,29 @@
                                 </tr>
                             </thead>
                             <tbody data-role="recon-tbody">
-                                <tr data-seed-record data-record data-date="2024-11-08" data-tank="PMS Tank 1" data-notes="Balanced with dip reading">
-                                    <td>1</td>
-                                    <td>08-11-2024</td>
-                                    <td>PMS - Tank 1</td>
-                                    <td>14,800.00 L</td>
-                                    <td>3,500.00 L</td>
-                                    <td>18,300.00 L</td>
-                                    <td>4,120.00 L</td>
-                                    <td>14,180.00 L</td>
-                                    <td>1,118 mm</td>
-                                    <td>0.00 L</td>
-                                    <td>Balanced with dip reading</td>
-                                </tr>
-                                <tr data-empty-state>
-                                    <td colspan="10" class="recon-empty">No reconciliation records captured yet.</td>
-                                </tr>
+                                @forelse(($reconciliations ?? collect()) as $index => $recon)
+                                    <tr
+                                        data-record
+                                        data-date="{{ optional($recon->recon_date)->toDateString() }}"
+                                        data-tank="{{ $recon->tank }}"
+                                        data-notes="{{ $recon->notes }}">
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ optional($recon->recon_date)->format('d-m-Y') }}</td>
+                                        <td>{{ $recon->tank }}</td>
+                                        <td>{{ number_format($recon->opening_stock, 2) }} L</td>
+                                        <td>{{ number_format($recon->add_stock, 2) }} L</td>
+                                        <td>{{ number_format($recon->total_stock, 2) }} L</td>
+                                        <td>{{ number_format($recon->sales_volume, 2) }} L</td>
+                                        <td>{{ number_format($recon->closing_stock, 2) }} L</td>
+                                        <td>{{ number_format($recon->dipping_reading, 2) }} mm</td>
+                                        <td>{{ number_format($recon->variance, 2) }} L</td>
+                                        <td>{{ $recon->notes }}</td>
+                                    </tr>
+                                @empty
+                                    <tr data-empty-state>
+                                        <td colspan="11" class="recon-empty">No reconciliation records captured yet.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -839,7 +865,8 @@
     </div>
 @endsection
 
-@push('scripts')
+@push('javascript')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const body = document.body;
@@ -858,7 +885,7 @@
             const pdfCustomRangeFields = document.querySelectorAll('[data-role="pdf-custom-range"]');
             const stockForm = document.getElementById('stockReconciliationForm');
             const openingStockInput = document.getElementById('openingStock');
-            const addedStockInput = document.getElementById('addedStock');
+            const addedStockInput = document.getElementById('addStock');
             const totalStockInput = document.getElementById('totalStock');
 
             const togglePdfCustomRange = () => {
@@ -1041,6 +1068,37 @@
             }
 
             applyLedgerFilters();
+
+            // SweetAlert flash messages
+            var successMessage = @json(session('success'));
+            var errorMessage = @json(session('error'));
+            var canUseSwal = typeof Swal !== 'undefined';
+
+            if (successMessage) {
+                if (canUseSwal) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: successMessage,
+                        confirmButtonText: 'OK',
+                    });
+                } else {
+                    console.info('Success:', successMessage);
+                }
+            }
+
+            if (errorMessage) {
+                if (canUseSwal) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: errorMessage,
+                        confirmButtonText: 'Try Again',
+                    });
+                } else {
+                    console.error('Error:', errorMessage);
+                }
+            }
         });
     </script>
 @endpush

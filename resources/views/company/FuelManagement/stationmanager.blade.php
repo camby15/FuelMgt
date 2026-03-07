@@ -1005,8 +1005,8 @@
                     <div class="manager-modal__body">
                         <div class="manager-form-grid">
                             <div class="manager-form-group">
-                                <label for="manager-avatar">Thumbnail Image *</label>
-                                <input class="manager-input" type="file" id="manager-avatar" name="avatar" accept="image/*" required>
+                                <label for="manager-avatar">Thumbnail Image <span style="font-weight:400;color:rgba(7,28,63,0.5);">(optional)</span></label>
+                                <input class="manager-input" type="file" id="manager-avatar" name="avatar" accept="image/*">
                             </div>
 
                             <div class="manager-form-group">

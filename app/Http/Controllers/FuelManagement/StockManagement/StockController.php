@@ -14,6 +14,7 @@ class StockController extends Controller
 {
     public function index(Request $request): View|RedirectResponse
     {
+        Log::info('StockController@index START');
         try {
             $isCompanySubUser = Auth::guard('company_sub_user')->check();
             $isDefaultAuth = Auth::check();
@@ -23,33 +24,36 @@ class StockController extends Controller
                 return redirect()->route('auth.login')->with('error', 'Please login to continue');
             }
 
-            $companyId = Session::get('selected_company_id');
-
-            if (!$companyId) {
-                if ($isCompanySubUser) {
-                    $subUser = Auth::guard('company_sub_user')->user();
-                    $companyId = $subUser->company_id;
-                    Session::put('selected_company_id', $companyId);
-                } elseif ($isSubUser) {
-                    $subUser = Auth::guard('sub_user')->user();
-                    $companyId = $subUser->company_id;
-                    Session::put('selected_company_id', $companyId);
-                } elseif ($isDefaultAuth) {
-                    $user = Auth::user();
-                    if ($user->companyProfile) {
-                        $companyId = $user->companyProfile->id ?? $user->id;
-                    } else {
-                        $companyId = $user->id;
-                    }
-                    Session::put('selected_company_id', $companyId);
-                }
-            }
+            $companyId = $this->resolveCompanyId();
 
             if (!$companyId) {
                 return redirect()->route('auth.login')->with('error', 'Unable to determine company context');
             }
 
             $stationId = $request->input('station_id');
+            $isManagerRestricted = false;
+            $managerStationId = null;
+            $managerStationName = null;
+
+            // When a station manager (company sub user with assigned station) logs in, restrict to their station only
+            if ($isCompanySubUser) {
+                $subUser = Auth::guard('company_sub_user')->user();
+                if ($subUser && $subUser->fuel_station_id) {
+                    $managerStationId = (int) $subUser->fuel_station_id;
+                    $stationId = $managerStationId;
+                    $isManagerRestricted = true;
+                    $managerStation = FuelStation::forCompany($companyId)->find($managerStationId);
+                    $managerStationName = $managerStation ? $managerStation->name : null;
+                }
+            }
+
+            Log::info('StockController@index debug', [
+                'companyId' => $companyId,
+                'stationId' => $stationId,
+                'isManagerRestricted' => $isManagerRestricted,
+                'session_id' => session()->getId(),
+                'url' => $request->fullUrl(),
+            ]);
 
             $stocksQuery = Stock::with(['station'])
                 ->forCompany($companyId)
@@ -61,11 +65,22 @@ class StockController extends Controller
 
             $stocks = $stocksQuery->get();
 
-            $stations = FuelStation::forCompany($companyId)
+            Log::info('StockController@index stocks query result', [
+                'count' => $stocks->count(),
+                'sql' => $stocksQuery->toSql(),
+                'bindings' => $stocksQuery->getBindings(),
+            ]);
+
+            $stationsQuery = FuelStation::forCompany($companyId)
                 ->with(['activeManager'])
                 ->select('id', 'name', 'code', 'location')
-                ->orderBy('name')
-                ->get();
+                ->orderBy('name');
+
+            if ($isManagerRestricted && $managerStationId) {
+                $stationsQuery->where('id', $managerStationId);
+            }
+
+            $stations = $stationsQuery->get();
 
             $agoBalance = Stock::forCompany($companyId)
                 ->forStation($stationId)
@@ -86,6 +101,9 @@ class StockController extends Controller
                 'agoBalance' => $agoBalance ? $agoBalance->running_balance : 0,
                 'pmsBalance' => $pmsBalance ? $pmsBalance->running_balance : 0,
                 'companyId' => $companyId,
+                'isManagerRestricted' => $isManagerRestricted,
+                'managerStationId' => $managerStationId,
+                'managerStationName' => $managerStationName,
             ]);
         } catch (\Exception $e) {
             Log::error('StockController@index failed', [
@@ -111,6 +129,16 @@ class StockController extends Controller
                 return redirect()->route('auth.login')->with('error', 'Company session expired. Please login again.');
             }
 
+            $stationIdRule = ['required', 'integer', 'exists:fuel_stations,id'];
+            $managerStationId = null;
+            if (Auth::guard('company_sub_user')->check()) {
+                $subUser = Auth::guard('company_sub_user')->user();
+                if ($subUser && $subUser->fuel_station_id) {
+                    $managerStationId = (int) $subUser->fuel_station_id;
+                    $stationIdRule[] = 'in:' . $managerStationId;
+                }
+            }
+
             $validated = $request->validate([
                 'delivery_date' => ['required', 'date'],
                 'brv_number' => ['required', 'string', 'max:100'],
@@ -120,9 +148,13 @@ class StockController extends Controller
                 'product_type' => ['required', 'in:AGO,PMS'],
                 'dispatched_quantity' => ['required', 'numeric', 'min:0'],
                 'received_quantity' => ['required', 'numeric', 'min:0'],
-                'station_id' => ['required', 'integer', 'exists:fuel_stations,id'],
+                'station_id' => $stationIdRule,
                 'inspected_by' => ['required', 'string', 'max:255'],
             ]);
+
+            if ($managerStationId !== null) {
+                $validated['station_id'] = $managerStationId;
+            }
 
             DB::beginTransaction();
 
