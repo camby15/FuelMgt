@@ -38,6 +38,7 @@ use App\Http\Controllers\FuelManagement\RosterController;
 use App\Http\Controllers\FuelManagement\StockManagement\StockController;
 use App\Http\Controllers\FuelManagement\StockManagement\DispatchController;
 use App\Http\Controllers\FuelManagement\StockManagement\ReconciliationController;
+use App\Http\Controllers\FuelManagement\StationManagement\StationMapController;
 
 use App\Http\Controllers\LoyaltyProgramController;
 use App\Http\Controllers\CustomerTierController;
@@ -949,6 +950,7 @@ Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.sessi
 // Fuel Management Routes
 Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.session'])->name('company.')->group(function () {
     Route::prefix('fuel-management')->name('fuel.')->group(function () {
+        Route::get('station-map', [StationMapController::class, 'index'])->name('station-map.index');
         Route::resource('stations', FuelStationController::class)->except(['create', 'edit']);
         Route::get('station-managers/stations', [StationManagerController::class, 'stations'])
             ->name('station-managers.stations');

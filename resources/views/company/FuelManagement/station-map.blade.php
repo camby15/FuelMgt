@@ -511,19 +511,8 @@
 
 @section('content')
     @php
-        $stations = [
-            ['name' => 'Wiaga', 'code' => 'ST-001', 'location' => 'Builsa North, Upper East', 'address' => 'Station Road, Wiaga Township', 'manager' => 'Abena Kwakye', 'phone' => '+233 20 111 2233', 'lat' => 10.7827, 'lng' => -0.8622],
-            ['name' => 'Pwalugu', 'code' => 'ST-002', 'location' => 'Talensi, Upper East', 'address' => 'Bolga–Tamale Hwy, Pwalugu Junction', 'manager' => 'Isaac Ndebugri', 'phone' => '+233 24 555 6677', 'lat' => 10.6841, 'lng' => -0.9245],
-            ['name' => 'Navrongo Main', 'code' => 'ST-003', 'location' => 'Kassena-Nankana, Upper East', 'address' => 'Central Market Ring Road, Navrongo', 'manager' => 'Helen Bawa', 'phone' => '+233 50 998 4411', 'lat' => 10.8965, 'lng' => -0.8937],
-            ['name' => 'Wapuli', 'code' => 'ST-004', 'location' => 'Saboba, Northern Region', 'address' => 'Opp. Wapuli Transport Yard, Tamale-Bimbilla Rd', 'manager' => 'Samuel Tia', 'phone' => '+233 27 803 5566', 'lat' => 9.8456, 'lng' => -0.1234],
-            ['name' => 'Kintampo', 'code' => 'ST-005', 'location' => 'Kintampo North, Bono East', 'address' => 'Techiman-Kintampo Hwy, Kintampo Rest Stop', 'manager' => 'Anita Jabari', 'phone' => '+233 26 123 8899', 'lat' => 8.0456, 'lng' => -1.7234],
-            ['name' => 'Amoako', 'code' => 'ST-006', 'location' => 'East Mamprusi, North East', 'address' => 'Amoako Lorry Park, Nalerigu Rd', 'manager' => 'Daniel Esubonteng', 'phone' => '+233 24 330 7711', 'lat' => 10.3456, 'lng' => -0.5234],
-            ['name' => 'Larabanga', 'code' => 'ST-007', 'location' => 'West Gonja, Savannah', 'address' => 'Larabanga Junction, Mole Park Access Rd', 'manager' => 'Rahim Sulemana', 'phone' => '+233 20 700 4410', 'lat' => 9.2234, 'lng' => -2.1234],
-            ['name' => 'Bugubele', 'code' => 'ST-008', 'location' => 'Builsa South, Upper East', 'address' => 'Bugubele Community Centre Street', 'manager' => 'Mabel Akosua', 'phone' => '+233 27 556 9981', 'lat' => 10.6234, 'lng' => -0.7234],
-            ['name' => 'Navrongo 2', 'code' => 'ST-009', 'location' => 'Kassena-Nankana, Upper East', 'address' => 'Navrongo-Airstrip Road, Estate Area', 'manager' => 'Isaac Bangnab', 'phone' => '+233 55 881 7744', 'lat' => 10.9065, 'lng' => -0.9037],
-            ['name' => 'Paga Annex', 'code' => 'ST-010', 'location' => 'Kassena-Nankana West, Upper East', 'address' => 'Border Market Lane, Paga', 'manager' => 'Lydia Obeng', 'phone' => '+233 24 990 6623', 'lat' => 10.9876, 'lng' => -1.0234],
-            ['name' => 'Bamvin', 'code' => 'ST-011', 'location' => 'Sawla-Tuna-Kalba, Savannah', 'address' => 'Bamvin High Street, Opp. Community Clinic', 'manager' => 'Jonah Laar', 'phone' => '+233 20 332 1144', 'lat' => 9.4567, 'lng' => -2.3456],
-        ];
+        $stations = $stations ?? collect();
+        $allStations = $allStations ?? $stations;
     @endphp
 
     <div class="station-map-board" data-station-map-board>
@@ -533,8 +522,8 @@
                 <span>Fuel Stations · Coverage Overview</span>
             </div>
             <div class="station-map__meta">
-                <span class="station-map__meta-chip">Total Stations: {{ count($stations) }}</span>
-                <span class="station-map__meta-chip">Last Sync: {{ now()->format('M d, Y · h:i A') }}</span>
+                <span class="station-map__meta-chip">Total Stations: {{ $allStations instanceof \Illuminate\Support\Collection ? $allStations->count() : count($allStations) }}</span>
+                <span class="station-map__meta-chip">Last Sync: {{ ($lastSyncedAt ?? now())->format('M d, Y · h:i A') }}</span>
             </div>
         </div>
 
@@ -617,21 +606,22 @@
             <div class="station-modal__body">
                 <p class="station-modal__description">Browse every location and jump straight into detailed views.</p>
                 <div class="station-directory-list">
-                    @foreach ($stations as $station)
+                    @foreach ($allStations as $station)
                         <article class="station-directory-card">
-                            <h4>{{ $station['name'] }}</h4>
-                            <span>{{ $station['location'] }}</span>
+                            <h4>{{ $station->name }}</h4>
+                            <span>{{ $station->location }}</span>
                             <div class="station-directory-meta">
-                                <div class="chip">{{ $station['code'] }}</div>
-                                <div class="chip">Mgr: {{ $station['manager'] }}</div>
+                                <div class="chip">{{ $station->code }}</div>
+                                <div class="chip">Mgr: {{ optional($station->activeManager)->full_name ?? 'Unassigned' }}</div>
                             </div>
                             <div class="station-directory-meta">
-                                <div class="chip">{{ $station['phone'] }}</div>
+                                <div class="chip">{{ optional($station->activeManager)->phone ?? '—' }}</div>
                             </div>
                             <button
                                 type="button"
-                                class="station-popup__btn is-primary"
-                                data-directory-view="{{ $loop->index }}"
+                                class="station-popup__btn is-primary {{ $station->latitude && $station->longitude ? '' : 'disabled' }}"
+                                data-directory-view="{{ $station->id }}"
+                                {{ $station->latitude && $station->longitude ? '' : 'disabled title="No GPS coordinates available"' }}
                             >
                                 Focus &amp; View
                             </button>
@@ -734,6 +724,7 @@
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             }).addTo(map);
 
+            const markersById = {};
             const markers = stations.map((station) => {
                 const marker = L.circleMarker([station.lat, station.lng], {
                     radius: 10,
@@ -757,7 +748,12 @@
                 marker.addTo(map);
                 bounds.push([station.lat, station.lng]);
 
-                return { marker, station };
+                const entry = { marker, station };
+                if (station.id) {
+                    markersById[station.id] = entry;
+                }
+
+                return entry;
             });
 
             if (bounds.length) {
@@ -800,8 +796,8 @@
             const directoryButtons = document.querySelectorAll('[data-directory-view]');
             directoryButtons.forEach((button) => {
                 button.addEventListener('click', () => {
-                    const targetIndex = Number(button.getAttribute('data-directory-view'));
-                    const entry = markers[targetIndex];
+                    const targetId = Number(button.getAttribute('data-directory-view'));
+                    const entry = markersById[targetId];
 
                     if (!entry) {
                         return;

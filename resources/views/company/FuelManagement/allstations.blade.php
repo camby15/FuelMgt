@@ -746,6 +746,7 @@
                                                 class="station-action-btn is-secondary"
                                                 type="button"
                                                 data-open-modal="station-view"
+                                                data-station-id="{{ $station->id }}"
                                                 data-station-name="{{ e($station->name) }}"
                                                 data-station-code="{{ e($station->code) }}"
                                                 data-station-product="{{ e($primaryStationProduct) }}"
@@ -828,7 +829,13 @@
 
                             <div class="station-form-group">
                                 <label for="station-gps">GPS Coordinates</label>
-                                <input type="text" id="station-gps" name="gps_coordinates" class="station-input" placeholder="e.g., 10.7827, -0.8622" value="{{ old('gps_coordinates') }}" />
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="station-gps" name="gps_coordinates" class="station-input" placeholder="e.g., 10.7827, -0.8622" value="{{ old('gps_coordinates') }}" readonly />
+                                    <button type="button" id="get-gps-btn" class="station-action-btn is-secondary" style="white-space: nowrap; padding: 0.75rem 1rem;" title="Get GPS from Address">
+                                        📍 Get GPS
+                                    </button>
+                                </div>
+                                <small class="station-field-hint">Click "Get GPS" to auto-fill coordinates from the address above.</small>
                             </div>
 
                             <div class="station-form-group">
@@ -899,7 +906,72 @@
                 </div>
                 <div class="station-modal__footer">
                     <button type="button" class="station-modal__cancel" data-close-modal>Close</button>
+                    <button type="button" class="station-modal__submit" id="edit-station-btn">Edit</button>
                 </div>
+            </div>
+        </div>
+
+        {{-- Edit Station Modal --}}
+        <div class="station-modal-backdrop" data-modal="station-edit">
+            <div class="station-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title-edit">
+                <div class="station-modal__header">
+                    <h3 id="modal-title-edit">Edit Station</h3>
+                    <button class="station-modal__close" type="button" data-close-modal aria-label="Close modal">
+                        ×
+                    </button>
+                </div>
+                <form action="" method="POST" id="edit-station-form">
+                    @csrf
+                    @method('PUT')
+                    <div class="station-modal__body">
+                        <div class="station-form-grid">
+                            <div class="station-form-group">
+                                <label for="edit-station-name">Station Name *</label>
+                                <input type="text" id="edit-station-name" name="name" class="station-input" placeholder="Enter station name" required />
+                            </div>
+
+                            <div class="station-form-group">
+                                <label for="edit-station-code">Station Code *</label>
+                                <input type="text" id="edit-station-code" name="code" class="station-input" placeholder="ST-XXX" required />
+                            </div>
+
+                            <div class="station-form-group">
+                                <label for="edit-station-products">Products Offered *</label>
+                                <select id="edit-station-products" name="products[]" class="station-select" multiple required size="2">
+                                    <option value="AGO">AGO (Diesel)</option>
+                                    <option value="PMS">PMS (Petrol)</option>
+                                </select>
+                                <small class="station-field-hint">Hold Cmd (⌘) / Ctrl to select more than one product.</small>
+                            </div>
+
+                            <div class="station-form-group">
+                                <label for="edit-station-location">Location *</label>
+                                <input type="text" id="edit-station-location" name="location" class="station-input" placeholder="District, Region" required />
+                            </div>
+
+                            <div class="station-form-group">
+                                <label for="edit-station-gps">GPS Coordinates</label>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="edit-station-gps" name="gps_coordinates" class="station-input" placeholder="e.g., 10.7827, -0.8622" readonly />
+                                    <button type="button" id="edit-get-gps-btn" class="station-action-btn is-secondary" style="white-space: nowrap; padding: 0.75rem 1rem;" title="Get GPS from Address">
+                                        📍 Get GPS
+                                    </button>
+                                </div>
+                                <small class="station-field-hint">Click "Get GPS" to auto-fill coordinates from the address above.</small>
+                            </div>
+
+                            <div class="station-form-group">
+                                <label for="edit-station-address">Full Address *</label>
+                                <textarea id="edit-station-address" name="address" class="station-textarea" placeholder="Enter complete station address" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="station-modal__footer">
+                        <button type="button" class="station-modal__cancel" data-close-modal>Cancel</button>
+                        <button type="submit" class="station-modal__submit">Save Changes</button>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -1131,6 +1203,153 @@
                     toggleModal(parentModal.dataset.modal, false);
                 });
             });
+
+            // GPS Coordinates from Address functionality
+            const getGpsBtn = document.getElementById('get-gps-btn');
+            const addressInput = document.getElementById('station-address');
+            const gpsInput = document.getElementById('station-gps');
+
+            const editGetGpsBtn = document.getElementById('edit-get-gps-btn');
+            const editAddressInput = document.getElementById('edit-station-address');
+            const editGpsInput = document.getElementById('edit-station-gps');
+
+            const fetchGpsCoordinates = async (btn, addressField, gpsField) => {
+                const address = addressField.value.trim();
+                if (!address) {
+                    if (canUseSwal) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Address Required',
+                            text: 'Please enter an address first.',
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        alert('Please enter an address first.');
+                    }
+                    addressField.focus();
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.textContent = 'Loading...';
+
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`, {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data && data.length > 0) {
+                        const { lat, lon } = data[0];
+                        gpsField.value = `${lat}, ${lon}`;
+
+                        if (canUseSwal) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'GPS Coordinates Found!',
+                                text: `Latitude: ${lat}, Longitude: ${lon}`,
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            console.log('GPS Coordinates:', lat, lon);
+                        }
+                    } else {
+                        if (canUseSwal) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Not Found',
+                                text: 'Could not find GPS coordinates for the given address. Please try with a more specific address.',
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            alert('Could not find GPS coordinates for the given address. Please try with a more specific address.');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Geocoding error:', error);
+                    if (canUseSwal) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to get GPS coordinates. Please check your internet connection and try again.',
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        alert('Failed to get GPS coordinates. Please check your internet connection and try again.');
+                    }
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = '📍 Get GPS';
+                }
+            };
+
+            if (getGpsBtn && addressInput && gpsInput) {
+                getGpsBtn.addEventListener('click', () => fetchGpsCoordinates(getGpsBtn, addressInput, gpsInput));
+            }
+
+            if (editGetGpsBtn && editAddressInput && editGpsInput) {
+                editGetGpsBtn.addEventListener('click', () => fetchGpsCoordinates(editGetGpsBtn, editAddressInput, editGpsInput));
+            }
+
+            // Edit Station functionality
+            const editStationBtn = document.getElementById('edit-station-btn');
+            const editStationForm = document.getElementById('edit-station-form');
+
+            if (editStationBtn) {
+                editStationBtn.addEventListener('click', () => {
+                    const viewModal = modalRegistry.get('station-view');
+                    if (!viewModal) return;
+
+                    // Get station data from view modal
+                    const stationName = viewModal.querySelector('[data-modal-field="name"]')?.textContent || '';
+                    const stationCode = viewModal.querySelector('[data-modal-field="code"]')?.textContent || '';
+                    const stationProducts = viewModal.querySelector('[data-modal-field="products"]')?.textContent || '';
+                    const stationLocation = viewModal.querySelector('[data-modal-field="location"]')?.textContent || '';
+                    const stationGps = viewModal.querySelector('[data-modal-field="gps_coordinates"]')?.textContent || '';
+                    const stationAddress = viewModal.querySelector('[data-modal-field="address"]')?.textContent || '';
+
+                    // Get the station ID from the row data (stored in a data attribute)
+                    const stationId = editStationBtn.dataset.stationId;
+
+                    if (!stationId) {
+                        console.error('Station ID not found');
+                        return;
+                    }
+
+                    // Set the form action
+                    const updateUrl = `/company/fuel-management/stations/${stationId}`;
+                    editStationForm.setAttribute('action', updateUrl);
+
+                    // Populate edit form fields
+                    const editNameInput = document.getElementById('edit-station-name');
+                    const editCodeInput = document.getElementById('edit-station-code');
+                    const editProductsSelect = document.getElementById('edit-station-products');
+                    const editLocationInput = document.getElementById('edit-station-location');
+                    const editGpsInputField = document.getElementById('edit-station-gps');
+                    const editAddressInputField = document.getElementById('edit-station-address');
+
+                    if (editNameInput) editNameInput.value = stationName;
+                    if (editCodeInput) editCodeInput.value = stationCode;
+                    if (editLocationInput) editLocationInput.value = stationLocation;
+                    if (editGpsInputField) editGpsInputField.value = stationGps;
+                    if (editAddressInputField) editAddressInputField.value = stationAddress;
+
+                    // Handle products selection
+                    if (editProductsSelect) {
+                        const productsArray = stationProducts.split('/').map(p => p.trim()).filter(p => p);
+                        [...editProductsSelect.options].forEach(option => {
+                            option.selected = productsArray.includes(option.value);
+                        });
+                    }
+
+                    // Close view modal and open edit modal
+                    toggleModal('station-view', false);
+                    toggleModal('station-edit', true);
+                });
+            }
         });
     </script>
 @endpush

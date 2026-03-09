@@ -367,7 +367,7 @@
                         @endif
                         @if($hasMenuAccess('station_map'))
                         <li>
-                            <a href="{{ route('any', 'company/FuelManagement/station-map') }}">
+                            <a href="{{ route('company.fuel.station-map.index') }}">
                                 <i class="ri-map-pin-line"></i>
                                 <span>Map</span>
                             </a>
