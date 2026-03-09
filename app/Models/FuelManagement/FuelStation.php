@@ -37,6 +37,11 @@ class FuelStation extends Model
         'products' => 'array',
     ];
 
+    protected $appends = [
+        'latitude',
+        'longitude',
+    ];
+
     public function company()
     {
         return $this->belongsTo(CompanyProfile::class, 'company_id');
@@ -67,5 +72,35 @@ class FuelStation extends Model
     public function scopeForCompany(Builder $query, ?int $companyId): Builder
     {
         return $companyId ? $query->where('fuel_stations.company_id', $companyId) : $query;
+    }
+
+    public function getLatitudeAttribute(): ?float
+    {
+        if (!$this->gps_coordinates) {
+            return null;
+        }
+
+        $parts = array_map('trim', explode(',', $this->gps_coordinates));
+
+        if (!isset($parts[0]) || !is_numeric($parts[0])) {
+            return null;
+        }
+
+        return (float) $parts[0];
+    }
+
+    public function getLongitudeAttribute(): ?float
+    {
+        if (!$this->gps_coordinates) {
+            return null;
+        }
+
+        $parts = array_map('trim', explode(',', $this->gps_coordinates));
+
+        if (!isset($parts[1]) || !is_numeric($parts[1])) {
+            return null;
+        }
+
+        return (float) $parts[1];
     }
 }
