@@ -38,6 +38,8 @@ use App\Http\Controllers\FuelManagement\RosterController;
 use App\Http\Controllers\FuelManagement\StockManagement\StockController;
 use App\Http\Controllers\FuelManagement\StockManagement\DispatchController;
 use App\Http\Controllers\FuelManagement\StockManagement\ReconciliationController;
+use App\Http\Controllers\FuelManagement\AccountDeposits\CompanyFuelAccountController;
+use App\Http\Controllers\FuelManagement\AccountDeposits\CompanyFuelBankDepositController;
 use App\Http\Controllers\FuelManagement\StationManagement\StationMapController;
 
 use App\Http\Controllers\LoyaltyProgramController;
@@ -961,6 +963,12 @@ Route::prefix('company')->middleware(['auth.company_or_sub_user', 'company.sessi
         Route::get('dispatches/{dispatch}/waybill', [DispatchController::class, 'waybill'])->name('dispatches.waybill');
         Route::resource('dispatches', DispatchController::class)->except(['create', 'edit']);
         Route::resource('reconciliations', ReconciliationController::class)->except(['create', 'edit', 'show']);
+        Route::resource('accounts', CompanyFuelAccountController::class)
+            ->only(['index', 'store', 'show'])
+            ->parameters(['accounts' => 'company_fuel_account']);
+        Route::resource('bank-deposits', CompanyFuelBankDepositController::class)
+            ->only(['index', 'store', 'show', 'destroy'])
+            ->parameters(['bank-deposits' => 'company_fuel_bank_deposit']);
 
         Route::post('rosters/auto-assign', [RosterController::class, 'autoAssign'])
             ->name('rosters.auto-assign');

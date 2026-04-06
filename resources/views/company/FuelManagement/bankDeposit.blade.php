@@ -3,26 +3,6 @@
     'mode' => session('theme_mode', 'light'),
 ])
 
-@php
-    $defaultStations = [
-        ['value' => 'Wiaga', 'label' => 'Wiaga'],
-        ['value' => 'Wapuli', 'label' => 'Wapuli'],
-        ['value' => 'Pwalugu', 'label' => 'Pwalugu'],
-        ['value' => 'Paga Annex', 'label' => 'Paga Annex'],
-        ['value' => 'Bamvin', 'label' => 'Bamvin'],
-        ['value' => 'Larabanga', 'label' => 'Larabanga'],
-        ['value' => 'Kintampo', 'label' => 'Kintampo'],
-        ['value' => 'Amoako', 'label' => 'Amoako'],
-        ['value' => 'Navrongo-2', 'label' => 'Navrongo-2'],
-        ['value' => 'Navrongo Main', 'label' => 'Navrongo Main'],
-        ['value' => 'Bugubele', 'label' => 'Bugubele'],
-    ];
-
-    if (! isset($sites) || empty($sites)) {
-        $sites = $defaultStations;
-    }
-@endphp
-
 @section('css')
     <style>
         .bank-deposits-page {
@@ -813,8 +793,8 @@
                 <div class="deposit-hero-aside">
                     <div class="deposit-hero-metric">
                         <span class="deposit-hero-metric__label">Today's Value</span>
-                        <span class="deposit-hero-metric__value">₵62,410.75</span>
-                        <span class="deposit-hero-metric__meta">Captured across 8 stations</span>
+                        <span class="deposit-hero-metric__value">₵{{ number_format((float) ($metrics['today_value'] ?? 0), 2) }}</span>
+                        <span class="deposit-hero-metric__meta">Captured across {{ number_format((int) ($metrics['today_stations'] ?? 0)) }} {{ \Illuminate\Support\Str::plural('station', (int) ($metrics['today_stations'] ?? 0)) }}</span>
                     </div>
                     <div class="deposit-actions">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createDepositModal">
@@ -837,15 +817,15 @@
                         <span class="deposit-metric-card__label">Deposits Captured</span>
                         <span class="deposit-metric-card__icon"><i class="ri-bank-line"></i></span>
                     </div>
-                    <span class="deposit-metric-card__value">24</span>
+                    <span class="deposit-metric-card__value">{{ number_format((int) ($metrics['deposits_captured_count'] ?? 0)) }}</span>
                     <div class="deposit-metric-card__meta">
                         <span class="deposit-metric-card__trend deposit-metric-card__trend--up">
-                            <i class="ri-arrow-up-line"></i>
-                            +3 vs yesterday
+                            <i class="ri-bank-line"></i>
+                            Today (transaction date)
                         </span>
-                        27 scheduled today
+                        Filtered list may differ
                     </div>
-                    <div class="deposit-metric-card__footer">Last sync 4 mins ago</div>
+                    <div class="deposit-metric-card__footer">Live from your ledger</div>
                 </div>
             </div>
             <div class="deposit-metric-card">
@@ -854,12 +834,12 @@
                         <span class="deposit-metric-card__label">Pending Proof Uploads</span>
                         <span class="deposit-metric-card__icon"><i class="ri-file-warning-line"></i></span>
                     </div>
-                    <span class="deposit-metric-card__value text-danger">3</span>
+                    <span class="deposit-metric-card__value text-danger">{{ number_format((int) ($metrics['pending_proof_count'] ?? 0)) }}</span>
                     <div class="deposit-metric-card__meta">
-                        <i class="ri-mail-unread-line text-warning"></i>
-                        Navrongo-2, Paga Annex, Wiaga
+                        <i class="ri-file-warning-line text-warning"></i>
+                        Deposits without an uploaded proof file
                     </div>
-                    <div class="deposit-metric-card__footer">Escalate if > 30 mins</div>
+                    <div class="deposit-metric-card__footer">Upload proof from Add Deposit</div>
                 </div>
             </div>
             <div class="deposit-metric-card">
@@ -868,15 +848,15 @@
                         <span class="deposit-metric-card__label">Cash vs Transfers</span>
                         <span class="deposit-metric-card__icon"><i class="ri-exchange-dollar-line"></i></span>
                     </div>
-                    <span class="deposit-metric-card__value">64% Cash</span>
+                    <span class="deposit-metric-card__value">{{ (int) ($metrics['cash_pct_today'] ?? 0) }}% Cash</span>
                     <div class="deposit-metric-card__meta">
                         <span class="deposit-metric-card__trend deposit-metric-card__trend--up">
-                            <i class="ri-arrow-up-line"></i>
-                            +6% cash share
+                            <i class="ri-exchange-dollar-line"></i>
+                            Today’s mix
                         </span>
-                        Transfers ₵21,090 today
+                        Transfers &amp; cheques ₵{{ number_format((float) ($metrics['transfer_total_today'] ?? 0), 2) }}
                     </div>
-                    <div class="deposit-metric-card__footer">Target mix 55% cash</div>
+                    <div class="deposit-metric-card__footer">Based on today’s deposit rows</div>
                 </div>
             </div>
             <div class="deposit-metric-card">
@@ -885,21 +865,21 @@
                         <span class="deposit-metric-card__label">Clearance Time</span>
                         <span class="deposit-metric-card__icon"><i class="ri-timer-line"></i></span>
                     </div>
-                    <span class="deposit-metric-card__value">38 mins</span>
+                    <span class="deposit-metric-card__value">—</span>
                     <div class="deposit-metric-card__meta">
                         <span class="deposit-metric-card__trend deposit-metric-card__trend--up">
-                            <i class="ri-speed-line"></i>
-                            SLA met 92%
+                            <i class="ri-timer-line"></i>
+                            Not tracked yet
                         </span>
-                        Fastest: Bamvim at 19 mins
+                        SLA analytics can be added later
                     </div>
-                    <div class="deposit-metric-card__footer">Daily SLA ≤ 45 mins</div>
+                    <div class="deposit-metric-card__footer">Placeholder metric</div>
                 </div>
             </div>
         </div>
         <div class="card deposit-filters mb-4">
             <div class="card-body">
-                <form method="GET" action="{{ url()->current() }}" id="filtersForm" class="deposit-filters__form">
+                <form method="GET" action="{{ route('company.fuel.bank-deposits.index') }}" id="filtersForm" class="deposit-filters__form">
                     <div class="row g-3 align-items-end">
                         <div class="col-sm-6 col-lg-3">
                             <label for="fromDate" class="deposit-label">From</label>
@@ -947,86 +927,12 @@
 
         @php
             $isPaginator = isset($deposits) && $deposits instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator;
-            $providedDeposits = $isPaginator ? $deposits : collect($deposits ?? []);
-            $hasProvidedDeposits = $providedDeposits->count() > 0;
-
-            if (! $hasProvidedDeposits) {
-                $displayDeposits = collect([
-                    [
-                        'transaction_date' => '31-Oct-2025',
-                        'sales_date' => '30-Oct-2025',
-                        'station' => ['name' => 'NAVRONGO-2'],
-                        'site' => ['name' => 'NAVRONGO-2'],
-                        'account_name' => 'CBG-21573161100001',
-                        'account_number' => 'DAILY SALES',
-                        'amount' => 'GHS21,000.00',
-                        'deposit_by' => 'Samuel Kpentey',
-                        'narration' => 'Daily sales banking for cashiers',
-                        'details' => 'Daily sales banking for cashiers',
-                        'payment_mode' => 'Cash',
-                        'transaction_id' => 'B251031000130',
-                        'transaction_number' => 'B251031000130',
-                        'view_url' => '#',
-                    ],
-                    [
-                        'transaction_date' => '31-Oct-2025',
-                        'sales_date' => '28-Oct-2025',
-                        'station' => ['name' => 'PAGA-ANNEX'],
-                        'site' => ['name' => 'PAGA-ANNEX'],
-                        'account_name' => 'ADB-108101057689201',
-                        'account_number' => 'Daily Sales',
-                        'amount' => 'GHS13,840.50',
-                        'deposit_by' => 'Millicent Bawa',
-                        'narration' => 'Sales close-out approved',
-                        'details' => 'Sales close-out approved',
-                        'payment_mode' => 'Cash',
-                        'transaction_id' => 'PGA-281005',
-                        'transaction_number' => 'PGA-281005',
-                        'view_url' => '#',
-                    ],
-                    [
-                        'transaction_date' => '31-Oct-2025',
-                        'sales_date' => '30-Oct-2025',
-                        'station' => ['name' => 'PWALUGU'],
-                        'site' => ['name' => 'PWALUGU'],
-                        'account_name' => 'ZENITH-6012608470',
-                        'account_number' => 'Sales',
-                        'amount' => 'GHS9,120.00',
-                        'deposit_by' => 'Robert Koomson',
-                        'narration' => 'Zenith bulk sales transfer',
-                        'details' => 'Zenith bulk sales transfer',
-                        'payment_mode' => 'Cash',
-                        'transaction_id' => 'ZNTH-6012608470',
-                        'transaction_number' => 'ZNTH-6012608470',
-                        'view_url' => '#',
-                    ],
-                    [
-                        'transaction_date' => '31-Oct-2025',
-                        'sales_date' => '30-Oct-2025',
-                        'station' => ['name' => 'PWALUGU'],
-                        'site' => ['name' => 'PWALUGU'],
-                        'account_name' => 'MTN-0593245613 - ADAM PARIDAVA',
-                        'account_number' => 'Upper Quarry Paid',
-                        'amount' => 'GHS6,450.75',
-                        'deposit_by' => 'Adam Paridava',
-                        'narration' => 'Upper Quarry mobile money settlement',
-                        'details' => 'Upper Quarry mobile money settlement',
-                        'payment_mode' => 'Mobile Money',
-                        'transaction_id' => '0593245613',
-                        'transaction_number' => '0593245613',
-                        'view_url' => '#',
-                    ],
-                ]);
-            } else {
-                $displayDeposits = $providedDeposits;
-            }
-
-            $totalItems = $isPaginator && $hasProvidedDeposits ? $deposits->total() : $displayDeposits->count();
-            $currentPage = $isPaginator && $hasProvidedDeposits ? $deposits->currentPage() : 1;
-            $lastPage = $isPaginator && $hasProvidedDeposits ? max($deposits->lastPage(), 1) : 1;
-            $perPageDefault = (int) request('per_page', $isPaginator && $hasProvidedDeposits ? $deposits->perPage() : 50);
-            $pageParameter = $isPaginator && $hasProvidedDeposits ? $deposits->getPageName() : 'page';
-            $nextPageUrl = $isPaginator && $hasProvidedDeposits && $deposits->hasMorePages()
+            $totalItems = $isPaginator ? $deposits->total() : 0;
+            $currentPage = $isPaginator ? $deposits->currentPage() : 1;
+            $lastPage = $isPaginator ? max($deposits->lastPage(), 1) : 1;
+            $perPageDefault = (int) request('per_page', $isPaginator ? $deposits->perPage() : 50);
+            $pageParameter = $isPaginator ? $deposits->getPageName() : 'page';
+            $nextPageUrl = $isPaginator && $deposits->hasMorePages()
                 ? request()->fullUrlWithQuery([$pageParameter => $deposits->currentPage() + 1])
                 : null;
         @endphp
@@ -1073,37 +979,24 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($displayDeposits as $deposit)
+                                @forelse($deposits as $deposit)
                                     @php
-                                        $transactionDate = data_get($deposit, 'transaction_date', '—');
-                                        $salesDate = data_get($deposit, 'sales_date', '—');
-                                        $stationName = data_get($deposit, 'station.name') ?? data_get($deposit, 'station') ?? data_get($deposit, 'site.name') ?? data_get($deposit, 'site', '—');
-                                        $accountName = data_get($deposit, 'account_name', '—');
-                                        $accountNumber = data_get($deposit, 'account_number', '—');
-                                        $amount = data_get($deposit, 'amount', '—');
-                                        $depositor = data_get($deposit, 'deposit_by') ?? data_get($deposit, 'deposited_by') ?? data_get($deposit, 'depositor', '—');
-                                        $narration = data_get($deposit, 'narration') ?? data_get($deposit, 'details', '—');
-                                        $additionalDetails = data_get($deposit, 'details');
-                                        $paymentMode = data_get($deposit, 'payment_mode', '—');
-                                        $transactionId = data_get($deposit, 'transaction_id') ?? data_get($deposit, 'transaction_ID') ?? data_get($deposit, 'transaction_number', '—');
-                                        $viewUrl = data_get($deposit, 'view_url');
-                                        $deleteUrl = data_get($deposit, 'delete_url');
-
-                                        try {
-                                            $transactionDateIso = $transactionDate && $transactionDate !== '—'
-                                                ? \Illuminate\Support\Carbon::parse($transactionDate)->format('Y-m-d')
-                                                : '';
-                                        } catch (\Exception $e) {
-                                            $transactionDateIso = '';
-                                        }
-
-                                        try {
-                                            $salesDateIso = $salesDate && $salesDate !== '—'
-                                                ? \Illuminate\Support\Carbon::parse($salesDate)->format('Y-m-d')
-                                                : '';
-                                        } catch (\Exception $e) {
-                                            $salesDateIso = '';
-                                        }
+                                        $transactionDate = $deposit->transaction_date?->format('d-M-Y') ?? '—';
+                                        $salesDate = $deposit->sales_date?->format('d-M-Y') ?? '—';
+                                        $stationName = $deposit->station?->name ?? '—';
+                                        $accountName = $deposit->account_name;
+                                        $accountNumber = $deposit->account_number;
+                                        $amount = 'GHS' . number_format((float) $deposit->amount, 2);
+                                        $depositor = $deposit->deposit_by;
+                                        $narration = $deposit->narration;
+                                        $additionalDetails = $deposit->details;
+                                        $paymentMode = $deposit->payment_mode;
+                                        $transactionId = $deposit->transaction_id;
+                                        $viewUrl = $deposit->proof_path ? \Illuminate\Support\Facades\Storage::disk('public')->url($deposit->proof_path) : '';
+                                        $deleteUrl = route('company.fuel.bank-deposits.destroy', $deposit);
+                                        $transactionDateIso = $deposit->transaction_date?->format('Y-m-d') ?? '';
+                                        $salesDateIso = $deposit->sales_date?->format('Y-m-d') ?? '';
+                                        $varianceMeta = $deposit->proof_path ? 'Proof on file' : 'Proof pending';
 
                                         $stationSlug = \Illuminate\Support\Str::slug($stationName ?? '', '-');
                                         $searchIndex = \Illuminate\Support\Str::lower(
@@ -1189,20 +1082,22 @@
                                                     data-payment-mode="{{ e($paymentMode) }}"
                                                     data-transaction-id="{{ e($transactionId) }}"
                                                     data-additional="{{ e($additionalDetails) }}"
-                                                    data-view-url="{{ $viewUrl }}">
+                                                    data-view-url="{{ $viewUrl }}"
+                                                    data-variance-meta="{{ e($varianceMeta) }}"
+                                                    data-footer-meta="{{ e($deposit->created_at?->format('d M Y H:i') ?? '—') }}">
                                                 <i class="ri-eye-line"></i>
                                             </button>
-                                            @if($deleteUrl)
-                                                <button type="button"
-                                                        class="deposit-icon-btn deposit-icon-btn--danger js-delete-deposit"
-                                                        aria-label="Delete deposit"
-                                                        data-delete-url="{{ $deleteUrl }}"
-                                                        data-depositor="{{ e($depositor) }}"
-                                                        data-amount="{{ e($amount) }}"
-                                                        data-transaction-id="{{ e($transactionId) }}">
-                                                    <i class="ri-delete-bin-6-line"></i>
-                                                </button>
-                                            @endif
+                                            <button type="button"
+                                                    class="deposit-icon-btn deposit-icon-btn--danger js-delete-deposit"
+                                                    aria-label="Delete deposit"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteDepositModal"
+                                                    data-delete-url="{{ $deleteUrl }}"
+                                                    data-depositor="{{ e($depositor) }}"
+                                                    data-amount="{{ e($amount) }}"
+                                                    data-transaction-id="{{ e($transactionId) }}">
+                                                <i class="ri-delete-bin-6-line"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 @empty
@@ -1223,7 +1118,7 @@
 
                 @if($isPaginator)
                     <div class="pt-3">
-                        {{ $deposits->withQueryString()->links('vendor.pagination.bootstrap-4') }}
+                        {{ $deposits->withQueryString()->links() }}
                     </div>
                 @endif
             </div>
@@ -1242,58 +1137,67 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pt-3">
-                    <form id="createDepositForm">
+                    <form id="createDepositForm" method="POST" action="{{ route('company.fuel.bank-deposits.store') }}" enctype="multipart/form-data">
+                        @csrf
+                        @if ($errors->any())
+                            <div class="alert alert-danger small mb-3" role="alert">
+                                <ul class="mb-0 ps-3">
+                                    @foreach ($errors->all() as $err)
+                                        <li>{{ $err }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="transactionDate" class="form-label text-uppercase small fw-semibold">Transaction Date</label>
-                                <input type="date" class="form-control" id="transactionDate" name="transaction_date" required>
+                                <input type="date" class="form-control" id="transactionDate" name="transaction_date" value="{{ old('transaction_date') }}" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="salesDate" class="form-label text-uppercase small fw-semibold">Sales Date</label>
-                                <input type="date" class="form-control" id="salesDate" name="sales_date" required>
+                                <input type="date" class="form-control" id="salesDate" name="sales_date" value="{{ old('sales_date') }}" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="stationSelect" class="form-label text-uppercase small fw-semibold">Station</label>
-                                <select class="form-select" id="stationSelect" name="station" required>
+                                <select class="form-select" id="stationSelect" name="fuel_station_id" required>
                                     <option value="" selected disabled>Select Station</option>
-                                    @foreach(($sites ?? []) as $siteOption)
-                                        <option value="{{ $siteOption['value'] ?? $siteOption }}">{{ $siteOption['label'] ?? $siteOption }}</option>
+                                    @foreach(($stations ?? collect()) as $st)
+                                        <option value="{{ $st->id }}" @selected(old('fuel_station_id') == $st->id)>{{ $st->name }} ({{ $st->code }})</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label for="accountName" class="form-label text-uppercase small fw-semibold">Account Name</label>
-                                <input type="text" class="form-control" id="accountName" name="account_name" placeholder="e.g. CBG Main Branch" required>
+                                <input type="text" class="form-control" id="accountName" name="account_name" value="{{ old('account_name') }}" placeholder="e.g. CBG Main Branch" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="accountNumber" class="form-label text-uppercase small fw-semibold">Account Number</label>
-                                <input type="text" class="form-control" id="accountNumber" name="account_number" placeholder="e.g. CBG-21573161100001" required>
+                                <input type="text" class="form-control" id="accountNumber" name="account_number" value="{{ old('account_number') }}" placeholder="e.g. CBG-21573161100001" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="depositAmount" class="form-label text-uppercase small fw-semibold">Amount</label>
-                                <input type="number" step="0.01" min="0" class="form-control" id="depositAmount" name="amount" placeholder="e.g. 21000.00" required>
+                                <input type="number" step="0.01" min="0" class="form-control" id="depositAmount" name="amount" value="{{ old('amount') }}" placeholder="e.g. 21000.00" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="depositBy" class="form-label text-uppercase small fw-semibold">Depositer</label>
-                                <input type="text" class="form-control" id="depositBy" name="deposit_by" placeholder="Name of depositer" required>
+                                <input type="text" class="form-control" id="depositBy" name="deposit_by" value="{{ old('deposit_by') }}" placeholder="Name of depositer" required>
                             </div>
                             <div class="col-md-12">
                                 <label for="narration" class="form-label text-uppercase small fw-semibold">Narration</label>
-                                <textarea class="form-control" id="narration" name="narration" rows="3" placeholder="Brief description of the deposit" required></textarea>
+                                <textarea class="form-control" id="narration" name="narration" rows="3" placeholder="Brief description of the deposit" required>{{ old('narration') }}</textarea>
                             </div>
                             <div class="col-md-6">
                                 <label for="paymentMode" class="form-label text-uppercase small fw-semibold">Payment Mode</label>
                                 <select class="form-select" id="paymentMode" name="payment_mode" required>
-                                    <option value="" selected disabled>Select Mode</option>
-                                    <option value="Cash">Cash</option>
-                                    <option value="Cheque">Cheque</option>
-                                    <option value="Mobile Money">Mobile Money</option>
-                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="" disabled @selected(!old('payment_mode'))>Select Mode</option>
+                                    @foreach(\App\Models\FuelManagement\AccountDeposits\CompanyFuelBankDeposit::paymentModes() as $mode)
+                                        <option value="{{ $mode }}" @selected(old('payment_mode') === $mode)>{{ $mode }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label for="transactionId" class="form-label text-uppercase small fw-semibold">Transaction ID</label>
-                                <input type="text" class="form-control" id="transactionId" name="transaction_id" placeholder="Reference or slip number" required>
+                                <input type="text" class="form-control" id="transactionId" name="transaction_id" value="{{ old('transaction_id') }}" placeholder="Reference or slip number" required>
                             </div>
                         </div>
                         <div class="mt-3">
@@ -1304,7 +1208,7 @@
                 </div>
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="saveDepositBtn">
+                    <button type="submit" class="btn btn-primary" form="createDepositForm">
                         <span class="me-1">Save Deposit</span>
                         <i class="ri-save-3-line"></i>
                     </button>
@@ -1445,14 +1349,14 @@
                 <div class="view-deposit-modal__footer">
                     <div class="d-flex flex-wrap gap-2">
                         <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Close</button>
-                        <a href="#" class="btn btn-light text-primary" data-view-link="view_url" target="_blank" rel="noopener">
+                        <a href="#" class="btn btn-light text-primary d-none" id="viewDepositExternalLink" target="_blank" rel="noopener">
                             <i class="ri-external-link-line me-1"></i>
                             Open Proof
                         </a>
                     </div>
                     <div class="view-deposit-footer-meta">
                         <i class="ri-shield-check-line me-1"></i>
-                        Logged by treasury automation · <span data-view-field="footer_meta">30 Oct 2025 15:42</span>
+                        Recorded · <span data-view-field="footer_meta">—</span>
                     </div>
                 </div>
             </div>
@@ -1485,14 +1389,49 @@
             </div>
         </div>
     </div>
+
+    <!-- Daily Brief Modal -->
+    <div class="modal fade" id="dailyBriefModal" tabindex="-1" aria-labelledby="dailyBriefModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dailyBriefModalLabel">Daily Brief</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-0">A narrative daily brief will be available once analytics are connected. For now, use the dashboard metrics above and the filtered table.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
-@push('scripts')
+@push('javascript')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            var successMessage = @json(session('success'));
+            var errorMessage = @json(session('error'));
+            var canUseSwal = typeof Swal !== 'undefined';
+            if (successMessage && canUseSwal) {
+                Swal.fire({ icon: 'success', title: 'Success', text: successMessage, confirmButtonText: 'OK' });
+            }
+            if (errorMessage && canUseSwal) {
+                Swal.fire({ icon: 'error', title: 'Oops...', text: errorMessage, confirmButtonText: 'OK' });
+            }
+
+            @if ($errors->any())
+            var depositModalEl = document.getElementById('createDepositModal');
+            if (depositModalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                bootstrap.Modal.getOrCreateInstance(depositModalEl).show();
+            }
+            @endif
+
             const depositModal = document.getElementById('createDepositModal');
             const depositForm = document.getElementById('createDepositForm');
-            const saveDepositBtn = document.getElementById('saveDepositBtn');
             const exportModal = document.getElementById('exportDepositModal');
             const exportForm = document.getElementById('exportDepositForm');
             const generateExportBtn = document.getElementById('generateExportBtn');
@@ -1509,28 +1448,6 @@
             const visibleCountEl = document.getElementById('bankVisibleCount');
             const visibleLabelEl = document.getElementById('bankVisibleLabel');
 
-            if (depositModal && depositForm) {
-                depositModal.addEventListener('hidden.bs.modal', () => {
-                    depositForm.reset();
-                });
-            }
-
-            if (saveDepositBtn) {
-                saveDepositBtn.addEventListener('click', () => {
-                    // Placeholder for future AJAX/submit logic
-                    saveDepositBtn.disabled = true;
-                    const originalText = saveDepositBtn.innerHTML;
-                    saveDepositBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
-
-                    setTimeout(() => {
-                        saveDepositBtn.disabled = false;
-                        saveDepositBtn.innerHTML = originalText;
-                        const modalInstance = bootstrap.Modal.getInstance(depositModal);
-                        modalInstance?.hide();
-                    }, 1200);
-                });
-            }
-
             if (exportModal && exportForm) {
                 exportModal.addEventListener('hidden.bs.modal', () => {
                     exportForm.reset();
@@ -1541,16 +1458,11 @@
 
             if (generateExportBtn) {
                 generateExportBtn.addEventListener('click', () => {
-                    generateExportBtn.disabled = true;
-                    const originalText = generateExportBtn.innerHTML;
-                    generateExportBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Preparing...';
-
-                    setTimeout(() => {
-                        generateExportBtn.disabled = false;
-                        generateExportBtn.innerHTML = originalText;
-                        const exportModalInstance = bootstrap.Modal.getInstance(exportModal);
-                        exportModalInstance?.hide();
-                    }, 1000);
+                    if (canUseSwal) {
+                        Swal.fire({ icon: 'info', title: 'Export', text: 'CSV/PDF export from the server will be added in a follow-up. Use Apply Filters and your browser for now.', confirmButtonText: 'OK' });
+                    }
+                    const exportModalInstance = bootstrap.Modal.getInstance(exportModal);
+                    exportModalInstance?.hide();
                 });
             }
 
@@ -1563,13 +1475,14 @@
                         transaction_date: 'transaction-date',
                         sales_date: 'sales-date',
                         station: 'station',
-                        account_name: 'account-name',
+                        account_name: 'account',
                         account_number: 'account-number',
                         amount: 'amount',
                         depositor: 'depositor',
                         narration: 'narration',
                         payment_mode: 'payment-mode',
-                        transaction_id: 'transaction-id'
+                        transaction_id: 'transaction-id',
+                        variance_meta: 'variance-meta'
                     };
 
                     Object.keys(fieldMap).forEach(key => {
@@ -1578,6 +1491,11 @@
                         if (target) target.textContent = value;
                     });
 
+                    const footerMeta = viewModal.querySelector('[data-view-field="footer_meta"]');
+                    if (footerMeta) {
+                        footerMeta.textContent = trigger.getAttribute('data-footer-meta') || '—';
+                    }
+
                     const externalLink = document.getElementById('viewDepositExternalLink');
                     if (externalLink) {
                         const href = trigger.getAttribute('data-view-url');
@@ -1585,6 +1503,7 @@
                             externalLink.href = href;
                             externalLink.classList.remove('d-none');
                         } else {
+                            externalLink.href = '#';
                             externalLink.classList.add('d-none');
                         }
                     }
@@ -1611,17 +1530,43 @@
                     confirmDeleteBtn.dataset.deleteUrl = deleteUrl;
                 });
 
-                confirmDeleteBtn.addEventListener('click', () => {
-                    confirmDeleteBtn.disabled = true;
-                    const originalText = confirmDeleteBtn.innerHTML;
-                    confirmDeleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Deleting...';
+                confirmDeleteBtn.addEventListener('click', function () {
+                    const url = confirmDeleteBtn.getAttribute('data-delete-url');
+                    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    if (!url) {
+                        if (canUseSwal) {
+                            Swal.fire({ icon: 'error', title: 'Cannot delete', text: 'Missing delete link. Close and try again.', confirmButtonText: 'OK' });
+                        }
+                        return;
+                    }
+                    if (!token) {
+                        if (canUseSwal) {
+                            Swal.fire({ icon: 'error', title: 'Session', text: 'Missing CSRF token. Refresh the page.', confirmButtonText: 'OK' });
+                        }
+                        return;
+                    }
 
-                    setTimeout(() => {
-                        confirmDeleteBtn.disabled = false;
-                        confirmDeleteBtn.innerHTML = originalText;
-                        const deleteModalInstance = bootstrap.Modal.getInstance(deleteModal);
-                        deleteModalInstance?.hide();
-                    }, 1000);
+                    confirmDeleteBtn.disabled = true;
+
+                    var form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = url;
+                    form.style.display = 'none';
+
+                    var tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '_token';
+                    tokenInput.value = token;
+                    form.appendChild(tokenInput);
+
+                    var methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'DELETE';
+                    form.appendChild(methodInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
                 });
             }
         });
