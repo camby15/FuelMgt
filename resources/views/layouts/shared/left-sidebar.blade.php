@@ -461,7 +461,7 @@
                     <ul class="side-nav-second-level">
                         @if($hasMenuAccess('all_account'))
                         <li>
-                            <a href="{{ route('any', 'company/FuelManagement/allaccount') }}">
+                            <a href="{{ route('company.fuel.accounts.index') }}">
                                 <i class="ri-money-dollar-circle-line"></i>
                                 <span>All Accounts</span>
                             </a>
@@ -469,7 +469,7 @@
                         @endif
                         @if($hasMenuAccess('bank_deposit'))
                         <li>
-                            <a href="{{ route('any', 'company/FuelManagement/bankdeposit') }}">
+                            <a href="{{ route('company.fuel.bank-deposits.index') }}">
                                 <i class="ri-money-dollar-circle-line"></i>
                                 <span>Bank Deposit</span>
                             </a>

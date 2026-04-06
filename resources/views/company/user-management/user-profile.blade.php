@@ -762,7 +762,7 @@
                                                             data-key="bank_deposit"
                                                             data-name="Bank Deposit"
                                                             data-parent="accounts_deposit"
-                                                            data-route="{{ route('any', 'company/FuelManagement/bankdeposit') }}" />
+                                                            data-route="{{ route('company.fuel.bank-deposits.index') }}" />
                                                         <label class="form-check-label" for="menu_bank_deposit">
                                                             Bank Deposit
                                                         </label>
@@ -775,7 +775,7 @@
                                                             data-key="all_account"
                                                             data-name="All Accounts"
                                                             data-parent="accounts_deposit"
-                                                            data-route="{{ route('any', 'company/FuelManagement/allaccount') }}" />
+                                                            data-route="{{ route('company.fuel.accounts.index') }}" />
                                                         <label class="form-check-label" for="menu_all_account">
                                                             All Accounts
                                                         </label>

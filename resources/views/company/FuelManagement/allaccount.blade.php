@@ -451,6 +451,12 @@
             transition: all 0.2s ease;
         }
 
+        a.accounts-filter-chip {
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
         .accounts-filter-chip:hover,
         .accounts-filter-chip.is-active {
             background: #2b6def;
@@ -691,7 +697,7 @@
                         <p class="accounts-card__subtitle">Review balances, manage bank details and control access across stations.</p>
                         <nav aria-label="Breadcrumb" class="accounts-breadcrumb">
                             <ol>
-                                <li><a href="#">Dashboard</a></li>
+                                <li><a href="{{ route('any', 'company/FuelManagement/dashboard') }}">Dashboard</a></li>
                                 <li aria-current="page">All Accounts</li>
                             </ol>
                         </nav>
@@ -713,7 +719,7 @@
                                     <i class="ri-folder-open-line"></i>
                                 </span>
                             </div>
-                            <div class="accounts-summary__value">12</div>
+                            <div class="accounts-summary__value">{{ number_format($summaryTotal ?? 0) }}</div>
                             <div class="accounts-summary__footer">Across all stations</div>
                         </div>
                         <div class="accounts-summary__item" data-variant="bank">
@@ -723,7 +729,7 @@
                                     <i class="ri-bank-line"></i>
                                 </span>
                             </div>
-                            <div class="accounts-summary__value">4</div>
+                            <div class="accounts-summary__value">{{ number_format($summaryBank ?? 0) }}</div>
                             <div class="accounts-summary__footer">Active settlements</div>
                         </div>
                         <div class="accounts-summary__item" data-variant="cash">
@@ -733,7 +739,7 @@
                                     <i class="ri-hand-coin-line"></i>
                                 </span>
                             </div>
-                            <div class="accounts-summary__value">8</div>
+                            <div class="accounts-summary__value">{{ number_format($summaryCash ?? 0) }}</div>
                             <div class="accounts-summary__footer">Customer &amp; sales</div>
                         </div>
                         <div class="accounts-summary__item" data-variant="stations">
@@ -743,27 +749,41 @@
                                     <i class="ri-map-pin-line"></i>
                                 </span>
                             </div>
-                            <div class="accounts-summary__value">6</div>
-                            <div class="accounts-summary__footer">Navrongo to Paga</div>
+                            <div class="accounts-summary__value">{{ number_format($summaryStationsCovered ?? 0) }}</div>
+                            <div class="accounts-summary__footer">Distinct stations linked to accounts</div>
                         </div>
                     </div>
                 </div>
+                @php
+                    $accountsFilterBase = array_filter(
+                        ['q' => $searchQuery ?? null],
+                        fn ($v) => $v !== null && $v !== ''
+                    );
+                    $accountsChip = fn (?string $type) => route('company.fuel.accounts.index', array_filter(
+                        array_merge($accountsFilterBase, ['type' => $type]),
+                        fn ($v) => $v !== null && $v !== ''
+                    ));
+                @endphp
 
                 <div class="accounts-panel accounts-panel--filters">
-                    <div class="accounts-toolbar">
+                    <form method="get" action="{{ route('company.fuel.accounts.index') }}" class="accounts-toolbar">
+                        @if(!empty($typeFilter))
+                            <input type="hidden" name="type" value="{{ $typeFilter }}">
+                        @endif
                         <div class="accounts-toolbar__search">
                             <div class="accounts-search">
                                 <i class="ri-search-line"></i>
-                                <input type="text" placeholder="Search by name, code or station...">
+                                <input type="text" name="q" value="{{ $searchQuery ?? '' }}" placeholder="Search by name, code or station...">
                             </div>
                         </div>
                         <div class="accounts-toolbar__filters">
-                            <button type="button" class="accounts-filter-chip is-active">All</button>
-                            <button type="button" class="accounts-filter-chip">Bank</button>
-                            <button type="button" class="accounts-filter-chip">Cash</button>
-                            <button type="button" class="accounts-filter-chip">Mobile Money</button>
+                            <button type="submit" class="accounts-filter-chip">Go</button>
+                            <a href="{{ $accountsChip(null) }}" class="accounts-filter-chip {{ empty($typeFilter) ? 'is-active' : '' }}">All</a>
+                            <a href="{{ $accountsChip(\App\Models\FuelManagement\AccountDeposits\CompanyFuelAccount::TYPE_BANK) }}" class="accounts-filter-chip {{ ($typeFilter ?? '') === \App\Models\FuelManagement\AccountDeposits\CompanyFuelAccount::TYPE_BANK ? 'is-active' : '' }}">Bank</a>
+                            <a href="{{ $accountsChip(\App\Models\FuelManagement\AccountDeposits\CompanyFuelAccount::TYPE_CASH) }}" class="accounts-filter-chip {{ ($typeFilter ?? '') === \App\Models\FuelManagement\AccountDeposits\CompanyFuelAccount::TYPE_CASH ? 'is-active' : '' }}">Cash</a>
+                            <a href="{{ $accountsChip(\App\Models\FuelManagement\AccountDeposits\CompanyFuelAccount::TYPE_MOBILE_MONEY) }}" class="accounts-filter-chip {{ ($typeFilter ?? '') === \App\Models\FuelManagement\AccountDeposits\CompanyFuelAccount::TYPE_MOBILE_MONEY ? 'is-active' : '' }}">Mobile Money</a>
                         </div>
-                    </div>
+                    </form>
                 </div>
 
                 <div class="accounts-panel accounts-panel--table">
@@ -780,129 +800,31 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td class="accounts-cell accounts-cell--code">
-                                            <a href="#" class="accounts-code">ADB-108101057689201</a>
-                                        </td>
-                                        <td class="accounts-cell accounts-cell--uppercase">YASS PETROLEUM COMPANY LIMITED-ADB</td>
-                                        <td class="accounts-cell accounts-cell--muted">Bank</td>
-                                        <td class="accounts-cell accounts-cell--uppercase">Primary settlement account</td>
-                                        <td class="accounts-cell accounts-action-cell">
-                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="adb" aria-label="View account">
-                                                <i class="ri-eye-line"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="accounts-cell accounts-cell--code">AMOAKO-Customer Payments</td>
-                                        <td class="accounts-cell">AMOAKO-Customer Payments</td>
-                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
-                                        <td class="accounts-cell">Customer payments vault</td>
-                                        <td class="accounts-cell accounts-action-cell">
-                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="amoako-payments" aria-label="View account">
-                                                <i class="ri-eye-line"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="accounts-cell accounts-cell--code">AMOAKO-Fuel Sales</td>
-                                        <td class="accounts-cell">AMOAKO-Fuel Sales</td>
-                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
-                                        <td class="accounts-cell">Pump collections account</td>
-                                        <td class="accounts-cell accounts-action-cell">
-                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="amoako-fuel" aria-label="View account">
-                                                <i class="ri-eye-line"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="accounts-cell accounts-cell--code">AMOAKO-Inventory Sales</td>
-                                        <td class="accounts-cell">AMOAKO-Inventory Sales</td>
-                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
-                                        <td class="accounts-cell">Lubricants &amp; accessories</td>
-                                        <td class="accounts-cell accounts-action-cell">
-                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="amoako-inventory" aria-label="View account">
-                                                <i class="ri-eye-line"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="accounts-cell accounts-cell--code">BAMVIM-Customer Payments</td>
-                                        <td class="accounts-cell">BAMVIM-Customer Payments</td>
-                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
-                                        <td class="accounts-cell">Retail customer receipts</td>
-                                        <td class="accounts-cell accounts-action-cell">
-                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="bamvim-payments" aria-label="View account">
-                                                <i class="ri-eye-line"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="accounts-cell accounts-cell--code">BAMVIM-Fuel Sales</td>
-                                        <td class="accounts-cell">BAMVIM-Fuel Sales</td>
-                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
-                                        <td class="accounts-cell">Daily pump reconciliations</td>
-                                        <td class="accounts-cell accounts-action-cell">
-                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="bamvim-fuel" aria-label="View account">
-                                                <i class="ri-eye-line"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="accounts-cell accounts-cell--code">BAMVIM-Inventory Sales</td>
-                                        <td class="accounts-cell">BAMVIM-Inventory Sales</td>
-                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
-                                        <td class="accounts-cell">Lubricants &amp; merch</td>
-                                        <td class="accounts-cell accounts-action-cell">
-                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="bamvim-inventory" aria-label="View account">
-                                                <i class="ri-eye-line"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="accounts-cell accounts-cell--code">CBG-2157316100001</td>
-                                        <td class="accounts-cell">YASS PETROLEUM COMPANY LIMITED-CBG</td>
-                                        <td class="accounts-cell accounts-cell--muted">Bank</td>
-                                        <td class="accounts-cell">Corporate treasury account</td>
-                                        <td class="accounts-cell accounts-action-cell">
-                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="cbg" aria-label="View account">
-                                                <i class="ri-eye-line"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="accounts-cell accounts-cell--code">KINTAMPO-Customer Payments</td>
-                                        <td class="accounts-cell">KINTAMPO-Customer Payments</td>
-                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
-                                        <td class="accounts-cell">Station customer receipts</td>
-                                        <td class="accounts-cell accounts-action-cell">
-                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="kintampo-payments" aria-label="View account">
-                                                <i class="ri-eye-line"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="accounts-cell accounts-cell--code">KINTAMPO-Fuel Sales</td>
-                                        <td class="accounts-cell">KINTAMPO-Fuel Sales</td>
-                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
-                                        <td class="accounts-cell">Fuel sales account</td>
-                                        <td class="accounts-cell accounts-action-cell">
-                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="kintampo-fuel" aria-label="View account">
-                                                <i class="ri-eye-line"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="accounts-cell accounts-cell--code">KINTAMPO-Inventory Sales</td>
-                                        <td class="accounts-cell">KINTAMPO-Inventory Sales</td>
-                                        <td class="accounts-cell accounts-cell--muted">Cash</td>
-                                        <td class="accounts-cell">Accessories &amp; merch</td>
-                                        <td class="accounts-cell accounts-action-cell">
-                                            <button type="button" class="accounts-action-btn" data-bs-toggle="modal" data-bs-target="#viewAccountModal" data-account="kintampo-inventory" aria-label="View account">
-                                                <i class="ri-eye-line"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
+                                    @forelse(($accounts ?? collect()) as $account)
+                                        <tr>
+                                            <td class="accounts-cell accounts-cell--code">
+                                                <span class="accounts-code">{{ $account->account_code }}</span>
+                                            </td>
+                                            <td class="accounts-cell accounts-cell--uppercase">{{ $account->account_name }}</td>
+                                            <td class="accounts-cell accounts-cell--muted">{{ $account->typeLabel() }}</td>
+                                            <td class="accounts-cell accounts-cell--uppercase">{{ $account->description ?: '—' }}</td>
+                                            <td class="accounts-cell accounts-action-cell">
+                                                <button
+                                                    type="button"
+                                                    class="accounts-action-btn btn-view-account"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#viewAccountModal"
+                                                    data-show-url="{{ route('company.fuel.accounts.show', $account) }}"
+                                                    aria-label="View account">
+                                                    <i class="ri-eye-line"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="accounts-cell accounts-cell--muted text-center py-4">No accounts yet. Create one with &ldquo;New Account&rdquo;.</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -917,16 +839,21 @@
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content add-account-modal">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addAccountModalLabel">View New Account</h5>
+                    <h5 class="modal-title" id="addAccountModalLabel">New Account</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="#" method="POST">
+                <form action="{{ route('company.fuel.accounts.store') }}" method="POST">
                     @csrf
                     <div class="modal-body">
-                        <div class="modal-action-buttons d-flex flex-wrap gap-3 justify-content-center mb-4">
-                            <button type="button" class="modal-secondary-btn">Edit Account</button>
-                            <button type="button" class="modal-danger-btn">Delete</button>
-                        </div>
+                        @if ($errors->any())
+                            <div class="alert alert-danger small mb-3" role="alert">
+                                <ul class="mb-0 ps-3">
+                                    @foreach ($errors->all() as $err)
+                                        <li>{{ $err }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <div class="row g-4">
                             <div class="col-lg-8">
                                 <div class="summary-card">
@@ -935,27 +862,44 @@
                                         <div class="summary-row">
                                             <label class="summary-label">Account Type:</label>
                                             <div class="summary-field">
-                                                <select class="form-select" name="account_type">
+                                                <select class="form-select @error('account_type') is-invalid @enderror" name="account_type" required>
                                                     <option value="">Select Account Type</option>
-                                                    <option value="bank">Bank</option>
-                                                    <option value="cash">Cash</option>
-                                                    <option value="mobile_money">Mobile Money</option>
+                                                    <option value="bank" @selected(old('account_type') === 'bank')>Bank</option>
+                                                    <option value="cash" @selected(old('account_type') === 'cash')>Cash</option>
+                                                    <option value="mobile_money" @selected(old('account_type') === 'mobile_money')>Mobile Money</option>
                                                 </select>
+                                                @error('account_type')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                             </div>
                                             <label class="summary-label">Account Code:</label>
                                             <div class="summary-field">
-                                                <input type="text" name="account_code" class="form-control" placeholder="e.g. ADB-108101057689201">
+                                                <input type="text" name="account_code" value="{{ old('account_code') }}" class="form-control @error('account_code') is-invalid @enderror" placeholder="e.g. ADB-108101057689201" required>
+                                                @error('account_code')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                             </div>
                                         </div>
                                         <div class="summary-row">
                                             <label class="summary-label">Account Name:</label>
                                             <div class="summary-field">
-                                                <input type="text" name="account_name" class="form-control" placeholder="Enter account name">
+                                                <input type="text" name="account_name" value="{{ old('account_name') }}" class="form-control @error('account_name') is-invalid @enderror" placeholder="Enter account name" required>
+                                                @error('account_name')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                             </div>
                                             <label class="summary-label">Description:</label>
                                             <div class="summary-field">
-                                                <input type="text" name="description" class="form-control" placeholder="Enter description">
+                                                <input type="text" name="description" value="{{ old('description') }}" class="form-control @error('description') is-invalid @enderror" placeholder="Enter description">
                                             </div>
+                                        </div>
+                                        <div class="summary-row">
+                                            <label class="summary-label">Notes:</label>
+                                            <div class="summary-field" style="grid-column: span 3;">
+                                                <textarea name="notes" class="form-control" rows="2" placeholder="Optional notes">{{ old('notes') }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="summary-row">
+                                            <label class="summary-label">Last reconciled:</label>
+                                            <div class="summary-field">
+                                                <input type="date" name="last_reconciled_at" value="{{ old('last_reconciled_at') }}" class="form-control">
+                                            </div>
+                                            <div class="summary-label"></div>
+                                            <div class="summary-field"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -966,17 +910,27 @@
                                         <div class="summary-row">
                                             <label class="summary-label">Bank:</label>
                                             <div class="summary-field">
-                                                <input type="text" name="bank_name" class="form-control" placeholder="Enter bank name">
+                                                <input type="text" name="bank_name" value="{{ old('bank_name') }}" class="form-control" placeholder="Enter bank name">
                                             </div>
                                             <label class="summary-label">Account No:</label>
                                             <div class="summary-field">
-                                                <input type="text" name="bank_account_no" class="form-control" placeholder="Enter account number">
+                                                <input type="text" name="bank_account_no" value="{{ old('bank_account_no') }}" class="form-control" placeholder="Enter account number">
                                             </div>
                                         </div>
                                         <div class="summary-row">
                                             <label class="summary-label">Bank Branch:</label>
                                             <div class="summary-field">
-                                                <input type="text" name="bank_branch" class="form-control" placeholder="Enter branch">
+                                                <input type="text" name="bank_branch" value="{{ old('bank_branch') }}" class="form-control" placeholder="Enter branch">
+                                            </div>
+                                            <label class="summary-label">MoMo provider:</label>
+                                            <div class="summary-field">
+                                                <input type="text" name="mobile_money_provider" value="{{ old('mobile_money_provider') }}" class="form-control" placeholder="e.g. MTN">
+                                            </div>
+                                        </div>
+                                        <div class="summary-row">
+                                            <label class="summary-label">MoMo number:</label>
+                                            <div class="summary-field">
+                                                <input type="text" name="mobile_money_number" value="{{ old('mobile_money_number') }}" class="form-control" placeholder="Registered wallet number">
                                             </div>
                                             <div class="summary-label"></div>
                                             <div class="summary-field"></div>
@@ -989,14 +943,16 @@
                                     <div class="summary-card-header">Site</div>
                                     <div class="summary-card-body">
                                         <div class="site-selection">
-                                            <div class="site-list-header">Station</div>
-                                            <select multiple class="form-select site-list" id="site_list" name="stations[]">
-                                                <option value="navrongo-main">NAVRONGO-MAIN</option>
-                                                <option value="paga-annex">PAGA-ANNEX</option>
-                                                <option value="larabanga">LARABANGA</option>
-                                                <option value="wapuli">WAPULI</option>
-                                                <option value="bamvim">BAMVIM</option>
+                                            <div class="site-list-header">Station (multi-select)</div>
+                                            <select multiple class="form-select site-list" id="site_list" name="stations[]" size="8">
+                                                @foreach(($stations ?? collect()) as $station)
+                                                    <option value="{{ $station->id }}" @selected(collect(old('stations', []))->contains((string) $station->id) || collect(old('stations', []))->contains((int) $station->id))>
+                                                        {{ $station->name }} ({{ $station->code }})
+                                                    </option>
+                                                @endforeach
                                             </select>
+                                            @error('stations')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                                            @error('stations.*')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                                         </div>
                                     </div>
                                 </div>
@@ -1024,35 +980,120 @@
                     <div class="view-account-summary">
                         <div class="view-account-summary__item">
                             <span class="view-account-summary__label">Account Number</span>
-                            <span class="view-account-summary__value" id="vaAccountNumber">ADB-108101057689201</span>
+                            <span class="view-account-summary__value" id="vaAccountNumber">—</span>
                         </div>
                         <div class="view-account-summary__item">
                             <span class="view-account-summary__label">Account Name</span>
-                            <span class="view-account-summary__value" id="vaAccountName">YASS PETROLEUM COMPANY LIMITED-ADB</span>
+                            <span class="view-account-summary__value" id="vaAccountName">—</span>
                         </div>
                         <div class="view-account-summary__item">
                             <span class="view-account-summary__label">Account Type</span>
-                            <span class="view-account-summary__value" id="vaAccountType">Bank</span>
+                            <span class="view-account-summary__value" id="vaAccountType">—</span>
                         </div>
                         <div class="view-account-summary__item">
                             <span class="view-account-summary__label">Stations</span>
-                            <span class="view-account-summary__value" id="vaStations">Navrongo Main, Paga Annex, Bamvim</span>
+                            <span class="view-account-summary__value" id="vaStations">—</span>
                         </div>
                         <div class="view-account-summary__item">
                             <span class="view-account-summary__label">Last Reconciled</span>
-                            <span class="view-account-summary__value" id="vaReconciled">September 2025</span>
+                            <span class="view-account-summary__value" id="vaReconciled">—</span>
+                        </div>
+                        <div class="view-account-summary__item">
+                            <span class="view-account-summary__label">Description</span>
+                            <span class="view-account-summary__value" id="vaDescription">—</span>
                         </div>
                         <div class="view-account-summary__item">
                             <span class="view-account-summary__label">Notes</span>
-                            <span class="view-account-summary__value" id="vaNotes">Primary settlement account</span>
+                            <span class="view-account-summary__value" id="vaNotes">—</span>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Open Full Profile</button>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
+@push('javascript')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        (function () {
+            var successMessage = @json(session('success'));
+            var errorMessage = @json(session('error'));
+            var canUseSwal = typeof Swal !== 'undefined';
+            if (successMessage) {
+                if (canUseSwal) {
+                    Swal.fire({ icon: 'success', title: 'Success!', text: successMessage, confirmButtonText: 'OK' });
+                } else {
+                    console.info('Success:', successMessage);
+                }
+            }
+            if (errorMessage) {
+                if (canUseSwal) {
+                    Swal.fire({ icon: 'error', title: 'Oops...', text: errorMessage, confirmButtonText: 'Try Again' });
+                } else {
+                    console.error('Error:', errorMessage);
+                }
+            }
+
+            @if ($errors->any())
+            document.addEventListener('DOMContentLoaded', function () {
+                var el = document.getElementById('addAccountModal');
+                if (el && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    bootstrap.Modal.getOrCreateInstance(el).show();
+                }
+            });
+            @endif
+
+            var viewModal = document.getElementById('viewAccountModal');
+            if (viewModal) {
+                viewModal.addEventListener('show.bs.modal', function (event) {
+                    var btn = event.relatedTarget;
+                    var url = btn && btn.getAttribute ? btn.getAttribute('data-show-url') : null;
+                    if (!url) return;
+
+                    var setText = function (id, text) {
+                        var n = document.getElementById(id);
+                        if (n) n.textContent = text == null || text === '' ? '—' : text;
+                    };
+
+                    setText('vaAccountNumber', '…');
+                    setText('vaAccountName', '…');
+                    setText('vaAccountType', '…');
+                    setText('vaStations', '…');
+                    setText('vaReconciled', '…');
+                    setText('vaDescription', '…');
+                    setText('vaNotes', '…');
+
+                    fetch(url, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        credentials: 'same-origin'
+                    })
+                        .then(function (r) {
+                            if (!r.ok) throw new Error('Failed to load account');
+                            return r.json();
+                        })
+                        .then(function (data) {
+                            setText('vaAccountNumber', data.account_code);
+                            setText('vaAccountName', data.account_name);
+                            setText('vaAccountType', data.account_type_label || data.account_type);
+                            setText('vaStations', data.stations_label || '—');
+                            setText('vaReconciled', data.last_reconciled_display || '—');
+                            setText('vaDescription', data.description || '—');
+                            setText('vaNotes', data.notes || '—');
+                        })
+                        .catch(function () {
+                            if (canUseSwal) {
+                                Swal.fire({ icon: 'error', title: 'Unable to load', text: 'Could not load account details.', confirmButtonText: 'OK' });
+                            }
+                        });
+                });
+            }
+        })();
+    </script>
+@endpush

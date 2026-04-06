@@ -166,6 +166,16 @@ class RoutingController extends Controller
             return redirect()->route('company.fuel.reconciliations.index');
         }
 
+        // Redirect All Accounts to fuel accounts controller
+        if ($first === 'company' && $second === 'FuelManagement' && $third === 'allaccount') {
+            return redirect()->route('company.fuel.accounts.index');
+        }
+
+        // Redirect Bank Deposit view to fuel bank deposits controller
+        if ($first === 'company' && $second === 'FuelManagement' && in_array($third, ['bankDeposit', 'bankdeposit'], true)) {
+            return redirect()->route('company.fuel.bank-deposits.index');
+        }
+
         return view($first . '.' . $second . '.' . $third, [
             'mode' => $mode,
             'demo' => $demo,
